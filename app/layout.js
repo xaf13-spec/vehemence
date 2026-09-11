@@ -1,3 +1,5 @@
+import "./globals.css";
+
 export const metadata = {
   title: "Vehemence",
   description: "Vehemence - Games, community, and more."
