@@ -34,7 +34,7 @@ export async function signup(formData) {
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const email = `${username.toLowerCase()}@vehemence.local`;
+    const email = username.toLowerCase() + "@vehemence.local";
 
     const { data, error } = await supabase.auth.signUp({
       email,
