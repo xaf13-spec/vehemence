@@ -1,10 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function StartCallButton({ calleeId }) {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const handleEnded = (event) => {
+      if (!event.detail?.callId) return;
+      setStatus("idle");
+      setError("");
+    };
+
+    window.addEventListener("vehemence-call-ended", handleEnded);
+
+    return () => {
+      window.removeEventListener("vehemence-call-ended", handleEnded);
+    };
+  }, []);
 
   async function handleClick() {
     if (status !== "idle") return;
