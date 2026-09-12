@@ -2,6 +2,7 @@ import "./globals.css";
 import "./themes.css";
 import "./fonts.css";
 import Navbar from "./components/Navbar";
+import ChatWidget from "./components/ChatWidget";
 
 export const metadata = {
   title: "Vehemence",
@@ -14,6 +15,7 @@ export default function RootLayout({ children }) {
       <body>
         <Navbar />
         {children}
+        <ChatWidget />
       </body>
     </html>
   );
