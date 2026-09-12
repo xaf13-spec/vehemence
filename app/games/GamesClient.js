@@ -28,10 +28,7 @@ const games = [
   { name: "Among Us", description: "Complete tasks, watch the crew, and figure out who is suspicious.", category: "Social", hasSound: true },
   { name: "Space Waves", description: "Guide your ship through tight spaces and keep your timing sharp.", category: "Arcade", hasSound: true },
   { name: "Speed Stars", description: "Sprint, time your steps, and chase faster runs.", category: "Sports", hasSound: true },
-  { name: "Stickman Hook", description: "Swing from point to point and keep your momentum going.", category: "Arcade", hasSound: true },
-  { name: "Spotube", description: "Open-source music streaming app.", category: "Entertainment", hasSound: false, url: "https://github.com/KRTirtho/spotube" },
-  { name: "StreameX", description: "Discover and watch movies and TV shows.", category: "Entertainment", hasSound: true, url: "https://streamex.hn/" },
-  { name: "Vidbox", description: "Movies, shows, and more to explore.", category: "Entertainment", hasSound: true, url: "https://vidbox.cc/" }
+  { name: "Stickman Hook", description: "Swing from point to point and keep your momentum going.", category: "Arcade", hasSound: true }
 ];
 
 const categories = ["All", ...Array.from(new Set(games.map((game) => game.category)))];
@@ -55,12 +52,11 @@ export default function GamesClient() {
 
   useEffect(() => {
     loadState();
-    const refresh = loadState;
-    window.addEventListener("vehemence-games-changed", refresh);
-    window.addEventListener("storage", refresh);
+    window.addEventListener("vehemence-games-changed", loadState);
+    window.addEventListener("storage", loadState);
     return () => {
-      window.removeEventListener("vehemence-games-changed", refresh);
-      window.removeEventListener("storage", refresh);
+      window.removeEventListener("vehemence-games-changed", loadState);
+      window.removeEventListener("storage", loadState);
     };
   }, []);
 
@@ -102,9 +98,7 @@ export default function GamesClient() {
       <div className="game-toolbar">
         <div className="game-filter-group">
           {categories.map((item) => (
-            <button type="button" key={item} className={`game-filter ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>
-              {item}
-            </button>
+            <button type="button" key={item} className={`game-filter ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>{item}</button>
           ))}
         </div>
         <select className="game-sort" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort games">
