@@ -1,0 +1,184 @@
+:root {
+  --theme-bg: #07070a;
+  --theme-surface: #111118;
+  --theme-surface-hover: #171720;
+  --theme-accent: #ffffff;
+  --theme-accent-soft: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="midnight"] {
+  --theme-bg: #07070a;
+  --theme-surface: #111118;
+  --theme-surface-hover: #181820;
+  --theme-accent: #aeb8ff;
+  --theme-accent-soft: rgba(174, 184, 255, 0.1);
+}
+
+html[data-theme="cherry-blossom"] {
+  --theme-bg: #10090d;
+  --theme-surface: #1b1016;
+  --theme-surface-hover: #25151d;
+  --theme-accent: #ff9fbd;
+  --theme-accent-soft: rgba(255, 159, 189, 0.1);
+}
+
+html[data-theme="ocean"] {
+  --theme-bg: #071015;
+  --theme-surface: #0d1a21;
+  --theme-surface-hover: #12232c;
+  --theme-accent: #5db9e8;
+  --theme-accent-soft: rgba(93, 185, 232, 0.1);
+}
+
+html[data-theme="aquatic"] {
+  --theme-bg: #061214;
+  --theme-surface: #0b1d20;
+  --theme-surface-hover: #10282b;
+  --theme-accent: #55e0d0;
+  --theme-accent-soft: rgba(85, 224, 208, 0.1);
+}
+
+html[data-theme="lavender"] {
+  --theme-bg: #0e0a15;
+  --theme-surface: #171020;
+  --theme-surface-hover: #20162c;
+  --theme-accent: #c5a4ff;
+  --theme-accent-soft: rgba(197, 164, 255, 0.1);
+}
+
+html[data-theme="forest"] {
+  --theme-bg: #08100b;
+  --theme-surface: #0f1b12;
+  --theme-surface-hover: #15261a;
+  --theme-accent: #7bc98b;
+  --theme-accent-soft: rgba(123, 201, 139, 0.1);
+}
+
+html[data-theme="sunset"] {
+  --theme-bg: #120b09;
+  --theme-surface: #1e130f;
+  --theme-surface-hover: #291a14;
+  --theme-accent: #ffad70;
+  --theme-accent-soft: rgba(255, 173, 112, 0.1);
+}
+
+html[data-theme="rose"] {
+  --theme-bg: #12090d;
+  --theme-surface: #1d1016;
+  --theme-surface-hover: #28151d;
+  --theme-accent: #f184a7;
+  --theme-accent-soft: rgba(241, 132, 167, 0.1);
+}
+
+html[data-theme="cloud"] {
+  --theme-bg: #101114;
+  --theme-surface: #181a1f;
+  --theme-surface-hover: #20232a;
+  --theme-accent: #c8ced8;
+  --theme-accent-soft: rgba(200, 206, 216, 0.1);
+}
+
+html[data-theme="autumn"] {
+  --theme-bg: #120d08;
+  --theme-surface: #1d150d;
+  --theme-surface-hover: #281d13;
+  --theme-accent: #d99a5b;
+  --theme-accent-soft: rgba(217, 154, 91, 0.1);
+}
+
+html[data-theme="frost"] {
+  --theme-bg: #080f14;
+  --theme-surface: #101a21;
+  --theme-surface-hover: #17252e;
+  --theme-accent: #9dd9f5;
+  --theme-accent-soft: rgba(157, 217, 245, 0.1);
+}
+
+html[data-theme="mocha"] {
+  --theme-bg: #100b08;
+  --theme-surface: #1b130e;
+  --theme-surface-hover: #261b14;
+  --theme-accent: #c89b73;
+  --theme-accent-soft: rgba(200, 155, 115, 0.1);
+}
+
+html[data-theme="moss"] {
+  --theme-bg: #0b0f09;
+  --theme-surface: #141b11;
+  --theme-surface-hover: #1c2617;
+  --theme-accent: #9caf72;
+  --theme-accent-soft: rgba(156, 175, 114, 0.1);
+}
+
+html[data-theme="crimson"] {
+  --theme-bg: #120708;
+  --theme-surface: #1d0d0f;
+  --theme-surface-hover: #281214;
+  --theme-accent: #ed7079;
+  --theme-accent-soft: rgba(237, 112, 121, 0.1);
+}
+
+html[data-theme="sakura"] {
+  --theme-bg: #110b10;
+  --theme-surface: #1d121b;
+  --theme-surface-hover: #281925;
+  --theme-accent: #f2a8cf;
+  --theme-accent-soft: rgba(242, 168, 207, 0.1);
+}
+
+html[data-theme] {
+  background: var(--theme-bg);
+}
+
+html[data-theme] body {
+  background:
+    radial-gradient(
+      circle at 50% -20%,
+      var(--theme-accent-soft),
+      transparent 35%
+    ),
+    var(--theme-bg);
+}
+
+html[data-theme] .navbar {
+  background: color-mix(in srgb, var(--theme-bg) 82%, transparent);
+}
+
+html[data-theme] .primary-button {
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+  color: var(--theme-bg);
+  box-shadow: 0 8px 30px var(--theme-accent-soft);
+}
+
+html[data-theme] .primary-button:hover {
+  box-shadow: 0 12px 35px var(--theme-accent-soft);
+}
+
+html[data-theme] .secondary-button:hover {
+  border-color: var(--theme-accent);
+  background: var(--theme-accent-soft);
+}
+
+html[data-theme] .settings-card,
+html[data-theme] .rules-card,
+html[data-theme] .auth-card,
+html[data-theme] .game-card {
+  background: var(--theme-surface);
+}
+
+html[data-theme] .game-card:hover {
+  background: var(--theme-surface-hover);
+  border-color: var(--theme-accent);
+}
+
+html[data-theme] .settings-select {
+  border-color: var(--theme-accent-soft);
+  background: var(--theme-surface);
+  color: var(--text);
+}
+
+html[data-theme] .settings-select:focus {
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 3px var(--theme-accent-soft);
+}
