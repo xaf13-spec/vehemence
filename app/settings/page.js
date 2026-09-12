@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { logout, changeUsername } from "./actions";
+import { logout, changeUsername, changePassword } from "./actions";
 
 export default function Settings() {
 const [showUsername, setShowUsername] = useState(false);
+const [showPassword, setShowPassword] = useState(false);
+
 const [usernameError, setUsernameError] = useState("");
 const [usernameSuccess, setUsernameSuccess] = useState("");
 const [usernameLoading, setUsernameLoading] = useState(false);
+
+const [passwordError, setPasswordError] = useState("");
+const [passwordSuccess, setPasswordSuccess] = useState("");
+const [passwordLoading, setPasswordLoading] = useState(false);
 
 async function handleLogout() {
 await logout();
@@ -31,6 +37,27 @@ if (result?.error) {
 
 setUsernameSuccess("Username changed successfully.");
 setUsernameLoading(false);
+event.currentTarget.reset();
+
+}
+
+async function handlePasswordChange(event) {
+event.preventDefault();
+setPasswordError("");
+setPasswordSuccess("");
+setPasswordLoading(true);
+
+const formData = new FormData(event.currentTarget);
+const result = await changePassword(formData);
+
+if (result?.error) {
+  setPasswordError(result.error);
+  setPasswordLoading(false);
+  return;
+}
+
+setPasswordSuccess("Password changed successfully.");
+setPasswordLoading(false);
 event.currentTarget.reset();
 
 }
@@ -110,10 +137,72 @@ return (
             <p>Change your password whenever you want.</p>
           </div>
 
-          <button className="secondary-button">
-            Change Password
+          <button
+            className="secondary-button"
+            onClick={() => {
+              setShowPassword(!showPassword);
+              setPasswordError("");
+              setPasswordSuccess("");
+            }}
+          >
+            {showPassword ? "Cancel" : "Change Password"}
           </button>
         </div>
+
+        {showPassword && (
+          <form
+            className="settings-form"
+            onSubmit={handlePasswordChange}
+          >
+            <label>
+              Current Password
+              <input
+                name="currentPassword"
+                type="password"
+                placeholder="Enter your current password"
+                required
+              />
+            </label>
+
+            <label>
+              New Password
+              <input
+                name="newPassword"
+                type="password"
+                placeholder="Enter your new password"
+                minLength={8}
+                required
+              />
+            </label>
+
+            <label>
+              Confirm New Password
+              <input
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm your new password"
+                minLength={8}
+                required
+              />
+            </label>
+
+            {passwordError && (
+              <p className="auth-error">{passwordError}</p>
+            )}
+
+            {passwordSuccess && (
+              <p className="settings-success">{passwordSuccess}</p>
+            )}
+
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={passwordLoading}
+            >
+              {passwordLoading ? "Changing..." : "Save Password"}
+            </button>
+          </form>
+        )}
       </div>
     </section>
 
