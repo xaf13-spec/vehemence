@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+const ONTARIO_TIME_ZONE = "America/Toronto";
+
 function formatTime(dateString) {
   const date = new Date(dateString);
   const diff = Date.now() - date.getTime();
@@ -10,7 +12,11 @@ function formatTime(dateString) {
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
 
-  return date.toLocaleDateString([], { month: "short", day: "numeric" });
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: ONTARIO_TIME_ZONE,
+    month: "short",
+    day: "numeric"
+  }).format(date);
 }
 
 export default function ChatWidget() {
