@@ -1,17 +1,11 @@
 "use client";
 
 const realGames = {
-  // Cookie Clicker’s official site is the real game, but its web app can keep
-  // patching/updating when embedded. This maintained mirror is a full browser
-  // build rather than one of our own remakes.
-  "Cookie Clicker": "https://plasma4.github.io/cookieclicker/",
-
-  // Use the game's play page instead of the Retro Bowl site's full homepage so
-  // the Vehemence player is just the game area.
   "Retro Bowl": "https://retrobowl.me/play.html",
   "Slope": "https://www.crazygames.com/game/slope",
   "Rocket Goal": "https://rocket-goal.io/",
   "Basketball Stars": "https://playcutegames.com/game/basketball-stars",
+  "Geometry Dash": "https://geometrydash-pc.com/",
   "Minesweeper": "https://minesweeper.online/",
   "Worlde": "https://www.nytimes.com/games/wordle/index.html",
   "Slither.io": "https://slither.io/",
@@ -23,8 +17,9 @@ const realGames = {
   "Space Waves": "https://www.crazygames.com/game/space-waves",
   "Speed Stars": "https://speedstars.ai/",
   "Stickman Hook": "https://www.crazygames.com/game/stickman-hook",
-  "Eaglercraft": "https://g.deev.is/eaglercraft/",
+  "Eaglercraft": "https://eaglercraft.com/",
   "Level Devil": "https://playleveldevil.com/",
+  "Spotube": "https://github.com/KRTirtho/spotube",
 };
 
 function ExternalGame({ name, url }) {
@@ -44,7 +39,7 @@ function ExternalGame({ name, url }) {
           style={{ pointerEvents: "auto", background: "rgba(10,10,14,.92)" }}
           onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
         >
-          Open game directly
+          Open directly
         </button>
       </div>
     </div>
@@ -56,7 +51,7 @@ function Unavailable({ name }) {
     <div className="vb-center">
       <span className="settings-eyebrow">VEHEMENCE GAME</span>
       <h2>{name}</h2>
-      <p>I’m not going to replace the real game with a fake copy. There isn’t a legitimate browser build I can embed for this title right now.</p>
+      <p>There isn't a legitimate browser build available for this title in Vehemence right now.</p>
     </div>
   );
 }
