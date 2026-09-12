@@ -1,11 +1,38 @@
 "use client";
 
-import { logout } from "./actions";
+import { useState } from "react";
+import { logout, changeUsername } from "./actions";
 
 export default function Settings() {
+const [showUsername, setShowUsername] = useState(false);
+const [usernameError, setUsernameError] = useState("");
+const [usernameSuccess, setUsernameSuccess] = useState("");
+const [usernameLoading, setUsernameLoading] = useState(false);
+
 async function handleLogout() {
 await logout();
 window.location.href = "/";
+}
+
+async function handleUsernameChange(event) {
+event.preventDefault();
+setUsernameError("");
+setUsernameSuccess("");
+setUsernameLoading(true);
+
+const formData = new FormData(event.currentTarget);
+const result = await changeUsername(formData);
+
+if (result?.error) {
+  setUsernameError(result.error);
+  setUsernameLoading(false);
+  return;
+}
+
+setUsernameSuccess("Username changed successfully.");
+setUsernameLoading(false);
+event.currentTarget.reset();
+
 }
 
 return (
@@ -30,10 +57,52 @@ return (
             <p>Change your username once every 24 hours.</p>
           </div>
 
-          <button className="secondary-button">
-            Change Username
+          <button
+            className="secondary-button"
+            onClick={() => {
+              setShowUsername(!showUsername);
+              setUsernameError("");
+              setUsernameSuccess("");
+            }}
+          >
+            {showUsername ? "Cancel" : "Change Username"}
           </button>
         </div>
+
+        {showUsername && (
+          <form
+            className="settings-form"
+            onSubmit={handleUsernameChange}
+          >
+            <label>
+              New Username
+              <input
+                name="username"
+                type="text"
+                placeholder="Enter your new username"
+                minLength={3}
+                maxLength={20}
+                required
+              />
+            </label>
+
+            {usernameError && (
+              <p className="auth-error">{usernameError}</p>
+            )}
+
+            {usernameSuccess && (
+              <p className="settings-success">{usernameSuccess}</p>
+            )}
+
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={usernameLoading}
+            >
+              {usernameLoading ? "Changing..." : "Save Username"}
+            </button>
+          </form>
+        )}
 
         <div className="settings-row">
           <div>
