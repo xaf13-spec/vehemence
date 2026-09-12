@@ -50,5 +50,3 @@ export async function signup(formData) {
 
   return { success: true };
 }
-
-return { error: JSON.stringify(profileError) };
