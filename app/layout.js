@@ -1,6 +1,7 @@
 import "./globals.css";
 import "./themes.css";
 import "./fonts.css";
+import "./chat-widget.css";
 import Navbar from "./components/Navbar";
 import ChatWidget from "./components/ChatWidget";
 
