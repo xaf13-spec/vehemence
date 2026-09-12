@@ -1,5 +1,3 @@
-// Vehemence username authentication
-js
 "use server";
 
 import { createHash } from "crypto";
