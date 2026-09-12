@@ -7,11 +7,49 @@ const supabase = createClient(
   process.env.SUPABASE_PUBLISHABLE_KEY
 );
 
-export async function GET() {
+export async function GET(request) {
   const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ error: "Not logged in." }, { status: 401 });
+  }
+
+  const callId = new URL(request.url).searchParams.get("callId");
+
+  if (callId) {
+    const { data: call } = await supabase
+      .from("calls")
+      .select("id, caller_id, callee_id")
+      .eq("id", callId)
+      .single();
+
+    if (!call) {
+      return NextResponse.json({ error: "Call not found." }, { status: 404 });
+    }
+
+    if (call.caller_id !== user.id && call.callee_id !== user.id) {
+      return NextResponse.json({ error: "You cannot access this call." }, { status: 403 });
+    }
+
+    const { data, error } = await supabase
+      .from("call_candidates")
+      .select("id, sender_id, candidate, created_at")
+      .eq("call_id", callId)
+      .neq("sender_id", user.id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      return NextResponse.json({ error: "Could not load call signals." }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      candidates: (data || []).map((item) => ({
+        id: item.id,
+        senderId: item.sender_id,
+        candidate: item.candidate,
+        createdAt: item.created_at
+      }))
+    });
   }
 
   const { data, error } = await supabase
