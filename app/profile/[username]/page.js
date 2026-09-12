@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { getCurrentUser } from "../../../lib/auth";
+import StartCallButton from "../../components/StartCallButton";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -90,9 +91,7 @@ export default async function OtherProfilePage({ params }) {
                 <h3>Voice Call</h3>
                 <p>Start a private call with this user.</p>
               </div>
-              <button type="button" className="profile-call-button">
-                Start Call
-              </button>
+              <StartCallButton calleeId={profile.id} />
             </div>
           </div>
         </section>
