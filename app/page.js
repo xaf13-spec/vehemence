@@ -16,10 +16,6 @@ export default function Home() {
             <a className="primary-button" href="/rules">
               Sign Up / Log In
             </a>
-
-            <a className="secondary-button" href="/games">
-              Browse Games
-            </a>
           </div>
         </div>
       </section>
