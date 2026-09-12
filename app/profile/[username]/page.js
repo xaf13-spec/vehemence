@@ -7,8 +7,11 @@ const supabase = createClient(
   process.env.SUPABASE_PUBLISHABLE_KEY
 );
 
+const ONTARIO_TIME_ZONE = "America/Toronto";
+
 function formatJoinedDate(date) {
   return new Intl.DateTimeFormat("en-US", {
+    timeZone: ONTARIO_TIME_ZONE,
     month: "long",
     day: "numeric",
     year: "numeric"
