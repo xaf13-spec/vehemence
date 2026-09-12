@@ -65,6 +65,7 @@ export default function CallWidget() {
     cleanupMedia();
     setActiveCall(null);
     setCalls((current) => current.filter((call) => call.id !== callId));
+    window.dispatchEvent(new CustomEvent("vehemence-call-ended", { detail: { callId } }));
 
     try {
       await callApi({ action: "end", callId });
@@ -271,9 +272,11 @@ export default function CallWidget() {
     if (!currentUserId) return;
 
     if (activeCallIdRef.current && !calls.some((call) => call.id === activeCallIdRef.current)) {
+      const endedCallId = activeCallIdRef.current;
       cleanupMedia();
       setActiveCall(null);
       setError("");
+      window.dispatchEvent(new CustomEvent("vehemence-call-ended", { detail: { callId: endedCallId } }));
       return;
     }
 
@@ -318,6 +321,7 @@ export default function CallWidget() {
     cleanupMedia();
     setActiveCall(null);
     setCalls((current) => current.filter((call) => call.id !== callId));
+    window.dispatchEvent(new CustomEvent("vehemence-call-ended", { detail: { callId } }));
 
     try {
       await callApi({ action: "decline", callId });
