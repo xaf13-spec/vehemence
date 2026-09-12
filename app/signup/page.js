@@ -21,7 +21,7 @@ export default function Signup() {
       return;
     }
 
-    window.location.href = "/login";
+    window.location.href = "/games";
   }
 
   return (
