@@ -1,4 +1,13 @@
+"use client";
+
+import { logout } from "./actions";
+
 export default function Settings() {
+async function handleLogout() {
+await logout();
+window.location.href = "/";
+}
+
 return (
 <main className="settings-page">
 <div className="settings-container">
@@ -114,7 +123,10 @@ return (
             <p>Sign out of your Vehemence account on this device.</p>
           </div>
 
-          <button className="secondary-button danger-button">
+          <button
+            className="secondary-button danger-button"
+            onClick={handleLogout}
+          >
             Sign Out
           </button>
         </div>
