@@ -1,5 +1,6 @@
 "use server";
 
+import { createHash } from "crypto";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
@@ -108,6 +109,76 @@ last_username_change: new Date().toISOString()
 
 if (error) {
 return { error: "Could not change your username." };
+}
+
+return { success: true };
+}
+
+export async function changePassword(formData) {
+const currentPassword = formData.get("currentPassword")?.toString();
+const newPassword = formData.get("newPassword")?.toString();
+const confirmPassword = formData.get("confirmPassword")?.toString();
+
+if (!currentPassword || !newPassword || !confirmPassword) {
+return { error: "Please fill in every field." };
+}
+
+if (newPassword !== confirmPassword) {
+return { error: "New passwords do not match." };
+}
+
+if (newPassword.length < 8) {
+return { error: "Your new password must be at least 8 characters." };
+}
+
+const cookieStore = await cookies();
+const token = cookieStore.get("vehemence_session")?.value;
+
+if (!token) {
+return { error: "You are not logged in." };
+}
+
+const { data: session } = await supabase
+.from("sessions")
+.select("user_id, expires_at")
+.eq("token", token)
+.single();
+
+if (!session || new Date(session.expires_at) <= new Date()) {
+return { error: "Your session has expired." };
+}
+
+const { data: profile } = await supabase
+.from("profiles")
+.select("password_hash")
+.eq("id", session.user_id)
+.single();
+
+if (!profile) {
+return { error: "Account not found." };
+}
+
+const currentPasswordHash = createHash("sha256")
+.update(currentPassword)
+.digest("hex");
+
+if (currentPasswordHash !== profile.password_hash) {
+return { error: "Your current password is incorrect." };
+}
+
+const newPasswordHash = createHash("sha256")
+.update(newPassword)
+.digest("hex");
+
+const { error } = await supabase
+.from("profiles")
+.update({
+password_hash: newPasswordHash
+})
+.eq("id", session.user_id);
+
+if (error) {
+return { error: "Could not change your password." };
 }
 
 return { success: true };
