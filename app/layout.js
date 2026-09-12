@@ -8,6 +8,7 @@ import "./game-player.css";
 import Navbar from "./components/Navbar";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
+import BrowserCustomization from "./components/BrowserCustomization";
 
 export const metadata = {
   title: "Vehemence",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <BrowserCustomization />
         <Navbar />
         {children}
         <ChatWidget />
