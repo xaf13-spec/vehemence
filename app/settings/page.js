@@ -6,6 +6,7 @@ import { logout, changeUsername, changePassword } from "./actions";
 const themes = ["Midnight","Cherry Blossom","Ocean","Aquatic","Lavender","Forest","Sunset","Rose","Cloud","Autumn","Frost","Mocha","Moss","Crimson","Sakura"];
 const fonts = ["Arial","Helvetica","Verdana","Tahoma","Trebuchet MS","Georgia","Garamond","Times New Roman","Courier New","Consolas","Lucida Console","Impact","Comic Sans MS","Segoe UI","Calibri","Cambria","Century Gothic","Palatino"];
 const tabIcons = ["Google Classroom","Google Docs","Google Slides","Khan Academy"];
+const siteNames = ["Vehemence","VEHEMENCE","Vehemence Games","Vehemence Hub"];
 
 const tabIconColors = {
   "Google Classroom": ["#5f6368", "#34a853"],
@@ -14,7 +15,7 @@ const tabIconColors = {
   "Khan Academy": ["#14bf96", "#0b8f72"]
 };
 
-function setTabIcon(name) {
+function applyTabIcon(name) {
   const [primary, secondary] = tabIconColors[name];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${primary}"/><circle cx="32" cy="27" r="13" fill="white" opacity=".95"/><path d="M18 48c4-10 24-10 28 0" fill="${secondary}"/></svg>`;
   let link = document.querySelector("link[rel='icon']");
@@ -24,6 +25,65 @@ function setTabIcon(name) {
     document.head.appendChild(link);
   }
   link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+function SearchableSelect({ label, value, options, onChange, placeholder }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredOptions = options.filter((option) =>
+    option.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function choose(option) {
+    onChange(option);
+    setSearch("");
+    setOpen(false);
+  }
+
+  return (
+    <div className="settings-custom-select">
+      <button
+        type="button"
+        className="settings-select-button"
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+      >
+        <span>{value}</span>
+        <span className={`settings-select-arrow ${open ? "open" : ""}`}>⌄</span>
+      </button>
+
+      {open && (
+        <div className="settings-select-menu">
+          <input
+            className="settings-select-search"
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={placeholder || `Search ${label.toLowerCase()}...`}
+            autoFocus
+          />
+          <div className="settings-select-options">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <button
+                  type="button"
+                  className={`settings-select-option ${option === value ? "selected" : ""}`}
+                  key={option}
+                  onClick={() => choose(option)}
+                >
+                  <span>{option}</span>
+                  {option === value && <span className="settings-select-check">✓</span>}
+                </button>
+              ))
+            ) : (
+              <div className="settings-select-empty">No results found.</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Settings() {
@@ -38,44 +98,55 @@ export default function Settings() {
   const [theme, setTheme] = useState("Midnight");
   const [font, setFont] = useState("Arial");
   const [tabIcon, setTabIconChoice] = useState("Google Classroom");
+  const [siteName, setSiteName] = useState("Vehemence");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("vehemence_theme");
     const savedFont = localStorage.getItem("vehemence_font");
     const savedTabIcon = localStorage.getItem("vehemence_tab_icon");
+    const savedSiteName = localStorage.getItem("vehemence_site_name");
 
     if (savedTheme && themes.includes(savedTheme)) {
       setTheme(savedTheme);
       document.documentElement.setAttribute("data-theme", savedTheme.toLowerCase().replaceAll(" ", "-"));
     }
+
     if (savedFont && fonts.includes(savedFont)) {
       setFont(savedFont);
       document.documentElement.style.setProperty("--site-font", savedFont);
     }
+
     const selectedIcon = savedTabIcon && tabIcons.includes(savedTabIcon) ? savedTabIcon : "Google Classroom";
     setTabIconChoice(selectedIcon);
-    setTabIcon(selectedIcon);
+    applyTabIcon(selectedIcon);
+
+    const selectedSiteName = savedSiteName && siteNames.includes(savedSiteName) ? savedSiteName : "Vehemence";
+    setSiteName(selectedSiteName);
+    document.title = selectedSiteName;
   }, []);
 
-  function handleThemeChange(event) {
-    const selectedTheme = event.target.value;
+  function handleThemeChange(selectedTheme) {
     setTheme(selectedTheme);
     localStorage.setItem("vehemence_theme", selectedTheme);
     document.documentElement.setAttribute("data-theme", selectedTheme.toLowerCase().replaceAll(" ", "-"));
   }
 
-  function handleFontChange(event) {
-    const selectedFont = event.target.value;
+  function handleFontChange(selectedFont) {
     setFont(selectedFont);
     localStorage.setItem("vehemence_font", selectedFont);
     document.documentElement.style.setProperty("--site-font", selectedFont);
   }
 
-  function handleTabIconChange(event) {
-    const selectedIcon = event.target.value;
+  function handleTabIconChange(selectedIcon) {
     setTabIconChoice(selectedIcon);
     localStorage.setItem("vehemence_tab_icon", selectedIcon);
-    setTabIcon(selectedIcon);
+    applyTabIcon(selectedIcon);
+  }
+
+  function handleSiteNameChange(selectedName) {
+    setSiteName(selectedName);
+    localStorage.setItem("vehemence_site_name", selectedName);
+    document.title = selectedName;
   }
 
   async function handleLogout() {
@@ -157,11 +228,11 @@ export default function Settings() {
           <div className="settings-card">
             <div className="settings-row">
               <div><h3>Theme</h3><p>Choose the look and colors of the site.</p></div>
-              <select className="settings-select" value={theme} onChange={handleThemeChange}>{themes.map((themeName) => <option key={themeName} value={themeName}>{themeName}</option>)}</select>
+              <SearchableSelect label="Theme" value={theme} options={themes} onChange={handleThemeChange} />
             </div>
             <div className="settings-row">
               <div><h3>Font</h3><p>Choose the font used throughout Vehemence.</p></div>
-              <select className="settings-select" value={font} onChange={handleFontChange}>{fonts.map((fontName) => <option key={fontName} value={fontName}>{fontName}</option>)}</select>
+              <SearchableSelect label="Font" value={font} options={fonts} onChange={handleFontChange} />
             </div>
           </div>
         </section>
@@ -171,11 +242,11 @@ export default function Settings() {
           <div className="settings-card">
             <div className="settings-row">
               <div><h3>Site Name</h3><p>Change the name shown in your browser tab.</p></div>
-              <button className="secondary-button">Change Name</button>
+              <SearchableSelect label="Site name" value={siteName} options={siteNames} onChange={handleSiteNameChange} />
             </div>
             <div className="settings-row">
               <div><h3>Tab Icon</h3><p>Choose the icon shown next to the site name.</p></div>
-              <select className="settings-select" value={tabIcon} onChange={handleTabIconChange}>{tabIcons.map((iconName) => <option key={iconName} value={iconName}>{iconName}</option>)}</select>
+              <SearchableSelect label="Tab icon" value={tabIcon} options={tabIcons} onChange={handleTabIconChange} />
             </div>
           </div>
         </section>
