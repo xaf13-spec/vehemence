@@ -1,14 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../lib/auth";
 
-const entertainment = [
-  {
-    name: "Spotube",
-    description: "An open-source music streaming app from the Spotube project.",
-    icon: "♫",
-    url: "https://github.com/KRTirtho/spotube"
-  }
-];
+const entertainment = [];
 
 export default async function EntertainmentPage() {
   const user = await getCurrentUser();
@@ -20,7 +13,7 @@ export default async function EntertainmentPage() {
         <div>
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Entertainment</h1>
-          <p>Music, media, and other stuff outside the game library.</p>
+          <p>Movies, shows, and other stuff outside the game library.</p>
         </div>
       </header>
 
@@ -28,25 +21,11 @@ export default async function EntertainmentPage() {
         <div className="section-title-row">
           <div>
             <h2>Entertainment</h2>
-            <p className="section-subtitle">Stuff to check out when you aren't playing.</p>
+            <p className="section-subtitle">More content will be added here.</p>
           </div>
         </div>
-
-        <div className="game-grid">
-          {entertainment.map((item) => (
-            <a className="game-card" href={item.url} target="_blank" rel="noreferrer" key={item.name}>
-              <div className="game-thumbnail">
-                <span style={{ fontSize: 54, letterSpacing: 0 }}>{item.icon}</span>
-              </div>
-              <div className="game-info">
-                <div>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                </div>
-                <span className="game-category">Entertainment</span>
-              </div>
-            </a>
-          ))}
+        <div className="empty-games">
+          <p>No entertainment items yet.</p>
         </div>
       </section>
     </main>
