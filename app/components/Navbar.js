@@ -9,9 +9,7 @@ export default function Navbar() {
         <a href="/">Home</a>
         <a href="/rules">Rules</a>
         <a href="/games">Games</a>
-        <a href="/clans">Clans</a>
         <a href="/profile">Profile</a>
-        <a href="/report">Report</a>
         <a href="/settings">Settings</a>
       </div>
     </nav>
