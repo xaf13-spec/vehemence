@@ -158,7 +158,7 @@ export default function CallWidget() {
 
     if (!isCaller && !isCallee) return;
 
-    if (call.status === "ringing" && isCallee) {
+    if (call.status === "ringing") {
       setActiveCall((current) => current || call);
       return;
     }
