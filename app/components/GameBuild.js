@@ -11,7 +11,7 @@ const realGames = {
   "Slither.io": "https://slither.io/",
   "Chess": "https://lichess.org/",
   "Tetris": "https://play.tetris.com/",
-  "FNAF": "https://www.gameflare.com/search/five%20nights%20at%20freddy%27s/",
+  "FNAF": "https://www.gameflare.com/search/five%20nights%20at%20freddys/",
   "Subway Surfers": "https://subwaysurfers.com/",
   "Among Us": "https://cards.crazygames.to/game-among-us",
   "Space Waves": "https://www.crazygames.com/game/space-waves",
@@ -19,7 +19,7 @@ const realGames = {
   "Stickman Hook": "https://www.crazygames.com/game/stickman-hook",
   "Eaglercraft": "https://eaglercraft.com/",
   "Level Devil": "https://playleveldevil.com/",
-  "Spotube": "https://github.com/KRTirtho/spotube",
+  "Happy Wheels": "https://totaljerkface.com/happy_wheels.tjf",
 };
 
 function ExternalGame({ name, url }) {
