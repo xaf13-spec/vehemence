@@ -15,6 +15,11 @@ const tabIconUrls = {
   "Khan Academy": "https://www.google.com/s2/favicons?domain=khanacademy.org&sz=64"
 };
 
+function saveSetting(key, value) {
+  localStorage.setItem(key, value);
+  document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
+}
+
 function applyTabIcon(name) {
   const iconUrl = tabIconUrls[name];
   if (!iconUrl) return;
@@ -33,6 +38,25 @@ function applyTabIcon(name) {
 function CustomSelect({ value, options, onChange }) {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const close = (event) => {
+      if (!event.target.closest(".settings-custom-select")) setOpen(false);
+    };
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
   function choose(option) {
     onChange(option);
     setOpen(false);
@@ -43,7 +67,7 @@ function CustomSelect({ value, options, onChange }) {
       <button
         type="button"
         className="settings-select-button"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
       >
         <span>{value}</span>
@@ -112,19 +136,19 @@ export default function Settings() {
 
   function handleThemeChange(selectedTheme) {
     setTheme(selectedTheme);
-    localStorage.setItem("vehemence_theme", selectedTheme);
+    saveSetting("vehemence_theme", selectedTheme);
     document.documentElement.setAttribute("data-theme", selectedTheme.toLowerCase().replaceAll(" ", "-"));
   }
 
   function handleFontChange(selectedFont) {
     setFont(selectedFont);
-    localStorage.setItem("vehemence_font", selectedFont);
+    saveSetting("vehemence_font", selectedFont);
     document.documentElement.style.setProperty("--site-font", selectedFont);
   }
 
   function handleTabIconChange(selectedIcon) {
     setTabIconChoice(selectedIcon);
-    localStorage.setItem("vehemence_tab_icon", selectedIcon);
+    saveSetting("vehemence_tab_icon", selectedIcon);
     applyTabIcon(selectedIcon);
   }
 
@@ -136,7 +160,7 @@ export default function Settings() {
     if (!newName) return;
 
     setSiteName(newName);
-    localStorage.setItem("vehemence_site_name", newName);
+    saveSetting("vehemence_site_name", newName);
     document.title = newName;
     setSiteNameSuccess("Site name changed successfully.");
     setShowSiteName(false);
