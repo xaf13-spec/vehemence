@@ -1,8 +1,14 @@
 "use client";
 
 const realGames = {
-  "Cookie Clicker": "https://cookieclicker.com/",
-  "Retro Bowl": "https://retrobowl.me/",
+  // Cookie Clicker’s official site is the real game, but its web app can keep
+  // patching/updating when embedded. This maintained mirror is a full browser
+  // build rather than one of our own remakes.
+  "Cookie Clicker": "https://plasma4.github.io/cookieclicker/",
+
+  // Use the game's play page instead of the Retro Bowl site's full homepage so
+  // the Vehemence player is just the game area.
+  "Retro Bowl": "https://retrobowl.me/play.html",
   "Slope": "https://www.crazygames.com/game/slope",
   "Rocket Goal": "https://rocket-goal.io/",
   "Basketball Stars": "https://playcutegames.com/game/basketball-stars",
@@ -23,12 +29,13 @@ const realGames = {
 
 function ExternalGame({ name, url }) {
   return (
-    <div className="vb-center" style={{ padding: 0, gap: 10 }}>
+    <div className="vb-center" style={{ padding: 0, gap: 0, position: "relative", overflow: "hidden" }}>
       <iframe
         src={url}
         title={name}
+        allow="autoplay; fullscreen; gamepad; pointer-lock"
+        allowFullScreen
         style={{ width: "100%", height: "100%", minHeight: 500, border: 0, display: "block" }}
-        allow="autoplay; fullscreen; gamepad"
       />
       <div style={{ position: "absolute", bottom: 14, left: 14, right: 14, display: "flex", justifyContent: "center", pointerEvents: "none" }}>
         <button
