@@ -1,4 +1,5 @@
-```js
+// Vehemence username authentication
+js
 "use server";
 
 import { createHash } from "crypto";
@@ -51,4 +52,3 @@ export async function signup(formData) {
 
   return { success: true };
 }
-```
