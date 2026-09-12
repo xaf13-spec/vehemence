@@ -7,6 +7,7 @@ import "./call-widget.css";
 import Navbar from "./components/Navbar";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Vehemence",
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
         {children}
         <ChatWidget />
         <CallWidget />
+        <Analytics />
       </body>
     </html>
   );
