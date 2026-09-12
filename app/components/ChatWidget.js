@@ -2,15 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-const demoMessages = [
-  { username: "Vehemence", message: "Welcome to the chat!", time: "2m ago" },
-  { username: "Alex", message: "yo whats up", time: "1m ago" }
-];
-
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState(demoMessages);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -34,7 +29,7 @@ export default function ChatWidget() {
   }
 
   const latest = messages[messages.length - 1];
-  const notificationCount = open ? 0 : messages.length;
+  const notificationCount = open ? 0 : 0;
 
   return (
     <div className={`chat-widget ${open ? "chat-widget-open" : ""}`}>
@@ -51,15 +46,19 @@ export default function ChatWidget() {
           </header>
 
           <div className="chat-messages">
-            {messages.map((item, index) => (
-              <div className="chat-message" key={`${item.username}-${index}`}>
-                <div className="chat-message-top">
-                  <strong>{item.username}</strong>
-                  <span>{item.time}</span>
+            {messages.length === 0 ? (
+              <div className="chat-empty">No messages yet.</div>
+            ) : (
+              messages.map((item, index) => (
+                <div className="chat-message" key={`${item.username}-${index}`}>
+                  <div className="chat-message-top">
+                    <strong>{item.username}</strong>
+                    <span>{item.time}</span>
+                  </div>
+                  <div className="chat-bubble">{item.message}</div>
                 </div>
-                <div className="chat-bubble">{item.message}</div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           <form className="chat-input-area" onSubmit={handleSubmit}>
