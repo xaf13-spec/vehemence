@@ -23,7 +23,7 @@
 .profile-call-button { min-width: 112px; height: 40px; padding: 0 14px; border: 1px solid var(--border); border-radius: 9px; background: rgba(255, 255, 255, 0.045); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
 .profile-call-button:hover { transform: translateY(-1px); border-color: var(--border-hover); background: rgba(255, 255, 255, 0.075); }
 
-.profile-hero { position: relative; min-height: 230px; display: flex; align-items: flex-end; gap: 22px; margin-bottom: 22px; padding: 34px; overflow: hidden; border: 1px solid var(--border); border-radius: 20px; background-size: cover; background-position: center; box-shadow: inset 0 0 80px rgba(0,0,0,.18); }
+.profile-hero { position: relative; min-height: 230px; display: flex; align-items: flex-end; gap: 22px; margin-bottom: 22px; padding: 34px; overflow: hidden; border: 1px solid var(--border); border-radius: 20px; background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.018)); background-size: cover; background-position: center; box-shadow: inset 0 0 80px rgba(0,0,0,.18); }
 .profile-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,.08)); pointer-events: none; }
 .profile-avatar, .profile-hero-copy, .profile-hero > button { position: relative; z-index: 1; }
 .profile-avatar { width: 92px; height: 92px; flex: 0 0 92px; display: grid; place-items: center; border: 2px solid rgba(255,255,255,.25); border-radius: 50%; background: rgba(255,255,255,.1); color: white; font-size: 28px; font-weight: 900; box-shadow: 0 10px 35px rgba(0,0,0,.25); }
@@ -31,12 +31,18 @@
 .profile-hero-copy h1 { margin: 3px 0 7px; font-size: 38px; letter-spacing: -.04em; }
 .profile-hero-copy p { max-width: 620px; color: rgba(255,255,255,.78); font-size: 14px; line-height: 1.5; }
 .profile-edit-card { display: grid; gap: 18px; margin-bottom: 22px; padding: 20px; border: 1px solid var(--border); border-radius: 15px; background: rgba(255,255,255,.025); }
-.profile-edit-card label { display: grid; gap: 8px; color: var(--text); font-size: 12px; font-weight: 700; }
-.profile-edit-card input, .profile-edit-card select { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; background: rgba(0,0,0,.18); color: var(--text); font: inherit; }
-.profile-edit-card input[type=file] { padding: 8px; }
-.profile-customization-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.profile-edit-card label { position: relative; display: grid; gap: 8px; color: var(--text); font-size: 12px; font-weight: 700; }
+.profile-edit-card textarea,
+.profile-edit-card input[type=file] { width: 100%; border: 1px solid rgba(255,255,255,.09); border-radius: 10px; outline: none; background: rgba(0,0,0,.2); color: var(--text); font: inherit; }
+.profile-edit-card textarea { min-height: 112px; padding: 12px 13px; resize: vertical; line-height: 1.5; }
+.profile-edit-card textarea:focus { border-color: rgba(255,255,255,.3); box-shadow: 0 0 0 3px rgba(255,255,255,.045); }
+.profile-edit-card textarea::placeholder { color: #5f5f6a; }
+.profile-edit-card input[type=file] { min-height: 45px; padding: 9px 10px; cursor: pointer; }
+.profile-edit-card input[type=file]::file-selector-button { margin-right: 10px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; background: rgba(255,255,255,.06); color: #dddde4; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.profile-customization-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.profile-bio-count { position: absolute; right: 3px; bottom: -18px; color: var(--muted); font-size: 10px; font-weight: 600; }
 .profile-edit-note { margin: -4px 0 0; color: var(--muted); font-size: 11px; }
-.profile-edit-card > div:last-child { display: flex; justify-content: flex-end; gap: 10px; }
+.profile-edit-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .profile-stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 42px; }
 .profile-stat { padding: 20px; border: 1px solid var(--border); border-radius: 15px; background: rgba(255,255,255,.025); }
 .profile-stat strong { display: block; margin-bottom: 5px; font-size: 25px; }
