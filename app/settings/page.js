@@ -3,41 +3,38 @@
 import { useEffect, useState } from "react";
 import { logout, changeUsername, changePassword } from "./actions";
 
-const themes = ["Midnight","Cherry Blossom","Ocean","Aquatic","Lavender","Forest","Sunset","Rose","Cloud","Autumn","Frost","Mocha","Moss","Crimson","Sakura"];
-const fonts = ["Arial","Helvetica","Verdana","Tahoma","Trebuchet MS","Georgia","Garamond","Times New Roman","Courier New","Consolas","Lucida Console","Impact","Comic Sans MS","Segoe UI","Calibri","Cambria","Century Gothic","Palatino"];
-const tabIcons = ["Google Classroom","Google Docs","Google Slides","Khan Academy"];
-const siteNames = ["Vehemence","VEHEMENCE","Vehemence Games","Vehemence Hub"];
+const themes = ["Midnight", "Cherry Blossom", "Ocean", "Aquatic", "Lavender", "Forest", "Sunset", "Rose", "Cloud", "Autumn", "Frost", "Mocha", "Moss", "Crimson", "Sakura"];
+const fonts = ["Arial", "Helvetica", "Verdana", "Tahoma", "Trebuchet MS", "Georgia", "Garamond", "Times New Roman", "Courier New", "Consolas", "Lucida Console", "Impact", "Comic Sans MS", "Segoe UI", "Calibri", "Cambria", "Century Gothic", "Palatino"];
+const tabIcons = ["Google Classroom", "Google Docs", "Google Slides", "Google Drive", "Khan Academy"];
 
-const tabIconColors = {
-  "Google Classroom": ["#5f6368", "#34a853"],
-  "Google Docs": ["#4285f4", "#aecbfa"],
-  "Google Slides": ["#fbbc04", "#f29900"],
-  "Khan Academy": ["#14bf96", "#0b8f72"]
+const tabIconUrls = {
+  "Google Classroom": "https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64",
+  "Google Docs": "https://www.google.com/s2/favicons?domain=docs.google.com&sz=64",
+  "Google Slides": "https://www.google.com/s2/favicons?domain=slides.google.com&sz=64",
+  "Google Drive": "https://www.google.com/s2/favicons?domain=drive.google.com&sz=64",
+  "Khan Academy": "https://www.google.com/s2/favicons?domain=khanacademy.org&sz=64"
 };
 
 function applyTabIcon(name) {
-  const [primary, secondary] = tabIconColors[name];
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${primary}"/><circle cx="32" cy="27" r="13" fill="white" opacity=".95"/><path d="M18 48c4-10 24-10 28 0" fill="${secondary}"/></svg>`;
+  const iconUrl = tabIconUrls[name];
+  if (!iconUrl) return;
+
   let link = document.querySelector("link[rel='icon']");
+
   if (!link) {
     link = document.createElement("link");
     link.rel = "icon";
     document.head.appendChild(link);
   }
-  link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+
+  link.href = iconUrl;
 }
 
-function SearchableSelect({ label, value, options, onChange, placeholder }) {
+function CustomSelect({ value, options, onChange }) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-
-  const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(search.toLowerCase())
-  );
 
   function choose(option) {
     onChange(option);
-    setSearch("");
     setOpen(false);
   }
 
@@ -55,31 +52,17 @@ function SearchableSelect({ label, value, options, onChange, placeholder }) {
 
       {open && (
         <div className="settings-select-menu">
-          <input
-            className="settings-select-search"
-            type="text"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={placeholder || `Search ${label.toLowerCase()}...`}
-            autoFocus
-          />
-          <div className="settings-select-options">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <button
-                  type="button"
-                  className={`settings-select-option ${option === value ? "selected" : ""}`}
-                  key={option}
-                  onClick={() => choose(option)}
-                >
-                  <span>{option}</span>
-                  {option === value && <span className="settings-select-check">✓</span>}
-                </button>
-              ))
-            ) : (
-              <div className="settings-select-empty">No results found.</div>
-            )}
-          </div>
+          {options.map((option) => (
+            <button
+              type="button"
+              className={`settings-select-option ${option === value ? "selected" : ""}`}
+              key={option}
+              onClick={() => choose(option)}
+            >
+              <span>{option}</span>
+              {option === value && <span className="settings-select-check">✓</span>}
+            </button>
+          ))}
         </div>
       )}
     </div>
@@ -89,12 +72,14 @@ function SearchableSelect({ label, value, options, onChange, placeholder }) {
 export default function Settings() {
   const [showUsername, setShowUsername] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showSiteName, setShowSiteName] = useState(false);
   const [usernameError, setUsernameError] = useState("");
   const [usernameSuccess, setUsernameSuccess] = useState("");
   const [usernameLoading, setUsernameLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [siteNameSuccess, setSiteNameSuccess] = useState("");
   const [theme, setTheme] = useState("Midnight");
   const [font, setFont] = useState("Arial");
   const [tabIcon, setTabIconChoice] = useState("Google Classroom");
@@ -120,9 +105,9 @@ export default function Settings() {
     setTabIconChoice(selectedIcon);
     applyTabIcon(selectedIcon);
 
-    const selectedSiteName = savedSiteName && siteNames.includes(savedSiteName) ? savedSiteName : "Vehemence";
-    setSiteName(selectedSiteName);
-    document.title = selectedSiteName;
+    const savedName = savedSiteName?.trim() || "Vehemence";
+    setSiteName(savedName);
+    document.title = savedName;
   }, []);
 
   function handleThemeChange(selectedTheme) {
@@ -143,10 +128,18 @@ export default function Settings() {
     applyTabIcon(selectedIcon);
   }
 
-  function handleSiteNameChange(selectedName) {
-    setSiteName(selectedName);
-    localStorage.setItem("vehemence_site_name", selectedName);
-    document.title = selectedName;
+  function handleSiteNameSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const newName = formData.get("siteName")?.toString().trim();
+
+    if (!newName) return;
+
+    setSiteName(newName);
+    localStorage.setItem("vehemence_site_name", newName);
+    document.title = newName;
+    setSiteNameSuccess("Site name changed successfully.");
+    setShowSiteName(false);
   }
 
   async function handleLogout() {
@@ -228,11 +221,11 @@ export default function Settings() {
           <div className="settings-card">
             <div className="settings-row">
               <div><h3>Theme</h3><p>Choose the look and colors of the site.</p></div>
-              <SearchableSelect label="Theme" value={theme} options={themes} onChange={handleThemeChange} />
+              <CustomSelect value={theme} options={themes} onChange={handleThemeChange} />
             </div>
             <div className="settings-row">
               <div><h3>Font</h3><p>Choose the font used throughout Vehemence.</p></div>
-              <SearchableSelect label="Font" value={font} options={fonts} onChange={handleFontChange} />
+              <CustomSelect value={font} options={fonts} onChange={handleFontChange} />
             </div>
           </div>
         </section>
@@ -242,11 +235,18 @@ export default function Settings() {
           <div className="settings-card">
             <div className="settings-row">
               <div><h3>Site Name</h3><p>Change the name shown in your browser tab.</p></div>
-              <SearchableSelect label="Site name" value={siteName} options={siteNames} onChange={handleSiteNameChange} />
+              <button className="secondary-button" onClick={() => { setShowSiteName(!showSiteName); setSiteNameSuccess(""); }}>{showSiteName ? "Cancel" : "Change Site Name"}</button>
             </div>
+            {showSiteName && <form className="settings-form" onSubmit={handleSiteNameSubmit}>
+              <label>New Site Name<input name="siteName" type="text" placeholder="Enter your site name" defaultValue={siteName} maxLength={40} required /></label>
+              {siteNameSuccess && <p className="settings-success">{siteNameSuccess}</p>}
+              <button type="submit" className="primary-button">Save Site Name</button>
+            </form>}
+            {!showSiteName && siteNameSuccess && <p className="settings-success">{siteNameSuccess}</p>}
+
             <div className="settings-row">
               <div><h3>Tab Icon</h3><p>Choose the icon shown next to the site name.</p></div>
-              <SearchableSelect label="Tab icon" value={tabIcon} options={tabIcons} onChange={handleTabIconChange} />
+              <CustomSelect value={tabIcon} options={tabIcons} onChange={handleTabIconChange} />
             </div>
           </div>
         </section>
