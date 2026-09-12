@@ -19,19 +19,26 @@ export default function StartCallButton({ calleeId }) {
         headers: {
           "Content-Type": "application/json"
         },
+        credentials: "same-origin",
         body: JSON.stringify({
           action: "start",
-          calleeId
+          calleeId: String(calleeId)
         })
       });
 
       const data = await response.json().catch(() => ({}));
 
-      if (!response.ok) {
-        throw new Error(data.error || "Could not start the call.");
+      if (!response.ok || !data.call) {
+        throw new Error(data.error || `Could not start the call (${response.status}).`);
       }
 
       setStarted(true);
+
+      window.dispatchEvent(
+        new CustomEvent("vehemence-call-started", {
+          detail: data.call
+        })
+      );
     } catch (err) {
       setError(err?.message || "Could not start the call.");
     } finally {
@@ -47,7 +54,7 @@ export default function StartCallButton({ calleeId }) {
         onClick={startCall}
         disabled={loading || started}
       >
-        {loading ? "Calling…" : started ? "Calling…" : "Start Call"}
+        {loading ? "Starting…" : started ? "Calling…" : "Start Call"}
       </button>
       {error && <span className="profile-call-error">{error}</span>}
     </div>
