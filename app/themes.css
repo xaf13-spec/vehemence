@@ -31,14 +31,14 @@ html[data-theme] .secondary-button:hover { border-color:var(--theme-accent); bac
 html[data-theme] .settings-card,html[data-theme] .rules-card,html[data-theme] .auth-card,html[data-theme] .game-card { background:var(--theme-surface); }
 html[data-theme] .game-card:hover { background:var(--theme-surface-hover); border-color:var(--theme-accent); }
 
-/* Settings dropdowns can extend over the content below them. */
 html[data-theme] .settings-page,
 html[data-theme] .settings-container,
 html[data-theme] .settings-section,
 html[data-theme] .settings-card,
 html[data-theme] .settings-row { overflow:visible !important; }
 
-html[data-theme] .settings-custom-select { position:relative; width:240px; flex-shrink:0; z-index:1000; }
+html[data-theme] .settings-custom-select { position:relative; width:240px; flex-shrink:0; z-index:20; }
+html[data-theme] .settings-custom-select:has(.settings-select-menu) { z-index:1000; }
 html[data-theme] .settings-select-button { width:100%; min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px; border:1px solid var(--theme-accent-soft); border-radius:11px; outline:none; background:var(--theme-surface); color:var(--text); font:inherit; font-size:14px; font-weight:700; text-align:left; cursor:pointer; transition:border-color .2s ease,background .2s ease,box-shadow .2s ease; }
 html[data-theme] .settings-select-button:hover { border-color:var(--theme-accent); background:var(--theme-surface-hover); }
 html[data-theme] .settings-select-button:focus-visible { border-color:var(--theme-accent); box-shadow:0 0 0 3px var(--theme-accent-soft); }
