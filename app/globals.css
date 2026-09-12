@@ -435,3 +435,38 @@ a {
   font-weight: 700;
   letter-spacing: 0.04em;
 }
+
+.settings-form {
+display: flex;
+flex-direction: column;
+gap: 14px;
+padding: 20px;
+margin: 0 0 20px;
+border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-form label {
+display: flex;
+flex-direction: column;
+gap: 8px;
+font-weight: 700;
+}
+
+.settings-form input {
+width: 100%;
+padding: 12px 14px;
+border: 1px solid rgba(255, 255, 255, 0.12);
+border-radius: 10px;
+background: rgba(255, 255, 255, 0.04);
+color: #ffffff;
+outline: none;
+}
+
+.settings-form input:focus {
+border-color: rgba(255, 255, 255, 0.3);
+}
+
+.settings-success {
+color: #6ee7b7;
+font-size: 14px;
+}
