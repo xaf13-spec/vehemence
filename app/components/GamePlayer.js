@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import GameBuild from "./GameBuild";
 
 export default function GamePlayer({ game, onClose }) {
   const playerRef = useRef(null);
@@ -24,9 +25,8 @@ export default function GamePlayer({ game, onClose }) {
 
   useEffect(() => {
     iframeRef.current?.contentWindow?.postMessage({ type: "vehemence-volume", volume: volume / 100 }, "*");
+    localStorage.setItem("vehemence_volume", String(volume));
   }, [volume]);
-
-  function changeVolume(event) { setVolume(Number(event.target.value)); }
 
   async function toggleFullscreen() {
     if (!playerRef.current) return;
@@ -36,9 +36,9 @@ export default function GamePlayer({ game, onClose }) {
 
   return <div className="game-player-overlay" role="dialog" aria-modal="true"><div className="game-player" ref={playerRef}>
     <div className="game-player-topbar"><div className="game-player-title"><span className="game-player-eyebrow">PLAYING</span><strong>{game.name}</strong></div><div className="game-player-controls">
-      {game.hasSound && <label className="game-volume"><span>Volume</span><input type="range" min="0" max="100" value={volume} onChange={changeVolume} aria-label="Game volume" /></label>}
+      {game.hasSound && <label className="game-volume"><span>Volume</span><input type="range" min="0" max="100" value={volume} onChange={e => setVolume(Number(e.target.value))} aria-label="Game volume" /></label>}
       <button type="button" className="game-player-button" onClick={toggleFullscreen}>Fullscreen</button><button type="button" className="game-player-close" onClick={onClose} aria-label="Close game">×</button>
     </div></div>
-    <div className="game-player-content">{game.url ? <iframe ref={iframeRef} src={game.url} title={game.name} className="game-frame" allow="autoplay; fullscreen; gamepad" /> : <div className="game-placeholder"><span className="settings-eyebrow">VEHEMENCE GAME</span><h2>{game.name}</h2><p>The game will appear here once its playable build is added.</p></div>}</div>
+    <div className="game-player-content"><GameBuild game={game} /></div>
   </div></div>;
 }
