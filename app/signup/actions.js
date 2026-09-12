@@ -38,7 +38,8 @@ const { data: profile, error } = await supabase
 .from("profiles")
 .insert({
 username,
-password_hash: passwordHash
+password_hash: passwordHash,
+rules_accepted: true
 })
 .select("id")
 .single();
