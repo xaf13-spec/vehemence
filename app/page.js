@@ -1,24 +1,30 @@
-export default function Home() {
-return (
-<main className="home">
-<section className="hero">
-<div className="hero-content">
-<p className="eyebrow">WELCOME TO VEHEMENCE</p>
+import { getCurrentUser } from "../lib/auth";
 
-      <h1>VEHEMENCE</h1>
+export default async function Home() {
+  const user = await getCurrentUser();
 
-      <p className="hero-description">
-        Your new home for games, competition, and community.
-      </p>
+  return (
+    <main className="home">
+      <section className="hero">
+        <div className="hero-content">
+          <p className="eyebrow">WELCOME TO VEHEMENCE</p>
 
-      <div className="hero-buttons">
-        <a className="primary-button" href="/rules">
-          Sign Up / Log In
-        </a>
-      </div>
-    </div>
-  </section>
-</main>
+          <h1>VEHEMENCE</h1>
 
-);
+          <p className="hero-description">
+            Your new home for games, competition, and community.
+          </p>
+
+          <div className="hero-buttons">
+            <a
+              className="primary-button"
+              href={user ? "/games" : "/rules"}
+            >
+              {user ? "Enter Vehemence" : "Sign Up / Log In"}
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }
