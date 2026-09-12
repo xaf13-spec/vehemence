@@ -271,6 +271,16 @@ export default function CallWidget() {
   useEffect(() => {
     if (!currentUserId) return;
 
+    const activeCallId = activeCall?.id;
+
+    if (activeCallId && !calls.some((call) => call.id === activeCallId)) {
+      cleanupMedia();
+      setActiveCall(null);
+      setError("");
+      window.dispatchEvent(new CustomEvent("vehemence-call-ended", { detail: { callId: activeCallId } }));
+      return;
+    }
+
     if (activeCallIdRef.current && !calls.some((call) => call.id === activeCallIdRef.current)) {
       const endedCallId = activeCallIdRef.current;
       cleanupMedia();
@@ -287,7 +297,7 @@ export default function CallWidget() {
         setError(err?.message || "Could not connect the call.");
       });
     });
-  }, [calls, cleanupMedia, currentUserId, processCall]);
+  }, [activeCall?.id, calls, cleanupMedia, currentUserId, processCall]);
 
   useEffect(() => {
     return () => cleanupMedia();
