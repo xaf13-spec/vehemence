@@ -17,36 +17,49 @@ export default async function ProfilePage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="profile-page">
-        <div className="profile-heading">
+    <main className="profile-page">
+      <section className="profile-container">
+        <header className="profile-header">
           <span className="settings-eyebrow">PROFILE</span>
           <h1>{user.username}</h1>
           <p>Your Vehemence profile</p>
-        </div>
+        </header>
 
-        <div className="profile-card">
-          <div className="profile-card-top">
-            <div>
-              <span className="profile-label">USERNAME</span>
-              <h2>{user.username}</h2>
-            </div>
-            <span className="profile-online">
-              <span className="profile-online-dot" /> Online
-            </span>
+        <section className="profile-section">
+          <div className="profile-section-header">
+            <h2>Account</h2>
+            <p>Your basic Vehemence account information.</p>
           </div>
 
-          <div className="profile-details">
-            <div className="profile-detail">
-              <span>Joined</span>
-              <strong>{formatJoinedDate(user.created_at)}</strong>
+          <div className="profile-card">
+            <div className="profile-row">
+              <div className="profile-row-copy">
+                <h3>Username</h3>
+                <p>Your public Vehemence username.</p>
+              </div>
+              <strong className="profile-value">{user.username}</strong>
             </div>
-            <div className="profile-detail">
-              <span>Online time</span>
-              <strong>Online now</strong>
+
+            <div className="profile-row">
+              <div className="profile-row-copy">
+                <h3>Joined</h3>
+                <p>The date this account was created.</p>
+              </div>
+              <strong className="profile-value">{formatJoinedDate(user.created_at)}</strong>
+            </div>
+
+            <div className="profile-row">
+              <div className="profile-row-copy">
+                <h3>Status</h3>
+                <p>Current availability on Vehemence.</p>
+              </div>
+              <span className="profile-status">
+                <span className="profile-status-dot" />
+                Online
+              </span>
             </div>
           </div>
-        </div>
+        </section>
       </section>
     </main>
   );
