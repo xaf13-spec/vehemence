@@ -21,6 +21,27 @@ const themes = [
   "Sakura"
 ];
 
+const fonts = [
+  "Arial",
+  "Helvetica",
+  "Verdana",
+  "Tahoma",
+  "Trebuchet MS",
+  "Georgia",
+  "Garamond",
+  "Times New Roman",
+  "Courier New",
+  "Consolas",
+  "Lucida Console",
+  "Impact",
+  "Comic Sans MS",
+  "Segoe UI",
+  "Calibri",
+  "Cambria",
+  "Century Gothic",
+  "Palatino"
+];
+
 export default function Settings() {
   const [showUsername, setShowUsername] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,15 +55,26 @@ export default function Settings() {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   const [theme, setTheme] = useState("Midnight");
+  const [font, setFont] = useState("Arial");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("vehemence_theme");
+    const savedFont = localStorage.getItem("vehemence_font");
 
     if (savedTheme && themes.includes(savedTheme)) {
       setTheme(savedTheme);
+
       document.documentElement.setAttribute(
         "data-theme",
         savedTheme.toLowerCase().replaceAll(" ", "-")
+      );
+    }
+
+    if (savedFont && fonts.includes(savedFont)) {
+      setFont(savedFont);
+      document.documentElement.style.setProperty(
+        "--site-font",
+        savedFont
       );
     }
   }, []);
@@ -57,6 +89,19 @@ export default function Settings() {
     document.documentElement.setAttribute(
       "data-theme",
       selectedTheme.toLowerCase().replaceAll(" ", "-")
+    );
+  }
+
+  function handleFontChange(event) {
+    const selectedFont = event.target.value;
+
+    setFont(selectedFont);
+
+    localStorage.setItem("vehemence_font", selectedFont);
+
+    document.documentElement.style.setProperty(
+      "--site-font",
+      selectedFont
     );
   }
 
@@ -281,9 +326,17 @@ export default function Settings() {
                 <p>Choose the font used throughout Vehemence.</p>
               </div>
 
-              <button className="secondary-button">
-                Choose Font
-              </button>
+              <select
+                className="settings-select"
+                value={font}
+                onChange={handleFontChange}
+              >
+                {fonts.map((fontName) => (
+                  <option key={fontName} value={fontName}>
+                    {fontName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </section>
