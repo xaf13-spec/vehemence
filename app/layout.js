@@ -2,6 +2,7 @@ import "./globals.css";
 import "./themes.css";
 import "./fonts.css";
 import "./profile.css";
+import "./settings.css";
 import "./chat-widget.css";
 import "./call-widget.css";
 import "./game-player.css";
