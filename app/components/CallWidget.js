@@ -31,6 +31,7 @@ export default function CallWidget() {
   const streamRef = useRef(null);
   const remoteAudioRef = useRef(null);
   const seenCandidatesRef = useRef(new Set());
+  const queuedCandidatesRef = useRef([]);
   const activeCallIdRef = useRef(null);
   const initializedCallRef = useRef(null);
 
@@ -53,6 +54,7 @@ export default function CallWidget() {
     }
 
     seenCandidatesRef.current.clear();
+    queuedCandidatesRef.current = [];
     activeCallIdRef.current = null;
     initializedCallRef.current = null;
     setMuted(false);
@@ -69,6 +71,21 @@ export default function CallWidget() {
       // The other side may have already ended the call.
     }
   }, [cleanupMedia]);
+
+  const addQueuedCandidates = useCallback(async (peer) => {
+    if (!peer.remoteDescription) return;
+
+    const queued = queuedCandidatesRef.current;
+    queuedCandidatesRef.current = [];
+
+    for (const candidate of queued) {
+      try {
+        await peer.addIceCandidate(candidate);
+      } catch {
+        // Ignore stale ICE candidates.
+      }
+    }
+  }, []);
 
   const setupPeer = useCallback(async (call) => {
     if (initializedCallRef.current === call.id) return;
@@ -105,11 +122,15 @@ export default function CallWidget() {
             value: event.candidate.toJSON()
           });
         } catch {
-          // Polling will keep the call alive if an individual candidate fails.
+          // A later candidate or the connection itself may still succeed.
         }
       };
 
       peer.onconnectionstatechange = () => {
+        if (peer.connectionState === "connected") {
+          setError("");
+        }
+
         if (["failed", "closed", "disconnected"].includes(peer.connectionState)) {
           setError("The voice connection ended.");
         }
@@ -142,46 +163,57 @@ export default function CallWidget() {
       return;
     }
 
-    if (call.status === "accepted") {
-      setActiveCall(call);
-      await setupPeer(call);
+    if (call.status !== "accepted") return;
 
-      const peer = peerRef.current;
-      if (!peer) return;
+    setActiveCall(call);
+    await setupPeer(call);
 
-      if (isCallee && call.offer && !peer.currentRemoteDescription) {
-        await peer.setRemoteDescription(call.offer);
-        const answer = await peer.createAnswer();
-        await peer.setLocalDescription(answer);
+    const peer = peerRef.current;
+    if (!peer) return;
 
-        await callApi({
-          action: "answer",
-          callId: call.id,
-          value: peer.localDescription.toJSON()
-        });
-      }
+    if (isCallee && call.offer && !peer.currentRemoteDescription) {
+      await peer.setRemoteDescription(call.offer);
 
-      if (isCaller && call.answer && !peer.currentRemoteDescription) {
-        await peer.setRemoteDescription(call.answer);
-      }
+      const answer = await peer.createAnswer();
+      await peer.setLocalDescription(answer);
 
-      const { data } = await fetch(`/api/calls?callId=${encodeURIComponent(call.id)}`).then((response) => response.json()).catch(() => ({ data: [] }));
-      const candidates = Array.isArray(data) ? data : [];
+      await callApi({
+        action: "answer",
+        callId: call.id,
+        value: peer.localDescription.toJSON()
+      });
 
-      for (const candidate of candidates) {
-        if (!candidate?.id || seenCandidatesRef.current.has(candidate.id)) continue;
-        seenCandidatesRef.current.add(candidate.id);
+      await addQueuedCandidates(peer);
+    }
 
-        if (candidate.senderId !== currentUserId) {
-          try {
-            await peer.addIceCandidate(candidate.candidate);
-          } catch {
-            // Ignore stale ICE candidates.
-          }
+    if (isCaller && call.answer && !peer.currentRemoteDescription) {
+      await peer.setRemoteDescription(call.answer);
+      await addQueuedCandidates(peer);
+    }
+
+    const response = await fetch(`/api/calls?callId=${encodeURIComponent(call.id)}`, {
+      cache: "no-store"
+    });
+    const data = await response.json().catch(() => ({}));
+    const candidates = Array.isArray(data.candidates) ? data.candidates : [];
+
+    for (const item of candidates) {
+      if (!item?.id || seenCandidatesRef.current.has(item.id)) continue;
+      seenCandidatesRef.current.add(item.id);
+
+      if (peer.remoteDescription) {
+        try {
+          await peer.addIceCandidate(item.candidate);
+        } catch {
+          // Ignore stale ICE candidates.
         }
+      } else {
+        queuedCandidatesRef.current.push(item.candidate);
       }
     }
-  }, [currentUserId, setupPeer]);
+
+    await addQueuedCandidates(peer);
+  }, [addQueuedCandidates, currentUserId, setupPeer]);
 
   useEffect(() => {
     let cancelled = false;
@@ -211,14 +243,23 @@ export default function CallWidget() {
   }, []);
 
   useEffect(() => {
-    if (!currentUserId || !calls.length) return;
+    if (!currentUserId) return;
+
+    if (activeCallIdRef.current && !calls.some((call) => call.id === activeCallIdRef.current)) {
+      cleanupMedia();
+      setActiveCall(null);
+      setError("");
+      return;
+    }
+
+    if (!calls.length) return;
 
     calls.forEach((call) => {
       processCall(call).catch((err) => {
         setError(err?.message || "Could not connect the call.");
       });
     });
-  }, [calls, currentUserId, processCall]);
+  }, [calls, cleanupMedia, currentUserId, processCall]);
 
   useEffect(() => {
     return () => cleanupMedia();
