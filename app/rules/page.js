@@ -1,4 +1,8 @@
-export default function Rules() {
+import { getCurrentUser } from "../../lib/auth";
+
+export default async function Rules() {
+  const user = await getCurrentUser();
+
   return (
     <main className="rules-page">
       <div className="rules-container">
@@ -15,10 +19,14 @@ export default function Rules() {
           <p>• Do not leak private Vehemence information, documents, links, or internal information to unauthorized people.</p>
 
           <div className="rules-bottom">
-            <p>By continuing, you agree to follow the Vehemence rules.</p>
+            <p>
+              {user
+                ? "You are already signed in. You can continue to Vehemence."
+                : "By continuing, you agree to follow the Vehemence rules."}
+            </p>
 
-            <a href="/signup" className="primary-button">
-              I Agree
+            <a href={user ? "/games" : "/signup"} className="primary-button">
+              {user ? "Continue to Games" : "I Agree"}
             </a>
           </div>
         </section>
