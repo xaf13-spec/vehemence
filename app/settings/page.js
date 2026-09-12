@@ -5,34 +5,10 @@ import { logout, changeUsername, changePassword } from "./actions";
 
 const themes = ["Midnight", "Cherry Blossom", "Ocean", "Aquatic", "Lavender", "Forest", "Sunset", "Rose", "Cloud", "Autumn", "Frost", "Mocha", "Moss", "Crimson", "Sakura"];
 const fonts = ["Arial", "Helvetica", "Verdana", "Tahoma", "Trebuchet MS", "Georgia", "Garamond", "Times New Roman", "Courier New", "Consolas", "Lucida Console", "Impact", "Comic Sans MS", "Segoe UI", "Calibri", "Cambria", "Century Gothic", "Palatino"];
-const tabIcons = ["Google Classroom", "Google Docs", "Google Slides", "Google Drive", "Khan Academy"];
 
-const tabIconUrls = {
-  "Google Classroom": "https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64",
-  "Google Docs": "https://www.google.com/s2/favicons?domain=docs.google.com&sz=64",
-  "Google Slides": "https://www.google.com/s2/favicons?domain=slides.google.com&sz=64",
-  "Google Drive": "https://www.google.com/s2/favicons?domain=drive.google.com&sz=64",
-  "Khan Academy": "https://www.google.com/s2/favicons?domain=khanacademy.org&sz=64"
-};
-
-function saveSetting(key, value) {
-  localStorage.setItem(key, value);
-  document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
-}
-
-function applyTabIcon(name) {
-  const iconUrl = tabIconUrls[name];
-  if (!iconUrl) return;
-
-  let link = document.querySelector("link[rel='icon']");
-
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "icon";
-    document.head.appendChild(link);
-  }
-
-  link.href = iconUrl;
+function save(key, value) {
+  localStorage.setItem(key, String(value));
+  window.dispatchEvent(new Event("vehemence-settings-changed"));
 }
 
 function CustomSelect({ value, options, onChange }) {
@@ -40,249 +16,171 @@ function CustomSelect({ value, options, onChange }) {
 
   useEffect(() => {
     if (!open) return;
-
     const close = (event) => {
       if (!event.target.closest(".settings-custom-select")) setOpen(false);
     };
-
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
+    const key = (event) => event.key === "Escape" && setOpen(false);
     document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", key);
     return () => {
       document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", key);
     };
   }, [open]);
 
-  function choose(option) {
-    onChange(option);
-    setOpen(false);
-  }
-
   return (
     <div className="settings-custom-select">
-      <button
-        type="button"
-        className="settings-select-button"
-        onClick={() => setOpen((current) => !current)}
-        aria-expanded={open}
-      >
-        <span>{value}</span>
-        <span className={`settings-select-arrow ${open ? "open" : ""}`}>⌄</span>
+      <button type="button" className="settings-select-button" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+        <span>{value}</span><span className={`settings-select-arrow ${open ? "open" : ""}`}>⌄</span>
       </button>
-
-      {open && (
-        <div className="settings-select-menu">
-          {options.map((option) => (
-            <button
-              type="button"
-              className={`settings-select-option ${option === value ? "selected" : ""}`}
-              key={option}
-              onClick={() => choose(option)}
-            >
-              <span>{option}</span>
-              {option === value && <span className="settings-select-check">✓</span>}
-            </button>
-          ))}
-        </div>
-      )}
+      {open && <div className="settings-select-menu">
+        {options.map((option) => <button type="button" key={option} className={`settings-select-option ${option === value ? "selected" : ""}`} onClick={() => { onChange(option); setOpen(false); }}>
+          <span>{option}</span>{option === value && <span className="settings-select-check">✓</span>}
+        </button>)}
+      </div>}
     </div>
   );
+}
+
+function Toggle({ checked, onChange }) {
+  return <button type="button" className={`settings-toggle ${checked ? "active" : ""}`} onClick={() => onChange(!checked)} aria-pressed={checked}>
+    <span className="settings-toggle-knob" />
+  </button>;
+}
+
+function SettingRow({ title, description, children }) {
+  return <div className="settings-row"><div><h3>{title}</h3><p>{description}</p></div>{children}</div>;
 }
 
 export default function Settings() {
   const [showUsername, setShowUsername] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showSiteName, setShowSiteName] = useState(false);
   const [usernameError, setUsernameError] = useState("");
   const [usernameSuccess, setUsernameSuccess] = useState("");
   const [usernameLoading, setUsernameLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [siteNameSuccess, setSiteNameSuccess] = useState("");
   const [theme, setTheme] = useState("Midnight");
   const [font, setFont] = useState("Arial");
-  const [tabIcon, setTabIconChoice] = useState("Google Classroom");
-  const [siteName, setSiteName] = useState("Vehemence");
+  const [uiScale, setUiScale] = useState("Normal");
+  const [compact, setCompact] = useState(false);
+  const [animations, setAnimations] = useState(true);
+  const [blur, setBlur] = useState(true);
+  const [backgroundEffects, setBackgroundEffects] = useState(true);
+  const [volume, setVolume] = useState(80);
+  const [autoFullscreen, setAutoFullscreen] = useState(false);
+  const [rememberLastGame, setRememberLastGame] = useState(true);
+  const [friendNotifications, setFriendNotifications] = useState(true);
+  const [siteNotifications, setSiteNotifications] = useState(true);
+  const [achievementNotifications, setAchievementNotifications] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [accountMessage, setAccountMessage] = useState("");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("vehemence_theme");
-    const savedFont = localStorage.getItem("vehemence_font");
-    const savedTabIcon = localStorage.getItem("vehemence_tab_icon");
-    const savedSiteName = localStorage.getItem("vehemence_site_name");
-
-    if (savedTheme && themes.includes(savedTheme)) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute("data-theme", savedTheme.toLowerCase().replaceAll(" ", "-"));
-    }
-
-    if (savedFont && fonts.includes(savedFont)) {
-      setFont(savedFont);
-      document.documentElement.style.setProperty("--site-font", savedFont);
-    }
-
-    const selectedIcon = savedTabIcon && tabIcons.includes(savedTabIcon) ? savedTabIcon : "Google Classroom";
-    setTabIconChoice(selectedIcon);
-    applyTabIcon(selectedIcon);
-
-    const savedName = savedSiteName?.trim() || "Vehemence";
-    setSiteName(savedName);
-    document.title = savedName;
+    const get = (key, fallback) => localStorage.getItem(key) ?? fallback;
+    setTheme(get("vehemence_theme", "Midnight"));
+    setFont(get("vehemence_font", "Arial"));
+    setUiScale(get("vehemence_ui_scale", "Normal"));
+    setCompact(get("vehemence_compact", "false") === "true");
+    setAnimations(get("vehemence_animations", "true") === "true");
+    setBlur(get("vehemence_blur", "true") === "true");
+    setBackgroundEffects(get("vehemence_background", "true") === "true");
+    setVolume(Number(get("vehemence_volume", "80")));
+    setAutoFullscreen(get("vehemence_auto_fullscreen", "false") === "true");
+    setRememberLastGame(get("vehemence_remember_game", "true") === "true");
+    setFriendNotifications(get("vehemence_notify_friends", "true") === "true");
+    setSiteNotifications(get("vehemence_notify_site", "true") === "true");
+    setAchievementNotifications(get("vehemence_notify_achievements", "true") === "true");
   }, []);
 
-  function handleThemeChange(selectedTheme) {
-    setTheme(selectedTheme);
-    saveSetting("vehemence_theme", selectedTheme);
-    document.documentElement.setAttribute("data-theme", selectedTheme.toLowerCase().replaceAll(" ", "-"));
+  const update = (key, value, setter) => { setter(value); save(key, value); };
+
+  function handleThemeChange(value) {
+    setTheme(value); save("vehemence_theme", value);
+    document.documentElement.setAttribute("data-theme", value.toLowerCase().replaceAll(" ", "-"));
+  }
+  function handleFontChange(value) {
+    setFont(value); save("vehemence_font", value);
+    document.documentElement.style.setProperty("--site-font", value);
   }
 
-  function handleFontChange(selectedFont) {
-    setFont(selectedFont);
-    saveSetting("vehemence_font", selectedFont);
-    document.documentElement.style.setProperty("--site-font", selectedFont);
-  }
-
-  function handleTabIconChange(selectedIcon) {
-    setTabIconChoice(selectedIcon);
-    saveSetting("vehemence_tab_icon", selectedIcon);
-    applyTabIcon(selectedIcon);
-  }
-
-  function handleSiteNameSubmit(event) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const newName = formData.get("siteName")?.toString().trim();
-
-    if (!newName) return;
-
-    setSiteName(newName);
-    saveSetting("vehemence_site_name", newName);
-    document.title = newName;
-    setSiteNameSuccess("Site name changed successfully.");
-    setShowSiteName(false);
-  }
-
-  async function handleLogout() {
-    await logout();
-    window.location.href = "/";
-  }
+  async function handleLogout() { await logout(); window.location.href = "/"; }
 
   async function handleUsernameChange(event) {
-    event.preventDefault();
-    setUsernameError("");
-    setUsernameSuccess("");
-    setUsernameLoading(true);
+    event.preventDefault(); setUsernameError(""); setUsernameSuccess(""); setUsernameLoading(true);
     const result = await changeUsername(new FormData(event.currentTarget));
-    if (result?.error) {
-      setUsernameError(result.error);
-      setUsernameLoading(false);
-      return;
-    }
-    setUsernameSuccess("Username changed successfully.");
-    setUsernameLoading(false);
-    event.currentTarget.reset();
+    if (result?.error) { setUsernameError(result.error); setUsernameLoading(false); return; }
+    setUsernameSuccess("Username changed successfully."); setUsernameLoading(false); event.currentTarget.reset();
   }
 
   async function handlePasswordChange(event) {
-    event.preventDefault();
-    setPasswordError("");
-    setPasswordSuccess("");
-    setPasswordLoading(true);
+    event.preventDefault(); setPasswordError(""); setPasswordSuccess(""); setPasswordLoading(true);
     const result = await changePassword(new FormData(event.currentTarget));
-    if (result?.error) {
-      setPasswordError(result.error);
-      setPasswordLoading(false);
-      return;
-    }
-    setPasswordSuccess("Password changed successfully.");
-    setPasswordLoading(false);
-    event.currentTarget.reset();
+    if (result?.error) { setPasswordError(result.error); setPasswordLoading(false); return; }
+    setPasswordSuccess("Password changed successfully."); setPasswordLoading(false); event.currentTarget.reset();
+  }
+
+  function signOutEverywhere() {
+    localStorage.removeItem("vehemence_last_game");
+    setAccountMessage("Other saved sessions cannot be revoked from this browser yet.");
   }
 
   return (
     <main className="settings-page">
       <div className="settings-container">
-        <div className="settings-header">
-          <p className="eyebrow">VEHEMENCE</p>
-          <h1>Settings</h1>
-          <p>Customize your Vehemence experience.</p>
-        </div>
+        <div className="settings-header"><p className="eyebrow">VEHEMENCE</p><h1>Settings</h1><p>Customize your Vehemence experience.</p></div>
 
         <section className="settings-section">
           <div className="settings-section-header"><h2>Account</h2><p>Manage your account information.</p></div>
           <div className="settings-card">
-            <div className="settings-row">
-              <div><h3>Username</h3><p>Change your username once every 24 hours.</p></div>
-              <button className="secondary-button" onClick={() => { setShowUsername(!showUsername); setUsernameError(""); setUsernameSuccess(""); }}>{showUsername ? "Cancel" : "Change Username"}</button>
-            </div>
-            {showUsername && <form className="settings-form" onSubmit={handleUsernameChange}>
-              <label>New Username<input name="username" type="text" placeholder="Enter your new username" minLength={3} maxLength={20} required /></label>
-              {usernameError && <p className="auth-error">{usernameError}</p>}
-              {usernameSuccess && <p className="settings-success">{usernameSuccess}</p>}
-              <button type="submit" className="primary-button" disabled={usernameLoading}>{usernameLoading ? "Changing..." : "Save Username"}</button>
-            </form>}
-            <div className="settings-row">
-              <div><h3>Password</h3><p>Change your password whenever you want.</p></div>
-              <button className="secondary-button" onClick={() => { setShowPassword(!showPassword); setPasswordError(""); setPasswordSuccess(""); }}>{showPassword ? "Cancel" : "Change Password"}</button>
-            </div>
-            {showPassword && <form className="settings-form" onSubmit={handlePasswordChange}>
-              <label>Current Password<input name="currentPassword" type="password" placeholder="Enter your current password" required /></label>
-              <label>New Password<input name="newPassword" type="password" placeholder="Enter your new password" minLength={8} required /></label>
-              <label>Confirm New Password<input name="confirmPassword" type="password" placeholder="Confirm your new password" minLength={8} required /></label>
-              {passwordError && <p className="auth-error">{passwordError}</p>}
-              {passwordSuccess && <p className="settings-success">{passwordSuccess}</p>}
-              <button type="submit" className="primary-button" disabled={passwordLoading}>{passwordLoading ? "Changing..." : "Save Password"}</button>
-            </form>}
+            <SettingRow title="Username" description="Change your username once every 24 hours."><button className="secondary-button" onClick={() => { setShowUsername(!showUsername); setUsernameError(""); setUsernameSuccess(""); }}>{showUsername ? "Cancel" : "Change Username"}</button></SettingRow>
+            {showUsername && <form className="settings-form" onSubmit={handleUsernameChange}><label>New Username<input name="username" type="text" placeholder="Enter your new username" minLength={3} maxLength={20} required /></label>{usernameError && <p className="auth-error">{usernameError}</p>}{usernameSuccess && <p className="settings-success">{usernameSuccess}</p>}<button type="submit" className="primary-button" disabled={usernameLoading}>{usernameLoading ? "Changing..." : "Save Username"}</button></form>}
+            <SettingRow title="Password" description="Change your password whenever you want."><button className="secondary-button" onClick={() => { setShowPassword(!showPassword); setPasswordError(""); setPasswordSuccess(""); }}>{showPassword ? "Cancel" : "Change Password"}</button></SettingRow>
+            {showPassword && <form className="settings-form" onSubmit={handlePasswordChange}><label>Current Password<input name="currentPassword" type="password" required /></label><label>New Password<input name="newPassword" type="password" minLength={8} required /></label><label>Confirm New Password<input name="confirmPassword" type="password" minLength={8} required /></label>{passwordError && <p className="auth-error">{passwordError}</p>}{passwordSuccess && <p className="settings-success">{passwordSuccess}</p>}<button type="submit" className="primary-button" disabled={passwordLoading}>{passwordLoading ? "Changing..." : "Save Password"}</button></form>}
+            <SettingRow title="Active Sessions" description="Review your current signed-in session. Multiple-device session management can be added when server session controls are exposed."><span className="settings-status">This device · Active</span></SettingRow>
+            <SettingRow title="Sign Out Everywhere" description="Prepare this account to sign out of other devices when session management is available."><button className="secondary-button" onClick={signOutEverywhere}>Sign Out Everywhere</button></SettingRow>
           </div>
         </section>
 
         <section className="settings-section">
-          <div className="settings-section-header"><h2>Appearance</h2><p>Customize how Vehemence looks.</p></div>
+          <div className="settings-section-header"><h2>Appearance</h2><p>Control the look and feel of Vehemence.</p></div>
           <div className="settings-card">
-            <div className="settings-row">
-              <div><h3>Theme</h3><p>Choose the look and colors of the site.</p></div>
-              <CustomSelect value={theme} options={themes} onChange={handleThemeChange} />
-            </div>
-            <div className="settings-row">
-              <div><h3>Font</h3><p>Choose the font used throughout Vehemence.</p></div>
-              <CustomSelect value={font} options={fonts} onChange={handleFontChange} />
-            </div>
+            <SettingRow title="Theme" description="Choose the look and colors of the site."><CustomSelect value={theme} options={themes} onChange={handleThemeChange} /></SettingRow>
+            <SettingRow title="Font" description="Choose the font used throughout Vehemence."><CustomSelect value={font} options={fonts} onChange={handleFontChange} /></SettingRow>
+            <SettingRow title="UI Scale" description="Adjust the overall size of interface elements."><CustomSelect value={uiScale} options={["Small", "Normal", "Large"]} onChange={(v) => update("vehemence_ui_scale", v, setUiScale)} /></SettingRow>
+            <SettingRow title="Compact Mode" description="Reduce spacing to fit more content on screen."><Toggle checked={compact} onChange={(v) => update("vehemence_compact", v, setCompact)} /></SettingRow>
+            <SettingRow title="Animations" description="Enable interface motion and transitions."><Toggle checked={animations} onChange={(v) => update("vehemence_animations", v, setAnimations)} /></SettingRow>
+            <SettingRow title="Blur Effects" description="Use the glass and backdrop blur effects throughout the site."><Toggle checked={blur} onChange={(v) => update("vehemence_blur", v, setBlur)} /></SettingRow>
+            <SettingRow title="Background Effects" description="Show the subtle background lighting effects."><Toggle checked={backgroundEffects} onChange={(v) => update("vehemence_background", v, setBackgroundEffects)} /></SettingRow>
           </div>
         </section>
 
         <section className="settings-section">
-          <div className="settings-section-header"><h2>Browser / Site</h2><p>Customize how Vehemence appears in your browser.</p></div>
+          <div className="settings-section-header"><h2>Games</h2><p>Set your default game behavior.</p></div>
           <div className="settings-card">
-            <div className="settings-row">
-              <div><h3>Site Name</h3><p>Change the name shown in your browser tab.</p></div>
-              <button className="secondary-button" onClick={() => { setShowSiteName(!showSiteName); setSiteNameSuccess(""); }}>{showSiteName ? "Cancel" : "Change Site Name"}</button>
-            </div>
-            {showSiteName && <form className="settings-form" onSubmit={handleSiteNameSubmit}>
-              <label>New Site Name<input name="siteName" type="text" placeholder="Enter your site name" defaultValue={siteName} maxLength={40} required /></label>
-              {siteNameSuccess && <p className="settings-success">{siteNameSuccess}</p>}
-              <button type="submit" className="primary-button">Save Site Name</button>
-            </form>}
-            {!showSiteName && siteNameSuccess && <p className="settings-success">{siteNameSuccess}</p>}
+            <SettingRow title="Default Game Volume" description="Set the starting volume for games that support audio."><div className="settings-range-wrap"><input className="settings-range" type="range" min="0" max="100" value={volume} onChange={(e) => update("vehemence_volume", e.target.value, setVolume)} /><span>{volume}%</span></div></SettingRow>
+            <SettingRow title="Auto Fullscreen" description="Enter fullscreen automatically when a game supports it."><Toggle checked={autoFullscreen} onChange={(v) => update("vehemence_auto_fullscreen", v, setAutoFullscreen)} /></SettingRow>
+            <SettingRow title="Remember Last Game" description="Keep track of the last game you opened for quick access."><Toggle checked={rememberLastGame} onChange={(v) => update("vehemence_remember_game", v, setRememberLastGame)} /></SettingRow>
+          </div>
+        </section>
 
-            <div className="settings-row">
-              <div><h3>Tab Icon</h3><p>Choose the icon shown next to the site name.</p></div>
-              <CustomSelect value={tabIcon} options={tabIcons} onChange={handleTabIconChange} />
-            </div>
+        <section className="settings-section">
+          <div className="settings-section-header"><h2>Notifications</h2><p>Choose which updates appear in your notification center.</p></div>
+          <div className="settings-card">
+            <SettingRow title="Friend Requests" description="Get notified when someone sends you a friend request."><Toggle checked={friendNotifications} onChange={(v) => update("vehemence_notify_friends", v, setFriendNotifications)} /></SettingRow>
+            <SettingRow title="Site Announcements" description="Get important announcements from Vehemence."><Toggle checked={siteNotifications} onChange={(v) => update("vehemence_notify_site", v, setSiteNotifications)} /></SettingRow>
+            <SettingRow title="Achievements" description="Get notified when you unlock an achievement."><Toggle checked={achievementNotifications} onChange={(v) => update("vehemence_notify_achievements", v, setAchievementNotifications)} /></SettingRow>
           </div>
         </section>
 
         <section className="settings-section">
           <div className="settings-section-header"><h2>Danger Zone</h2><p>Actions that affect your account session.</p></div>
           <div className="settings-card danger-card">
-            <div className="settings-row">
-              <div><h3>Sign Out</h3><p>Sign out of your Vehemence account on this device.</p></div>
-              <button className="secondary-button danger-button" onClick={handleLogout}>Sign Out</button>
-            </div>
+            <SettingRow title="Sign Out" description="Sign out of your Vehemence account on this device."><button className="secondary-button danger-button" onClick={handleLogout}>Sign Out</button></SettingRow>
+            <SettingRow title="Delete Account" description="Permanently delete your Vehemence account and its data.">{!deleteConfirm ? <button className="secondary-button danger-button" onClick={() => setDeleteConfirm(true)}>Delete Account</button> : <div className="danger-confirm"><span>This cannot be undone.</span><button className="secondary-button danger-button" onClick={() => setDeleteConfirm(false)}>Cancel</button></div>}</SettingRow>
           </div>
+          {accountMessage && <p className="settings-note">{accountMessage}</p>}
         </section>
       </div>
     </main>
