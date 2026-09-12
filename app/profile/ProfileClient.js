@@ -21,6 +21,7 @@ export default function ProfileClient({ user }) {
   const [favorites, setFavorites] = useState([]);
   const [recent, setRecent] = useState([]);
   const [played, setPlayed] = useState(0);
+  const [activeDays, setActiveDays] = useState([]);
   const [friends, setFriends] = useState([]);
   const [online, setOnline] = useState(true);
 
@@ -34,6 +35,7 @@ export default function ProfileClient({ user }) {
     setFavorites(JSON.parse(localStorage.getItem("vehemence_favorites") || "[]"));
     setRecent(JSON.parse(localStorage.getItem("vehemence_recent_games") || "[]"));
     setPlayed(Number(localStorage.getItem("vehemence_games_played") || 0));
+    setActiveDays(JSON.parse(localStorage.getItem("vehemence_active_days") || "[]"));
     setFriends(JSON.parse(localStorage.getItem("vehemence_friends") || "[]"));
   }
 
@@ -51,7 +53,6 @@ export default function ProfileClient({ user }) {
     };
   }, []);
 
-  const activeDays = useMemo(() => JSON.parse(localStorage.getItem("vehemence_active_days") || "[]"), [played, recent]);
   const unlocked = useMemo(() => new Set([
     ...(played >= 1 ? ["first-game"] : []),
     ...(favorites.length >= 5 ? ["collector"] : []),
