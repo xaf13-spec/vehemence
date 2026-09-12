@@ -31,13 +31,20 @@ html[data-theme] .secondary-button:hover { border-color:var(--theme-accent); bac
 html[data-theme] .settings-card,html[data-theme] .rules-card,html[data-theme] .auth-card,html[data-theme] .game-card { background:var(--theme-surface); }
 html[data-theme] .game-card:hover { background:var(--theme-surface-hover); border-color:var(--theme-accent); }
 
-html[data-theme] .settings-custom-select { position:relative; width:240px; flex-shrink:0; z-index:20; }
+/* Settings dropdowns can extend over the content below them. */
+html[data-theme] .settings-page,
+html[data-theme] .settings-container,
+html[data-theme] .settings-section,
+html[data-theme] .settings-card,
+html[data-theme] .settings-row { overflow:visible !important; }
+
+html[data-theme] .settings-custom-select { position:relative; width:240px; flex-shrink:0; z-index:1000; }
 html[data-theme] .settings-select-button { width:100%; min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px; border:1px solid var(--theme-accent-soft); border-radius:11px; outline:none; background:var(--theme-surface); color:var(--text); font:inherit; font-size:14px; font-weight:700; text-align:left; cursor:pointer; transition:border-color .2s ease,background .2s ease,box-shadow .2s ease; }
 html[data-theme] .settings-select-button:hover { border-color:var(--theme-accent); background:var(--theme-surface-hover); }
 html[data-theme] .settings-select-button:focus-visible { border-color:var(--theme-accent); box-shadow:0 0 0 3px var(--theme-accent-soft); }
 html[data-theme] .settings-select-arrow { color:var(--muted); font-size:18px; line-height:1; transition:transform .2s ease; }
 html[data-theme] .settings-select-arrow.open { transform:rotate(180deg); }
-html[data-theme] .settings-select-menu { position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:500; padding:6px; border:1px solid var(--theme-accent-soft); border-radius:12px; background:var(--theme-surface); box-shadow:0 18px 45px rgba(0,0,0,.45); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); max-height:280px; overflow-y:auto; }
+html[data-theme] .settings-select-menu { position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:2000; padding:6px; border:1px solid var(--theme-accent-soft); border-radius:12px; background:var(--theme-surface); box-shadow:0 18px 45px rgba(0,0,0,.45); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); max-height:280px; overflow-y:auto; }
 html[data-theme] .settings-select-option { width:100%; min-height:39px; display:flex; align-items:center; justify-content:space-between; padding:0 11px; border:0; border-radius:8px; background:transparent; color:var(--muted-light); font:inherit; font-size:13px; font-weight:650; text-align:left; cursor:pointer; transition:background .15s ease,color .15s ease; }
 html[data-theme] .settings-select-option:hover,html[data-theme] .settings-select-option.selected { background:var(--theme-accent-soft); color:var(--text); }
 html[data-theme] .settings-select-check { color:var(--theme-accent); font-weight:900; }
