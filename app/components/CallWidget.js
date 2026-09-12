@@ -8,6 +8,7 @@ async function callApi(body) {
   const response = await fetch("/api/calls", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
     body: JSON.stringify(body)
   });
 
@@ -192,7 +193,8 @@ export default function CallWidget() {
     }
 
     const response = await fetch(`/api/calls?callId=${encodeURIComponent(call.id)}`, {
-      cache: "no-store"
+      cache: "no-store",
+      credentials: "same-origin"
     });
     const data = await response.json().catch(() => ({}));
     const candidates = Array.isArray(data.candidates) ? data.candidates : [];
@@ -216,11 +218,34 @@ export default function CallWidget() {
   }, [addQueuedCandidates, currentUserId, setupPeer]);
 
   useEffect(() => {
+    const handleStarted = (event) => {
+      const call = event.detail;
+      if (!call?.id) return;
+
+      setError("");
+      setActiveCall(call);
+      setCalls((current) => {
+        if (current.some((item) => item.id === call.id)) return current;
+        return [call, ...current];
+      });
+    };
+
+    window.addEventListener("vehemence-call-started", handleStarted);
+
+    return () => {
+      window.removeEventListener("vehemence-call-started", handleStarted);
+    };
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     const poll = async () => {
       try {
-        const response = await fetch("/api/calls", { cache: "no-store" });
+        const response = await fetch("/api/calls", {
+          cache: "no-store",
+          credentials: "same-origin"
+        });
         if (!response.ok) return;
 
         const data = await response.json();
@@ -324,7 +349,7 @@ export default function CallWidget() {
             </div>
 
             <div className="call-person">
-              <h2>{otherUsername}</h2>
+              <h2>{otherUsername || "User"}</h2>
               <p>
                 {incomingCall
                   ? "Incoming call"
