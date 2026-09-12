@@ -45,13 +45,6 @@ export default async function EntertainmentPage() {
               <div className="game-card-body">
                 <h3>{item.name}</h3>
                 <p>{item.description}</p>
-                <button
-                  type="button"
-                  className="vb-button"
-                  onClick={() => window.open(item.url, "_blank", "noopener,noreferrer")}
-                >
-                  Open
-                </button>
               </div>
             </article>
           ))}
