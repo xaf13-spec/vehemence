@@ -1,6 +1,14 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../lib/auth";
 
+function formatJoinedDate(date) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(date));
+}
+
 export default async function ProfilePage() {
   const user = await getCurrentUser();
 
@@ -11,26 +19,33 @@ export default async function ProfilePage() {
   return (
     <main className="page-shell">
       <section className="profile-page">
-        <div className="profile-header-card">
-          <div className="profile-avatar">{user.username.charAt(0).toUpperCase()}</div>
-          <div>
-            <span className="profile-eyebrow">VEHEMENCE PROFILE</span>
-            <h1>{user.username}</h1>
-            <p>Your Vehemence profile.</p>
-          </div>
+        <div className="profile-heading">
+          <span className="settings-eyebrow">PROFILE</span>
+          <h1>{user.username}</h1>
+          <p>Your Vehemence profile</p>
         </div>
 
         <div className="profile-card">
-          <div className="profile-card-heading">
+          <div className="profile-card-top">
             <div>
-              <span className="profile-eyebrow">ACCOUNT</span>
+              <span className="profile-label">USERNAME</span>
               <h2>{user.username}</h2>
             </div>
-            <button type="button" className="profile-call-button" disabled>
-              Start Call
-            </button>
+            <span className="profile-online">
+              <span className="profile-online-dot" /> Online
+            </span>
           </div>
-          <p className="profile-muted">Voice calling will be connected here once the calling system is added.</p>
+
+          <div className="profile-details">
+            <div className="profile-detail">
+              <span>Joined</span>
+              <strong>{formatJoinedDate(user.created_at)}</strong>
+            </div>
+            <div className="profile-detail">
+              <span>Online time</span>
+              <strong>Online now</strong>
+            </div>
+          </div>
         </div>
       </section>
     </main>
