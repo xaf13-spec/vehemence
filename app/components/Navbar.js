@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const defaultNotifications = [{ id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }];
-const navItems = [["/", "Home"], ["/music", "Music"], ["/entertainment", "Entertainment"], ["/soundboard", "Soundboard"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"]];
+const navItems = [["/", "Home"], ["/music", "Music"], ["/entertainment", "Entertainment"], ["/soundboard", "Soundboard"], ["/rng", "RNG"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"]];
 
 export default function Navbar({ activePath = "/", onNavigate }) {
   const [unread, setUnread] = useState(0); const [navMode, setNavMode] = useState("top"); const [now, setNow] = useState(null);
