@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Navbar from "./Navbar";
+import { touchPresence } from "../friends/actions";
 
-const navOrder = ["/", "/rules", "/games", "/browser", "/music", "/entertainment", "/profile", "/settings", "/notifications"];
+const navOrder = ["/", "/rules", "/games", "/browser", "/music", "/entertainment", "/profile", "/friends", "/settings", "/notifications"];
 
 function routeIndex(pathname) {
   const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
@@ -30,6 +31,12 @@ export default function AppShell({ children }) {
       return [...currentPages, { pathname, children }];
     });
   }, [pathname, children]);
+
+  useEffect(() => {
+    touchPresence().catch(() => {});
+    const timer = setInterval(() => touchPresence().catch(() => {}), 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const onClick = (event) => {
