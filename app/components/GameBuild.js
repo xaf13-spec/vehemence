@@ -14,12 +14,12 @@ const realGames = {
     embedUrl: "https://www.miniplay.com/embed/rocket-goal",
   },
   "Geometry Dash": {
-    url: "https://geometrydash-pc.com/",
-    embedUrl: "https://geometrydash-pc.com/",
+    url: "https://www.miniplay.com/game/geometry-dash",
+    embedUrl: "https://www.miniplay.com/embed/geometry-dash",
   },
   "Eaglercraft": {
-    url: "https://eaglercraft.com/play?version=1.8.8-wasm",
-    embedUrl: "https://eaglercraft.com/play?version=1.8.8-wasm",
+    url: "https://eaglercraft.com/play",
+    embedUrl: "https://eaglercraft.com/play",
   },
   "Level Devil": {
     url: "https://playleveldevil.com/",
@@ -34,8 +34,8 @@ const realGames = {
     embedUrl: "https://play-minesweeper.games/embed/?size=beginner&theme=dark",
   },
   "Worlde": {
-    url: "https://www.rocketgames.io/game/wordle",
-    embedUrl: "https://www.rocketgames.io/game/wordle",
+    url: "https://www.miniplay.com/game/wordle",
+    embedUrl: "https://www.miniplay.com/embed/wordle",
   },
   "Slither.io": {
     url: "https://slither.io/",
@@ -46,16 +46,16 @@ const realGames = {
     embedUrl: "https://play.tetris.com/",
   },
   "FNAF": {
-    url: "https://www.freddy-fnaf.com/",
-    embedUrl: "https://www.freddy-fnaf.com/",
+    url: "https://www.miniplay.com/game/five-nights-at-freddys",
+    embedUrl: "https://www.miniplay.com/embed/five-nights-at-freddys",
   },
   "Subway Surfers": {
-    url: "https://www.rocketgames.io/game/subway-surfers-multiplayer",
-    embedUrl: "https://www.rocketgames.io/game/subway-surfers-multiplayer",
+    url: "https://www.miniplay.com/game/subway-surfers",
+    embedUrl: "https://www.miniplay.com/embed/subway-surfers",
   },
   "Space Waves": {
-    url: "https://www.crazygames.com/game/space-waves",
-    embedUrl: "https://www.crazygames.com/game/space-waves",
+    url: "https://www.miniplay.com/game/space-waves",
+    embedUrl: "https://www.miniplay.com/embed/space-waves",
   },
   "Speed Stars": {
     url: "https://speedstars.ai/speed-stars-online-free",
