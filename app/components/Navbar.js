@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+const defaultNotifications = [
+  { id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }
+];
 
 const navItems = [
   ["/", "Home"],
@@ -10,50 +16,118 @@ const navItems = [
   ["/marketplace", "Marketplace"],
   ["/profile", "Profile"],
   ["/friends", "Friends"],
-  ["/settings", "Settings"],
+  ["/settings", "Settings"]
 ];
 
-export default function Navbar({ activePath, onNavigate }) {
-  const [open, setOpen] = useState(false);
-  const items = useMemo(() => navItems, []);
+export default function Navbar() {
+  const pathname = usePathname();
+  const [unread, setUnread] = useState(0);
+  const [navMode, setNavMode] = useState("top");
+  const [now, setNow] = useState(null);
 
-  function navigate(path) {
-    setOpen(false);
-    onNavigate(path);
-  }
+  useEffect(() => {
+    if (!localStorage.getItem("vehemence_notifications")) {
+      localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
+    }
+
+    const updateNotifications = () => {
+      try {
+        const items = JSON.parse(localStorage.getItem("vehemence_notifications") || "[]");
+        setUnread(items.filter((item) => !item.read).length);
+      } catch {
+        setUnread(0);
+      }
+    };
+
+    const updateNav = () => setNavMode(localStorage.getItem("vehemence_nav_mode") || "top");
+    const updateClock = () => setNow(new Date());
+
+    updateNotifications();
+    updateNav();
+    updateClock();
+
+    window.addEventListener("storage", updateNotifications);
+    window.addEventListener("vehemence-notifications-changed", updateNotifications);
+    window.addEventListener("vehemence-navigation-changed", updateNav);
+
+    const timer = setInterval(updateClock, 1000);
+    return () => {
+      window.removeEventListener("storage", updateNotifications);
+      window.removeEventListener("vehemence-notifications-changed", updateNotifications);
+      window.removeEventListener("vehemence-navigation-changed", updateNav);
+      clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-nav-mode", navMode);
+  }, [navMode]);
+
+  const currentPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+  const side = navMode === "side";
+
+  const parts = now
+    ? new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Toronto",
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      }).formatToParts(now)
+    : [];
+
+  const amPm = parts.find((part) => part.type === "dayPeriod")?.value || "--";
+  const hour = parts.find((part) => part.type === "hour")?.value || "--";
+  const minute = parts.find((part) => part.type === "minute")?.value || "--";
+  const second = parts.find((part) => part.type === "second")?.value || "--";
+
+  const date = now
+    ? new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Toronto",
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }).format(now)
+    : "Loading date...";
 
   return (
-    <nav className="navbar">
-      <button className="logo" type="button" onClick={() => navigate("/")}>
-        Vehemence
-      </button>
+    <nav className={`navbar ${side ? "navbar-side" : ""}`}>
+      <Link href="/" className="logo">VEHEMENCE</Link>
 
       <div className="nav-links">
-        {items.map(([path, label]) => (
-          <button
-            key={path}
-            type="button"
-            onClick={() => navigate(path)}
-            className="nav-link-button"
-            style={activePath === path ? {
-              color: "#ffffff",
-              background: "rgba(255, 255, 255, 0.07)",
-              boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.08)"
-            } : undefined}
-          >
-            {label}
-          </button>
-        ))}
+        {navItems.map(([href, label]) => {
+          const active = currentPath === href;
+          return (
+            <Link
+              href={href}
+              className={`nav-link ${active ? "active" : ""}`}
+              key={href}
+              aria-current={active ? "page" : undefined}
+            >
+              <span>{label}</span>
+              {active && <span className="nav-active-bubble" aria-hidden="true" />}
+            </Link>
+          );
+        })}
       </div>
 
-      <button
-        className="navbar-menu-button"
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-label="Toggle navigation"
-      >
-        ☰
-      </button>
+      <div className="navbar-status">
+        <Link
+          href="/notifications"
+          className={`notification-nav ${currentPath === "/notifications" ? "active" : ""}`}
+          aria-label="Notifications"
+        >
+          <span className="notification-bell">🔔</span>
+          {unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}
+        </Link>
+
+        <div className="navbar-clock" aria-label="Ontario time and date">
+          <span className="navbar-clock-period">{amPm}</span>
+          <strong>{hour}:{minute}:{second}</strong>
+          <span>{date} · Ontario / New York</span>
+        </div>
+      </div>
     </nav>
   );
 }
