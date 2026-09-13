@@ -175,10 +175,7 @@ export default function EntertainmentClient() {
   return (
     <div style={{ width: "100%", maxWidth: expanded ? 1180 : 900, margin: "0 auto", padding: "28px 20px 70px", transition: "max-width .25s ease" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-        <div style={{ flex: 1 }}>
-          <span className="entertainment-kicker">ENTERTAINMENT</span>
-          <h2 style={{ marginTop: 5 }}>Entertainment</h2>
-        </div>
+        <h2 style={{ margin: 0, flex: 1, fontSize: 24 }}>{show}</h2>
         <div style={{ display: "flex", gap: 8 }}>
           {["Anime", "Movies"].map((name) => (
             <button key={name} type="button" onClick={() => chooseCategory(name)} style={{ minWidth: 105, padding: "11px 18px", borderRadius: 10, border: category === name ? "1px solid rgba(255,255,255,.2)" : "1px solid rgba(255,255,255,.07)", background: category === name ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{name}</button>
@@ -202,7 +199,7 @@ export default function EntertainmentClient() {
                   <span style={{ fontSize: 10, color: "#eee", minWidth: 72 }}>{formatTime(currentTime)} / {formatTime(duration)}</span>
                   <div style={{ flex: 1 }} />
                   <button type="button" onClick={toggleExpand} aria-label={expanded ? "Shrink" : "Expand"} style={controlStyle}>{expanded ? "↙" : "↗"}</button>
-                  <button type="button" onClick={toggleFullscreen} aria-label="Fullscreen" style={controlStyle}>{fullscreen ? "⛶" : "⛶"}</button>
+                  <button type="button" onClick={toggleFullscreen} aria-label="Fullscreen" style={controlStyle}>⛶</button>
                 </div>
               </div>
             </div>
@@ -213,7 +210,7 @@ export default function EntertainmentClient() {
           </section>
 
           <aside style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, background: "rgba(17,17,24,.82)", overflow: "hidden" }}>
-            <div style={{ padding: "13px 14px", borderBottom: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}><div><span className="entertainment-kicker" style={{ fontSize: 9 }}>{show}</span><h3 style={{ marginTop: 3, fontSize: 15 }}>Episodes</h3></div><span style={{ color: "#92929f", fontSize: 11 }}>{episodes.length}</span></div>
+            <div style={{ padding: "13px 14px", borderBottom: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}><div><h3 style={{ margin: 0, fontSize: 15 }}>{show}</h3><span style={{ color: "#777783", fontSize: 10 }}>Episodes</span></div><span style={{ color: "#92929f", fontSize: 11 }}>{episodes.length}</span></div>
             <div style={{ maxHeight: expanded ? 560 : 430, overflowY: "auto", padding: 7 }}>
               {episodes.map((episode) => <button key={episode.number} type="button" onClick={() => chooseEpisode(episode.number)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 9, padding: "9px 8px", marginBottom: 3, border: "1px solid transparent", borderRadius: 9, background: episode.number === selectedEpisode ? "rgba(255,255,255,.09)" : "transparent", color: "#fff", textAlign: "left" }}><span style={{ width: 27, height: 27, display: "grid", placeItems: "center", flexShrink: 0, borderRadius: 7, background: "rgba(255,255,255,.06)", color: "#b5b5c0", fontSize: 10, fontWeight: 800 }}>{String(episode.number).padStart(2, "0")}</span><span style={{ minWidth: 0 }}><strong style={{ display: "block", fontSize: 11 }}>{episode.title}</strong><small style={{ display: "block", marginTop: 2, color: "#777783", fontSize: 9 }}>{episode.number === selectedEpisode ? "Playing" : "Watch episode"}</small></span></button>)}
             </div>
