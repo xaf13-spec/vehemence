@@ -16,7 +16,10 @@ const games = [
   { name: "Slither.io", description: "Grow your snake, collect dots, and avoid crashing.", category: "Arcade", hasSound: true },
   { name: "Chess", description: "Play classic chess right in the browser.", category: "Board", hasSound: false, url: "https://lichess.org/" },
   { name: "Tetris", description: "Stack falling pieces and clear lines before the board fills.", category: "Puzzle", hasSound: true, url: "https://play.tetris.com/" },
+  { name: "FNAF", description: "Survive the night by keeping an eye on what is happening around you.", category: "Horror", hasSound: true, url: "https://www.freddy-fnaf.com/" },
+  { name: "Subway Surfers", description: "Dash through the tracks, dodge obstacles, and grab coins.", category: "Arcade", hasSound: true, url: "https://subwaysurfers.com/" },
   { name: "Space Waves", description: "Guide your ship through tight spaces and keep your timing sharp.", category: "Arcade", hasSound: true },
+  { name: "Speed Stars", description: "Sprint, time your steps, and chase faster runs.", category: "Sports", hasSound: true, url: "https://speedstars.ai/speed-stars-online-free" },
 ];
 
 const categories = ["All", ...Array.from(new Set(games.map((game) => game.category)))];
