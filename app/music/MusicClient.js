@@ -57,6 +57,12 @@ const spotifyPlaylists = [
     creator: "Spotify",
     type: "playlist",
   },
+  {
+    id: "3DYvo2SJ4NS8DkJTsMCvXf",
+    name: "idk",
+    creator: "Spotify",
+    type: "playlist",
+  },
 ];
 
 function remember(item) {
