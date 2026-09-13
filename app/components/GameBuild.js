@@ -34,16 +34,17 @@ const realGames = {
     embedUrl: "https://play-minesweeper.games/embed/?size=beginner&theme=dark",
   },
   "Worlde": {
-    url: "https://www.miniplay.com/game/wordle",
-    embedUrl: "https://www.miniplay.com/embed/wordle",
+    url: "https://www.nytimes.com/games/wordle/index.html",
+    embedUrl: null,
+    embedUnsupported: true,
   },
   "Slither.io": {
-    url: "https://www.bubbleshooter.net/game/wormate-io/",
-    embedUrl: "https://www.bubbleshooter.net/embed.php?id=1591",
+    url: "https://www.gameflare.com/online-game/slitherio/",
+    embedUrl: "https://www.gameflare.com/embed/slitherio/",
   },
   "Tetris": {
-    url: "https://www.miniplay.com/game/tetris-2",
-    embedUrl: "https://www.miniplay.com/embed/tetris-2",
+    url: "https://classicarcade.games/games/nes/tetris/",
+    embedUrl: "https://classicarcade.games/games/nes/tetris?embed=1",
   },
   "FNAF": {
     url: "https://www.miniplay.com/game/five-nights-at-freddys",
@@ -58,8 +59,8 @@ const realGames = {
     embedUrl: "https://www.miniplay.com/embed/space-waves",
   },
   "Speed Stars": {
-    url: "https://speedstars.ai/speed-stars-online-free",
-    embedUrl: "https://speedstars.ai/speed-stars-online-free",
+    url: "https://www.play-games.com/game/39311/speed-stars.html",
+    embedUrl: "https://www.play-games.com/iframe/39311.html",
   },
   "Google Baseball": {
     url: "https://www.google.com/doodles/fourth-of-july-2019",
@@ -110,12 +111,7 @@ function ExternalGame({ name, config }) {
         style={{ width: "100%", height: "100%", minHeight: 500, border: 0, display: "block" }}
       />
       <div style={{ position: "absolute", bottom: 14, left: 14, right: 14, display: "flex", justifyContent: "center", pointerEvents: "none" }}>
-        <button
-          type="button"
-          className="vb-button"
-          style={{ pointerEvents: "auto", background: "rgba(10,10,14,.92)" }}
-          onClick={() => window.open(config.url, "_blank", "noopener,noreferrer")}
-        >
+        <button type="button" className="vb-button" style={{ pointerEvents: "auto", background: "rgba(10,10,14,.92)" }} onClick={() => window.open(config.url, "_blank", "noopener,noreferrer")}>
           Open directly
         </button>
       </div>
