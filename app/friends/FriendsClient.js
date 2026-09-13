@@ -77,7 +77,7 @@ export default function FriendsClient() {
             <button className="primary-button" type="submit">Search</button>
           </form>
           {message && <p className="friends-message">{message}</p>}
-          {results.length > 0 && <div className="friends-results">{results.map((item) => <UserRow key={item.id} item={item} action={<button className="secondary-button" onClick={() => add(item.username)}>Add Friend</button>} />)}</div>}
+          {results.length > 0 && <div className="friends-results">{results.map((item) => <UserRow key={item.id} item={item} action={<button className="secondary-button" onClick={() => add(item.username)}>Send Friend Request</button>} />)}</div>}
         </section>
 
         <section className="friends-section">
