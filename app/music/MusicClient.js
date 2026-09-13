@@ -68,7 +68,6 @@ export default function MusicClient() {
                 src={`https://open.spotify.com/embed/${playlist.type}/${playlist.id}?utm_source=generator`}
                 title={playlist.name}
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
               />
             </article>
           ))}
