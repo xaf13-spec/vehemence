@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Navbar from "./Navbar";
+import PersistentSpotifyEmbed from "./PersistentSpotifyEmbed";
 import { touchPresence } from "../friends/actions";
 
 const navOrder = ["/", "/rules", "/music", "/entertainment", "/soundboard", "/profile", "/friends", "/settings", "/notifications"];
@@ -78,6 +79,7 @@ export default function AppShell({ children }) {
           );
         })}
       </div>
+      <PersistentSpotifyEmbed />
       <div className="page-active-bubble" key={pathname} aria-live="polite">
         <span />
         {pageLabel}
