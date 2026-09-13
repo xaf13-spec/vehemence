@@ -12,28 +12,16 @@ import "./soundboard/soundboard.css";
 import "./music/music.css";
 import "./social-dashboard.css";
 import "./entertainment/entertainment.css";
+import "./rng/rng.css";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
 import BrowserCustomization from "./components/BrowserCustomization";
 import AppShell from "./components/AppShell";
 import { getCurrentUser } from "../lib/auth";
 
-export const metadata = {
-  title: "Vehemence",
-  description: "Vehemence - community, music, and more."
-};
+export const metadata = { title: "Vehemence", description: "Vehemence - community, music, and more." };
 
 export default async function RootLayout({ children }) {
   const user = await getCurrentUser();
-
-  return (
-    <html lang="en">
-      <body>
-        <BrowserCustomization />
-        <AppShell user={user}>{children}</AppShell>
-        <ChatWidget />
-        <CallWidget />
-      </body>
-    </html>
-  );
+  return (<html lang="en"><body><BrowserCustomization /><AppShell user={user}>{children}</AppShell><ChatWidget /><CallWidget /></body></html>);
 }
