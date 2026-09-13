@@ -2,20 +2,20 @@
 
 const realGames = {
   "Retro Bowl": {
-    url: "https://retrobowl.me/play.html",
-    embedUrl: "https://retrobowl.me/play.html",
+    url: "https://www.miniplay.com/game/retro-bowl",
+    embedUrl: "https://www.miniplay.com/embed/retro-bowl",
   },
   "Slope": {
-    url: "https://www.rocketgames.io/game/slope",
-    embedUrl: "https://www.rocketgames.io/game/slope",
+    url: "https://www.miniplay.com/game/slope",
+    embedUrl: "https://www.miniplay.com/embed/slope",
   },
   "Rocket Goal": {
-    url: "https://www.rocketgames.io/game/rocket-goal-io",
-    embedUrl: "https://www.rocketgames.io/game/rocket-goal-io",
+    url: "https://www.miniplay.com/game/rocket-goal",
+    embedUrl: "https://www.miniplay.com/embed/rocket-goal",
   },
   "Geometry Dash": {
-    url: "https://www.rocketgames.io/game/geometry-dash",
-    embedUrl: "https://www.rocketgames.io/game/geometry-dash",
+    url: "https://geometrydash-pc.com/",
+    embedUrl: "https://geometrydash-pc.com/",
   },
   "Eaglercraft": {
     url: "https://eaglercraft.com/play?version=1.8.8-wasm",
@@ -41,10 +41,6 @@ const realGames = {
     url: "https://slither.io/",
     embedUrl: "https://slither.io/",
   },
-  "Chess": {
-    url: "https://lichess.org/",
-    embedUrl: "https://lichess.org/embed/game/4mwG9f8J?theme=auto&bg=auto",
-  },
   "Tetris": {
     url: "https://play.tetris.com/",
     embedUrl: "https://play.tetris.com/",
@@ -62,8 +58,24 @@ const realGames = {
     embedUrl: "https://www.crazygames.com/game/space-waves",
   },
   "Speed Stars": {
-    url: "https://www.rocketgames.io/game/speed-stars",
-    embedUrl: "https://www.rocketgames.io/game/speed-stars",
+    url: "https://speedstars.ai/speed-stars-online-free",
+    embedUrl: "https://speedstars.ai/speed-stars-online-free",
+  },
+  "Google Baseball": {
+    url: "https://www.google.com/doodles/fourth-of-july-2019",
+    embedUrl: "https://www.google.com/doodles/fourth-of-july-2019",
+  },
+  "Google Snake": {
+    url: "https://www.google.com/search?q=snake+game",
+    embedUrl: "https://www.google.com/search?q=snake+game",
+  },
+  "Google Pac-Man": {
+    url: "https://www.google.com/logos/2010/pacman10-i.html",
+    embedUrl: "https://www.google.com/logos/2010/pacman10-i.html",
+  },
+  "Tomb of the Mask": {
+    url: "https://www.miniplay.com/game/tomb-of-the-mask",
+    embedUrl: "https://www.miniplay.com/embed/tomb-of-the-mask",
   },
 };
 
