@@ -21,5 +21,5 @@ export default function Navbar() {
     return () => { window.removeEventListener("storage", update); window.removeEventListener("vehemence-notifications-changed", update); };
   }, []);
 
-  return <nav className="navbar"><a href="/" className="logo">VEHEMENCE</a><div className="nav-links"><a href="/">Home</a><a href="/rules">Rules</a><a href="/games">Games</a><a href="/entertainment">Entertainment</a><a href="/profile">Profile</a><a href="/settings">Settings</a></div><a href="/notifications" className="notification-nav" aria-label="Notifications"><span className="notification-bell">🔔</span>{unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}</a></nav>;
+  return <nav className="navbar"><a href="/" className="logo">VEHEMENCE</a><div className="nav-links"><a href="/">Home</a><a href="/rules">Rules</a><a href="/games">Games</a><a href="/browser">Browser</a><a href="/entertainment">Entertainment</a><a href="/profile">Profile</a><a href="/settings">Settings</a></div><a href="/notifications" className="notification-nav" aria-label="Notifications"><span className="notification-bell">🔔</span>{unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}</a></nav>;
 }
