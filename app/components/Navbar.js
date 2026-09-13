@@ -13,7 +13,6 @@ const navItems = [
   ["/", "Home"],
   ["/rules", "Rules"],
   ["/games", "Games"],
-  ["/browser", "Browser"],
   ["/music", "Music"],
   ["/entertainment", "Entertainment"],
   ["/soundboard", "Soundboard"],
