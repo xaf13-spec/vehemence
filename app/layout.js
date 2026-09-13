@@ -6,6 +6,7 @@ import "./settings.css";
 import "./chat-widget.css";
 import "./call-widget.css";
 import "./game-player.css";
+import "./browser/browser.css";
 import Navbar from "./components/Navbar";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
