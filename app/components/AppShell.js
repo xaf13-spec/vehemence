@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import MusicClient from "../music/MusicClient";
 import EntertainmentClient from "../entertainment/EntertainmentClient";
 import SoundboardClient from "../soundboard/SoundboardClient";
+import MarketplaceClient from "../marketplace/MarketplaceClient";
 import FriendsClient from "../friends/FriendsClient";
 import ProfileClient from "../profile/ProfileClient";
 import Settings from "../settings/page";
