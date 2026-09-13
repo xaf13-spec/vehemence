@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSocialData, respondToFriendRequest, removeFriend, searchUsers, sendFriendRequest } from "./actions";
+import StartCallButton from "../components/StartCallButton";
 
 export default function FriendsClient() {
   const [data, setData] = useState({ friends: [], incoming: [], outgoing: [] });
@@ -90,7 +91,26 @@ export default function FriendsClient() {
 
         <section className="friends-section">
           <div className="friends-section-header"><h2>Your Friends</h2><p>{loading ? "Loading..." : `${data.friends.length} ${data.friends.length === 1 ? "friend" : "friends"}`}</p></div>
-          <div className="friends-card">{data.friends.length ? data.friends.map((item) => <UserRow key={item.id} item={item} action={<button className="secondary-button" onClick={() => remove(item.id)}>Remove</button>} />) : <div className="friends-empty">You don't have any friends yet.</div>}</div>
+          <div className="friends-card">
+            {data.friends.length ? data.friends.map((item) => (
+              <UserRow
+                key={item.id}
+                item={item}
+                action={(
+                  <>
+                    <Link
+                      href={`/chat/${encodeURIComponent(item.username)}`}
+                      className="secondary-button friend-action-link"
+                    >
+                      Chat
+                    </Link>
+                    <StartCallButton calleeId={item.user_id || item.id} />
+                    <button className="secondary-button" onClick={() => remove(item.id)}>Remove</button>
+                  </>
+                )}
+              />
+            )) : <div className="friends-empty">You don't have any friends yet.</div>}
+          </div>
         </section>
       </section>
     </main>
