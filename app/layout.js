@@ -9,6 +9,7 @@ import "./page-transition.css";
 import "./navigation.css";
 import "./friends/friends.css";
 import "./soundboard/soundboard.css";
+import "./music/music.css";
 import "./social-dashboard.css";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
