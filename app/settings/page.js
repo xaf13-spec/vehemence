@@ -63,14 +63,15 @@ export default function Settings() {
   }, []);
 
   function update(k, v, setter) { setter(v); save(k, v, false); }
-  function changeAppearance(k, v, setter) {
-    setter(v); save(k, v, true);
-    applyAppearance({ theme, font, uiScale, compact, animations, blur, backgroundEffects, [k]: v });
+  function changeAppearance(storageKey, stateKey, v, setter) {
+    setter(v);
+    save(storageKey, v, true);
+    applyAppearance({ theme, font, uiScale, compact, animations, blur, backgroundEffects, [stateKey]: v });
   }
-  function handleThemeChange(v) { changeAppearance("theme", v, setTheme); }
-  function handleFontChange(v) { changeAppearance("font", v, setFont); }
-  function handleScaleChange(v) { changeAppearance("uiScale", v, setUiScale); }
-  function handleToggle(k, v, setter) { changeAppearance(k, v, setter); }
+  function handleThemeChange(v) { changeAppearance("vehemence_theme", "theme", v, setTheme); }
+  function handleFontChange(v) { changeAppearance("vehemence_font", "font", v, setFont); }
+  function handleScaleChange(v) { changeAppearance("vehemence_ui_scale", "uiScale", v, setUiScale); }
+  function handleToggle(k, v, setter) { changeAppearance(`vehemence_${k === "backgroundEffects" ? "background" : k}`, k, v, setter); }
   async function handleLogout() { await logout(); window.location.href = "/"; }
   async function handleLogoutEverywhere() { const result = await logoutEverywhere(); if (result?.error) { setAccountMessage(result.error); return; } window.location.href = "/"; }
   async function handleUsernameChange(e) { e.preventDefault(); setUsernameError(""); setUsernameSuccess(""); setUsernameLoading(true); const result = await changeUsername(new FormData(e.currentTarget)); if (result?.error) { setUsernameError(result.error); setUsernameLoading(false); return; } setUsernameSuccess("Username changed successfully."); setUsernameLoading(false); e.currentTarget.reset(); }
