@@ -24,39 +24,27 @@ export default function MarketplaceClient({ user, onNavigate }) {
   }
 
   useEffect(() => { loadListings(); }, []);
-
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) return listings;
-    return listings.filter((item) => `${item.name} ${item.description}`.toLowerCase().includes(query));
-  }, [listings, search]);
-
+  const filtered = useMemo(() => { const query = search.trim().toLowerCase(); if (!query) return listings; return listings.filter((item) => `${item.name} ${item.description}`.toLowerCase().includes(query)); }, [listings, search]);
   function updateForm(key, value) { setForm((current) => ({ ...current, [key]: value })); }
 
   async function submitListing(event) {
-    event.preventDefault();
-    setMessage("");
-    const price = Number(form.price);
+    event.preventDefault(); setMessage(""); const price = Number(form.price);
     if (!form.name.trim() || !form.description.trim() || form.price === "") return setMessage("Fill out the name, description, and price.");
     if (!Number.isFinite(price) || price < 0) return setMessage("Enter a valid price.");
-    setSaving(true);
-    const result = await createListing({ ...form, price });
-    if (result?.error) setMessage(result.error);
-    else {
-      setListings((current) => [result.listing, ...current]);
-      setForm({ name: "", description: "", price: "", image_url: "" });
-      setCreating(false);
-      setSelected(result.listing);
-    }
+    setSaving(true); const result = await createListing({ ...form, price });
+    if (result?.error) setMessage(result.error); else { setListings((current) => [result.listing, ...current]); setForm({ name: "", description: "", price: "", image_url: "" }); setCreating(false); setSelected(result.listing); }
     setSaving(false);
   }
 
   async function handleDelete(listing) {
     if (listing.seller_id !== user?.id || !window.confirm("Delete this listing?")) return;
-    setMessage("");
-    const result = await deleteListing(listing.id);
-    if (result?.error) setMessage(result.error);
-    else { setListings((current) => current.filter((item) => item.id !== listing.id)); setSelected(null); }
+    setMessage(""); const result = await deleteListing(listing.id);
+    if (result?.error) setMessage(result.error); else { setListings((current) => current.filter((item) => item.id !== listing.id)); setSelected(null); }
+  }
+
+  function messageSeller(username) {
+    window.dispatchEvent(new CustomEvent("vehemence-open-chat", { detail: { username } }));
+    onNavigate?.("/friends");
   }
 
   if (selected) {
@@ -71,7 +59,7 @@ export default function MarketplaceClient({ user, onNavigate }) {
             <div style={{ display: "flex", justifyContent: "space-between", gap: 20, alignItems: "flex-start" }}><div><h2 style={{ margin: 0, fontSize: 28 }}>{selected.name}</h2><p style={{ margin: "8px 0 0", opacity: .55 }}>Seller: {selected.seller_username}</p></div><strong style={{ fontSize: 24 }}>${Number(selected.price).toFixed(2)}</strong></div>
             <p style={{ marginTop: 24, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{selected.description}</p>
             <div style={{ display: "flex", gap: 10, marginTop: 24, flexWrap: "wrap" }}>
-              {selected.seller_id !== user?.id && <button type="button" style={buttonStyle} onClick={() => onNavigate?.("/friends")}>Message Seller</button>}
+              {selected.seller_id !== user?.id && <button type="button" style={buttonStyle} onClick={() => messageSeller(selected.seller_username)}>Message Seller</button>}
               {own && <button type="button" onClick={() => handleDelete(selected)} style={{ ...buttonStyle, borderColor: "rgba(255,80,80,.3)", background: "rgba(255,60,60,.08)" }}>Delete Listing</button>}
             </div>
             {message && <p style={{ marginTop: 14, opacity: .7 }}>{message}</p>}
