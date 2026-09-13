@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 const spotifyPlaylists = [
   {
     id: "0U28P0QVB1QRxpqp5IHOlH",
@@ -35,11 +37,39 @@ const spotifyPlaylists = [
     id: "1HFnpLBaSM3XC3LX5UtnfO",
     name: "mj",
     creator: "spotify playlist",
+    creator: "spotify playlist",
     type: "playlist",
   },
 ];
 
+function remember(item) {
+  try {
+    localStorage.setItem("vehemence_last_played", JSON.stringify({
+      id: item.id,
+      name: item.name,
+      creator: item.creator,
+      type: item.type,
+      at: Date.now(),
+    }));
+    window.dispatchEvent(new Event("vehemence-music-last-played"));
+  } catch {}
+}
+
 export default function MusicClient() {
+  useEffect(() => {
+    function onMessage(event) {
+      const data = event.data;
+      if (!data || typeof data !== "object") return;
+      if (data.type === "vehemence-playlist" && data.id) {
+        const item = spotifyPlaylists.find((playlist) => playlist.id === data.id);
+        if (item) remember(item);
+      }
+    }
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
   return (
     <main className="music-page">
       <section className="music-hero">
