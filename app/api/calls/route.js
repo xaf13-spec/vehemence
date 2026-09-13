@@ -99,19 +99,23 @@ export async function POST(request) {
 
   if (action === "start") {
     const calleeId = body?.calleeId?.toString();
+    const calleeUsername = body?.calleeUsername?.toString().trim();
 
-    if (!calleeId || calleeId === user.id) {
+    if (!calleeId && !calleeUsername) {
       return NextResponse.json({ error: "Invalid call recipient." }, { status: 400 });
     }
 
-    const { data: callee } = await supabase
-      .from("profiles")
-      .select("id, username")
-      .eq("id", calleeId)
-      .single();
+    let calleeQuery = supabase.from("profiles").select("id, username");
+    if (calleeId) {
+      calleeQuery = calleeQuery.eq("id", calleeId);
+    } else {
+      calleeQuery = calleeQuery.ilike("username", calleeUsername);
+    }
 
-    if (!callee) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+    const { data: callee } = await calleeQuery.single();
+
+    if (!callee || callee.id === user.id) {
+      return NextResponse.json({ error: "Invalid call recipient." }, { status: 400 });
     }
 
     const { data: existing } = await supabase
@@ -128,7 +132,7 @@ export async function POST(request) {
     const { data: targetActive } = await supabase
       .from("calls")
       .select("id")
-      .or(`caller_id.eq.${calleeId},callee_id.eq.${calleeId}`)
+      .or(`caller_id.eq.${callee.id},callee_id.eq.${callee.id}`)
       .in("status", ["ringing", "accepted"])
       .limit(1);
 
@@ -140,7 +144,7 @@ export async function POST(request) {
       .from("calls")
       .insert({
         caller_id: user.id,
-        callee_id: calleeId,
+        callee_id: callee.id,
         status: "ringing"
       })
       .select("id, caller_id, callee_id, status, created_at, updated_at")
