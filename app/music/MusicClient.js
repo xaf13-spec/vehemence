@@ -39,6 +39,24 @@ const spotifyPlaylists = [
     creator: "spotify playlist",
     type: "playlist",
   },
+  {
+    id: "33UoJTtfrwN75RFYB5hTyA",
+    name: "school playlist",
+    creator: "Spotify",
+    type: "playlist",
+  },
+  {
+    id: "5dzv5eutKhMhPb7KeY5ZA7",
+    name: "no lyrics just thoughts",
+    creator: "Spotify",
+    type: "playlist",
+  },
+  {
+    id: "4tNdcHxqk9R9QdIlFNjV3F",
+    name: "chill",
+    creator: "Spotify",
+    type: "playlist",
+  },
 ];
 
 function remember(item) {
