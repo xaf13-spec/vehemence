@@ -45,10 +45,6 @@ const spotifyPlaylists = [
   },
 ];
 
-function playPlaylist(playlist) {
-  window.dispatchEvent(new CustomEvent("vehemence:spotify-select", { detail: playlist }));
-}
-
 export default function MusicClient() {
   return (
     <main className="music-page">
@@ -56,30 +52,30 @@ export default function MusicClient() {
         <div>
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Music</h1>
+          <p>Play your playlists and music without leaving Vehemence.</p>
         </div>
       </section>
 
       <section className="music-section">
         <div className="music-section-heading">
-          <div><h2>Spotify</h2></div>
+          <div><h2>Spotify</h2><p>Playlists and albums you added to Vehemence.</p></div>
         </div>
         <div className="spotify-grid">
           {spotifyPlaylists.map((playlist) => (
             <article className="spotify-card" key={`${playlist.type}-${playlist.id}`}>
               <div className="spotify-card-heading">
                 <div>
-                  <span className="music-status">{playlist.type === "album" ? "album" : "playlist"}</span>
+                  <span className="music-status">{playlist.type === "album" ? "ALBUM" : "SPOTIFY"}</span>
                   <h3>{playlist.name}</h3>
                   <p>{playlist.creator}</p>
                 </div>
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={() => playPlaylist(playlist)}
-                >
-                  play
-                </button>
               </div>
+              <iframe
+                src={`https://open.spotify.com/embed/${playlist.type}/${playlist.id}?utm_source=generator`}
+                title={playlist.name}
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              />
             </article>
           ))}
         </div>
