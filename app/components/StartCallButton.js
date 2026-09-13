@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export default function StartCallButton({ calleeId }) {
+export default function StartCallButton({ calleeId, calleeUsername }) {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
 
@@ -35,7 +35,7 @@ export default function StartCallButton({ calleeId }) {
         },
         body: JSON.stringify({
           action: "start",
-          calleeId: String(calleeId)
+          ...(calleeId ? { calleeId: String(calleeId) } : { calleeUsername: String(calleeUsername || "") })
         })
       });
 
@@ -77,7 +77,7 @@ export default function StartCallButton({ calleeId }) {
         onClick={handleClick}
         aria-label="Start voice call"
       >
-        {status === "starting" ? "Starting…" : status === "calling" ? "Calling…" : "Start Call"}
+        {status === "starting" ? "Starting…" : status === "calling" ? "Calling…" : "Call"}
       </button>
       {error && <span className="profile-call-error">{error}</span>}
     </div>
