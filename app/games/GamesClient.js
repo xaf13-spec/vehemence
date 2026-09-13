@@ -8,7 +8,6 @@ const games = [
   { name: "Slope", description: "Roll down the track, dodge obstacles, and stay on course.", category: "Arcade", hasSound: true },
   { name: "Rocket Goal", description: "Fast arcade soccer with rockets and quick reactions.", category: "Sports", hasSound: true },
   { name: "Geometry Dash", description: "Jump, fly, and time your moves through rhythmic levels.", category: "Arcade", hasSound: true },
-  { name: "Eaglercraft", description: "Open-source Minecraft-style browser gameplay.", category: "Adventure", hasSound: true },
   { name: "Level Devil", description: "A platformer where the level itself keeps trying to surprise you.", category: "Platformer", hasSound: true },
   { name: "Basketball Stars", description: "Take on fast basketball matches and work on your shots.", category: "Sports", hasSound: true },
   { name: "Minesweeper", description: "Clear the board, mark the mines, and don't hit one.", category: "Puzzle", hasSound: false },
