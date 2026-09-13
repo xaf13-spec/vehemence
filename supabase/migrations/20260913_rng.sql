@@ -1,120 +1,22 @@
 -- Vehemence RNG persistence. Run this once in Supabase SQL Editor.
-create table if not exists public.rng_players (
-  user_id uuid primary key references public.profiles(id) on delete cascade,
-  rolls integer not null default 0,
-  pity integer not null default 0,
-  luck numeric(10,2) not null default 1,
-  equipped_aura text,
-  updated_at timestamptz not null default now()
-);
-
-create table if not exists public.rng_inventory (
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  aura_id text not null,
-  quantity integer not null default 0,
-  favorite boolean not null default false,
-  primary key (user_id, aura_id)
-);
-
+create table if not exists public.rng_players (user_id uuid primary key references public.profiles(id) on delete cascade, rolls integer not null default 0, pity integer not null default 0, luck numeric(10,2) not null default 1, equipped_aura text, updated_at timestamptz not null default now());
+create table if not exists public.rng_inventory (user_id uuid not null references public.profiles(id) on delete cascade, aura_id text not null, quantity integer not null default 0, favorite boolean not null default false, primary key (user_id, aura_id));
 alter table public.rng_players enable row level security;
 alter table public.rng_inventory enable row level security;
 revoke all on public.rng_players from anon, authenticated;
 revoke all on public.rng_inventory from anon, authenticated;
 
-create or replace function public.vehemence_rng_auras()
-returns jsonb
-language sql immutable
-as $$
-  select jsonb_build_array(
-    jsonb_build_object('id','common','name','Common','rarity','Common','one_in',2),
-    jsonb_build_object('id','uncommon','name','Uncommon','rarity','Uncommon','one_in',10),
-    jsonb_build_object('id','rare','name','Rare','rarity','Rare','one_in',100),
-    jsonb_build_object('id','epic','name','Epic','rarity','Epic','one_in',1000),
-    jsonb_build_object('id','legendary','name','Legendary','rarity','Legendary','one_in',10000),
-    jsonb_build_object('id','mythic','name','Mythic','rarity','Mythic','one_in',100000),
-    jsonb_build_object('id','vehemence','name','Vehemence','rarity','???','one_in',1000000)
-  );
-$$;
+create or replace function public.vehemence_rng_auras() returns jsonb language sql immutable as $$ select jsonb_build_array(jsonb_build_object('id','common','name','Common','rarity','Common','one_in',2),jsonb_build_object('id','uncommon','name','Uncommon','rarity','Uncommon','one_in',10),jsonb_build_object('id','rare','name','Rare','rarity','Rare','one_in',100),jsonb_build_object('id','epic','name','Epic','rarity','Epic','one_in',1000),jsonb_build_object('id','legendary','name','Legendary','rarity','Legendary','one_in',10000),jsonb_build_object('id','mythic','name','Mythic','rarity','Mythic','one_in',100000),jsonb_build_object('id','vehemence','name','Vehemence','rarity','???','one_in',1000000)); $$;
 
-create or replace function public.vehemence_rng_pick(p_luck numeric default 1)
-returns jsonb
-language plpgsql
-as $$
-declare r double precision := random();
-begin
-  -- Weighted rarity table. Luck increases the chance of rarer tiers without using real money.
-  if r < least(0.000001 * p_luck, 0.02) then return jsonb_build_object('id','vehemence','name','Vehemence','rarity','???','one_in',1000000); end if;
-  if r < least(0.00001 * p_luck, 0.08) then return jsonb_build_object('id','mythic','name','Mythic','rarity','Mythic','one_in',100000); end if;
-  if r < least(0.0001 * p_luck, 0.20) then return jsonb_build_object('id','legendary','name','Legendary','rarity','Legendary','one_in',10000); end if;
-  if r < least(0.001 * p_luck, 0.35) then return jsonb_build_object('id','epic','name','Epic','rarity','Epic','one_in',1000); end if;
-  if r < least(0.01 * p_luck, 0.55) then return jsonb_build_object('id','rare','name','Rare','rarity','Rare','one_in',100); end if;
-  if r < least(0.10 * p_luck, 0.80) then return jsonb_build_object('id','uncommon','name','Uncommon','rarity','Uncommon','one_in',10); end if;
-  return jsonb_build_object('id','common','name','Common','rarity','Common','one_in',2);
-end;
-$$;
+create or replace function public.vehemence_rng_pick(p_luck numeric default 1) returns jsonb language plpgsql as $$ declare r double precision := random(); begin if r < least(0.000001*p_luck,0.02) then return jsonb_build_object('id','vehemence','name','Vehemence','rarity','???','one_in',1000000); end if; if r < least(0.00001*p_luck,0.08) then return jsonb_build_object('id','mythic','name','Mythic','rarity','Mythic','one_in',100000); end if; if r < least(0.0001*p_luck,0.20) then return jsonb_build_object('id','legendary','name','Legendary','rarity','Legendary','one_in',10000); end if; if r < least(0.001*p_luck,0.35) then return jsonb_build_object('id','epic','name','Epic','rarity','Epic','one_in',1000); end if; if r < least(0.01*p_luck,0.55) then return jsonb_build_object('id','rare','name','Rare','rarity','Rare','one_in',100); end if; if r < least(0.10*p_luck,0.80) then return jsonb_build_object('id','uncommon','name','Uncommon','rarity','Uncommon','one_in',10); end if; return jsonb_build_object('id','common','name','Common','rarity','Common','one_in',2); end; $$;
 
-create or replace function public.vehemence_rng_state(p_token text)
-returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare uid uuid; p record; inv jsonb;
-begin
-  uid := public.vehemence_user_id(p_token);
-  if uid is null then return null; end if;
-  insert into public.rng_players(user_id) values(uid) on conflict do nothing;
-  select * into p from public.rng_players where user_id = uid;
-  select coalesce(jsonb_agg(jsonb_build_object('id', i.aura_id, 'name', a.name, 'rarity', a.rarity, 'one_in', a.one_in, 'quantity', i.quantity, 'favorite', i.favorite)), '[]'::jsonb) into inv
-  from public.rng_inventory i cross join lateral jsonb_array_elements(public.vehemence_rng_auras()) a
-  where i.user_id = uid and a->>'id' = i.aura_id;
-  return jsonb_build_object('rolls',p.rolls,'pity',p.pity,'luck',p.luck,'equipped',p.equipped_aura,'inventory',inv,'auras',public.vehemence_rng_auras());
-end;
-$$;
+create or replace function public.vehemence_rng_state(p_token text) returns jsonb language plpgsql security definer set search_path=public as $$ declare uid uuid; p record; inv jsonb; begin uid:=public.vehemence_user_id(p_token); if uid is null then return null; end if; insert into public.rng_players(user_id) values(uid) on conflict do nothing; select * into p from public.rng_players where user_id=uid; select coalesce(jsonb_agg(jsonb_build_object('id',i.aura_id,'name',a->>'name','rarity',a->>'rarity','one_in',(a->>'one_in')::int,'quantity',i.quantity,'favorite',i.favorite)),'[]'::jsonb) into inv from public.rng_inventory i cross join lateral jsonb_array_elements(public.vehemence_rng_auras()) a where i.user_id=uid and a->>'id'=i.aura_id; return jsonb_build_object('rolls',p.rolls,'pity',p.pity,'luck',p.luck,'equipped',p.equipped_aura,'inventory',inv,'auras',public.vehemence_rng_auras()); end; $$;
 
-create or replace function public.vehemence_rng_roll(p_token text)
-returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare uid uuid; p record; aura jsonb; next_pity integer; roll_luck numeric; inv_qty integer;
-begin
-  uid := public.vehemence_user_id(p_token);
-  if uid is null then raise exception 'You are not logged in.'; end if;
-  insert into public.rng_players(user_id) values(uid) on conflict do nothing;
-  select * into p from public.rng_players where user_id = uid for update;
-  next_pity := p.pity + 1;
-  roll_luck := p.luck;
-  if next_pity >= 10 then roll_luck := roll_luck * 2; next_pity := 0; end if;
-  aura := public.vehemence_rng_pick(roll_luck);
-  insert into public.rng_inventory(user_id,aura_id,quantity) values(uid,aura->>'id',1)
-  on conflict(user_id,aura_id) do update set quantity = public.rng_inventory.quantity + 1;
-  update public.rng_players set rolls=p.rolls+1,pity=next_pity,updated_at=now() where user_id=uid;
-  select quantity into inv_qty from public.rng_inventory where user_id=uid and aura_id=aura->>'id';
-  return jsonb_build_object('aura',aura,'quantity',inv_qty,'state',public.vehemence_rng_state(p_token)->'state');
-end;
-$$;
+create or replace function public.vehemence_rng_roll(p_token text) returns jsonb language plpgsql security definer set search_path=public as $$ declare uid uuid; p record; aura jsonb; next_pity integer; roll_luck numeric; inv_qty integer; begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; insert into public.rng_players(user_id) values(uid) on conflict do nothing; select * into p from public.rng_players where user_id=uid for update; next_pity:=p.pity+1; roll_luck:=p.luck; if next_pity>=10 then roll_luck:=roll_luck*2; next_pity:=0; end if; aura:=public.vehemence_rng_pick(roll_luck); insert into public.rng_inventory(user_id,aura_id,quantity) values(uid,aura->>'id',1) on conflict(user_id,aura_id) do update set quantity=public.rng_inventory.quantity+1; update public.rng_players set rolls=p.rolls+1,pity=next_pity,updated_at=now() where user_id=uid; select quantity into inv_qty from public.rng_inventory where user_id=uid and aura_id=aura->>'id'; return jsonb_build_object('aura',aura,'quantity',inv_qty,'state',public.vehemence_rng_state(p_token)); end; $$;
 
-create or replace function public.vehemence_rng_favorite(p_token text,p_aura_id text,p_favorite boolean)
-returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare uid uuid;
-begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; update public.rng_inventory set favorite=p_favorite where user_id=uid and aura_id=p_aura_id; return jsonb_build_object('success',true); end;
-$$;
-
-create or replace function public.vehemence_rng_equip(p_token text,p_aura_id text)
-returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare uid uuid; q integer;
-begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; select quantity into q from public.rng_inventory where user_id=uid and aura_id=p_aura_id; if coalesce(q,0)<1 then raise exception 'You have not collected that aura.'; end if; update public.rng_players set equipped_aura=case when equipped_aura=p_aura_id then null else p_aura_id end where user_id=uid; return jsonb_build_object('success',true); end;
-$$;
-
-create or replace function public.vehemence_rng_sacrifice(p_token text,p_aura_id text,p_quantity integer)
-returns jsonb
-language plpgsql security definer set search_path = public
-as $$
-declare uid uuid; q integer; gain numeric;
-begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; if p_quantity<1 then raise exception 'Invalid quantity.'; end if; select quantity into q from public.rng_inventory where user_id=uid and aura_id=p_aura_id for update; if coalesce(q,0)<p_quantity then raise exception 'Not enough duplicates.'; end if; gain := p_quantity * case p_aura_id when 'common' then 0.01 when 'uncommon' then 0.03 when 'rare' then 0.08 when 'epic' then 0.20 when 'legendary' then 0.50 when 'mythic' then 1.00 else 2.00 end; update public.rng_inventory set quantity=quantity-p_quantity where user_id=uid and aura_id=p_aura_id; delete from public.rng_inventory where user_id=uid and aura_id=p_aura_id and quantity<=0; update public.rng_players set luck=luck+gain where user_id=uid; return jsonb_build_object('success',true,'luck_gain',gain); end;
-$$;
+create or replace function public.vehemence_rng_favorite(p_token text,p_aura_id text,p_favorite boolean) returns jsonb language plpgsql security definer set search_path=public as $$ declare uid uuid; begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; update public.rng_inventory set favorite=p_favorite where user_id=uid and aura_id=p_aura_id; return jsonb_build_object('success',true); end; $$;
+create or replace function public.vehemence_rng_equip(p_token text,p_aura_id text) returns jsonb language plpgsql security definer set search_path=public as $$ declare uid uuid; q integer; begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; select quantity into q from public.rng_inventory where user_id=uid and aura_id=p_aura_id; if coalesce(q,0)<1 then raise exception 'You have not collected that aura.'; end if; update public.rng_players set equipped_aura=case when equipped_aura=p_aura_id then null else p_aura_id end where user_id=uid; return jsonb_build_object('success',true); end; $$;
+create or replace function public.vehemence_rng_sacrifice(p_token text,p_aura_id text,p_quantity integer) returns jsonb language plpgsql security definer set search_path=public as $$ declare uid uuid; q integer; gain numeric; begin uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if; if p_quantity<1 then raise exception 'Invalid quantity.'; end if; select quantity into q from public.rng_inventory where user_id=uid and aura_id=p_aura_id for update; if coalesce(q,0)<p_quantity then raise exception 'Not enough duplicates.'; end if; gain:=p_quantity*case p_aura_id when 'common' then 0.01 when 'uncommon' then 0.03 when 'rare' then 0.08 when 'epic' then 0.20 when 'legendary' then 0.50 when 'mythic' then 1.00 else 2.00 end; update public.rng_inventory set quantity=quantity-p_quantity where user_id=uid and aura_id=p_aura_id; delete from public.rng_inventory where user_id=uid and aura_id=p_aura_id and quantity<=0; update public.rng_players set luck=luck+gain where user_id=uid; return jsonb_build_object('success',true,'luck_gain',gain); end; $$;
 
 grant execute on function public.vehemence_rng_state(text) to anon, authenticated;
 grant execute on function public.vehemence_rng_roll(text) to anon, authenticated;
