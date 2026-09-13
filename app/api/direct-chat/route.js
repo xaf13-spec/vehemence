@@ -2,16 +2,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_PUBLISHABLE_KEY
-);
-
-async function getSessionToken() {
-  const cookieStore = await cookies();
-  return cookieStore.get("vehemence_session")?.value || null;
-}
-
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY);
+async function getSessionToken() { const cookieStore = await cookies(); return cookieStore.get("vehemence_session")?.value || null; }
 function mapError(error) {
   const message = error?.message || "";
   if (message.includes("not_logged_in")) return ["Not logged in.", 401];
@@ -25,78 +17,30 @@ function mapError(error) {
 export async function GET(request) {
   const token = await getSessionToken();
   if (!token) return NextResponse.json({ error: "Not logged in." }, { status: 401 });
-
   const username = new URL(request.url).searchParams.get("username")?.trim();
   if (!username) return NextResponse.json({ error: "Username is required." }, { status: 400 });
-
-  const [{ data, error }, { data: isFriend, error: relationshipError }] = await Promise.all([
+  const [{ data, error }, { data: relationship, error: relationshipError }, { data: currentUserId, error: viewerError }] = await Promise.all([
     supabase.rpc("vehemence_direct_chat", { p_token: token, p_username: username }),
-    supabase.rpc("vehemence_chat_relationship", { p_token: token, p_username: username })
+    supabase.rpc("vehemence_chat_relationship", { p_token: token, p_username: username }),
+    supabase.rpc("vehemence_user_id", { p_token: token })
   ]);
-
-  if (error) {
-    const [message, status] = mapError(error);
-    return NextResponse.json({ error: message }, { status });
-  }
-
-  if (relationshipError) {
-    const [message, status] = mapError(relationshipError);
-    return NextResponse.json({ error: message }, { status });
-  }
-
-  return NextResponse.json({
-    isFriend: Boolean(isFriend),
-    messages: (data || []).map((item) => ({
-      id: item.id,
-      senderId: item.sender_id,
-      recipientId: item.recipient_id,
-      senderUsername: item.sender_username,
-      message: item.message,
-      createdAt: item.created_at
-    }))
-  });
+  if (error) { const [message, status] = mapError(error); return NextResponse.json({ error: message }, { status }); }
+  if (relationshipError || viewerError) return NextResponse.json({ error: "Could not load this chat." }, { status: 500 });
+  return NextResponse.json({ currentUserId, isFriend: Boolean(relationship), messages: (data || []).map((item) => ({ id: item.id, senderId: item.sender_id, recipientId: item.recipient_id, senderUsername: item.sender_username, message: item.message, createdAt: item.created_at })) });
 }
 
 export async function POST(request) {
   const token = await getSessionToken();
   if (!token) return NextResponse.json({ error: "Not logged in." }, { status: 401 });
-
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
-  }
-
+  let body; try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid request." }, { status: 400 }); }
   const username = body?.username?.toString().trim();
   const message = body?.message?.toString().trim();
-
   if (!username) return NextResponse.json({ error: "Username is required." }, { status: 400 });
   if (!message) return NextResponse.json({ error: "Message cannot be empty." }, { status: 400 });
   if (message.length > 500) return NextResponse.json({ error: "Message is too long." }, { status: 400 });
-
-  const { data, error } = await supabase.rpc("vehemence_send_direct_message", {
-    p_token: token,
-    p_username: username,
-    p_message: message
-  });
-
-  if (error) {
-    const [errorMessage, status] = mapError(error);
-    return NextResponse.json({ error: errorMessage }, { status });
-  }
-
+  const { data, error } = await supabase.rpc("vehemence_send_direct_message", { p_token: token, p_username: username, p_message: message });
+  if (error) { const [errorMessage, status] = mapError(error); return NextResponse.json({ error: errorMessage }, { status }); }
   const item = data?.[0];
   if (!item) return NextResponse.json({ error: "Could not send the message." }, { status: 500 });
-
-  return NextResponse.json({
-    message: {
-      id: item.id,
-      senderId: item.sender_id,
-      recipientId: item.recipient_id,
-      senderUsername: item.sender_username,
-      message: item.message,
-      createdAt: item.created_at
-    }
-  });
+  return NextResponse.json({ message: { id: item.id, senderId: item.sender_id, recipientId: item.recipient_id, senderUsername: item.sender_username, message: item.message, createdAt: item.created_at } });
 }
