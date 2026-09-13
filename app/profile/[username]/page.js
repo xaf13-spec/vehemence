@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { getCurrentUser } from "../../../lib/auth";
+import SendFriendRequestButton from "../../components/SendFriendRequestButton";
 import StartCallButton from "../../components/StartCallButton";
 
 const supabase = createClient(
@@ -84,6 +85,14 @@ export default async function OtherProfilePage({ params }) {
                 <span className="profile-status-dot" />
                 Online
               </span>
+            </div>
+
+            <div className="profile-row">
+              <div className="profile-row-copy">
+                <h3>Friend Request</h3>
+                <p>Send this user a friend request.</p>
+              </div>
+              <SendFriendRequestButton username={profile.username} />
             </div>
 
             <div className="profile-row">
