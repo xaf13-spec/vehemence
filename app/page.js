@@ -12,13 +12,13 @@ export default async function Home() {
           <h1>VEHEMENCE</h1>
 
           <p className="hero-description">
-            Your new home for games, competition, and community.
+            Your new home for music, community, and more.
           </p>
 
           <div className="hero-buttons">
             <a
               className="primary-button"
-              href={user ? "/games" : "/rules"}
+              href={user ? "/music" : "/rules"}
             >
               {user ? "Enter Vehemence" : "Sign Up / Log In"}
             </a>
