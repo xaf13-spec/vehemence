@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 const SHOWS = {
   "Tokyo Ghoul": [
-    [2, "https://www.dropbox.com/scl/fi/le0ct19zbddvaehk1pgrd/2.mp4?rlkey=ugane14tnuee7n12ocbqfal17t&st=lbmtz2q4&raw=1"],
+    [2, "https://www.dropbox.com/scl/fi/le0ct19zbddvaehk1pgrd/2.mp4?rlkey=ugane14tnue0po2czk6r2ba6y&st=lbmtz2q4&raw=1"],
     [3, "https://www.dropbox.com/scl/fi/t8xyrh4o8lhoxck2tvmwd/3.mp4?rlkey=qramzc1huee7n12ocbqfal17t&st=2t9llmwa&raw=1"],
     [4, "https://www.dropbox.com/scl/fi/fg31a37k6x2m31hco564v/4.mp4?rlkey=ike0z9qp0oocr2gchouyi0ggv&st=1ikvtyri&raw=1"],
     [5, "https://www.dropbox.com/scl/fi/92w6w0ind7irhq0nimzvg/5.mp4?rlkey=htujdf8b6o36p53gpxf8ahelr&st=k0o0hzvw&raw=1"],
@@ -31,9 +31,26 @@ const SHOWS = {
     [11, "https://www.dropbox.com/scl/fi/2uewgbyy6nntp79dx6avf/11.mp4?rlkey=583ebdni64t2jsdl0ojyblekm&st=mln5sihw&raw=1"],
     [12, "https://www.dropbox.com/scl/fi/vj5ks45012npp7jd40uu3/12.mp4?rlkey=64apetb0m5wmunqt27ut2bgp1&st=qh0vfqsk&raw=1"],
   ],
+  "Jujutsu Kaisen - Season 2": [
+    [25, "https://www.dropbox.com/scl/fi/3z2ry6m15ay0r22b6ufzk/25.mp4?rlkey=lb6nxq5oevqghosb0kd6630ez&st=5gfohur7&raw=1"],
+    [26, "https://www.dropbox.com/scl/fi/jqurhgt70o7fn2tl1fpel/26.mp4?rlkey=fg60eqbk8uopp62gonwyolrn9&st=5ql9fjzb&raw=1"],
+    [27, "https://www.dropbox.com/scl/fi/tilw0lmc6ulmxqveprh3w/27.mp4?rlkey=f7kcp3pp3udx5mlqt592w2dp2&st=wyipcm1s&raw=1"],
+    [28, "https://www.dropbox.com/scl/fi/xnqso6jq43ywly80u7ph7/28.mp4?rlkey=snzj2cgid3yoyrkv500yvt2qw&st=98939pb4&raw=1"],
+    [29, "https://www.dropbox.com/scl/fi/quknjk72lxvesee2irghx/29.mp4?rlkey=q21jp0poy08i9q4mf4bot0j6f&st=l8amqwwi&raw=1"],
+    [30, "https://www.dropbox.com/scl/fi/4ek5uw1xl0k1wtwn59j4s/30.mp4?rlkey=q2oax0zs7it5ntlq5g9we1qh0&st=oelrtuxs&raw=1"],
+    [31, "https://www.dropbox.com/scl/fi/g6vhfp2w69mi5b2iw5tai/31.mp4?rlkey=gsrnoq37szedh95ispda4w22h&st=muvojww7&raw=1"],
+    [32, "https://www.dropbox.com/scl/fi/0quvi9fox0bew1230hnhi/32.mp4?rlkey=8a7kw97mkei9aqggm77zysoia&st=k3oc373r&raw=1"],
+    [33, "https://www.dropbox.com/scl/fi/e48w12nozt5i7pq6uu697/33.mp4?rlkey=5s4qg3j1stw3fwffgwyysi01l&st=m6hf4ntq&raw=1"],
+    [34, "https://www.dropbox.com/scl/fi/82aaicb29xum2ghmb3h3k/34.mp4?rlkey=0s73vscqu5wlgyzalfsiiyfgm&st=ggbvxljn&raw=1"],
+    [35, "https://www.dropbox.com/scl/fi/0mqqidf0znbyqy5mgb8hh/35.mp4?rlkey=kiyufdk1761516gildprvxtu1&st=tnsymt2n&raw=1"],
+    [36, "https://www.dropbox.com/scl/fi/28w1ozwq6kp3av5vfg4am/36.mp4?rlkey=eqe4e1yohybk43ht5i9e9wbcw&st=xeptilnx&raw=1"],
+    [37, "https://www.dropbox.com/scl/fi/j3clhzjak5arq9bd9p7bp/37.mp4?rlkey=blxl5aai8jl2uxws9dbdnmdk3&st=wzva03dr&raw=1"],
+    [38, "https://www.dropbox.com/scl/fi/bkemhzqdgc40ip0vk2r7y/38.mp4?rlkey=k08rezuwoddqmhxf9q0mo30l0&st=houriot4&raw=1"],
+    [39, "https://www.dropbox.com/scl/fi/928hxgloum22ryn0ujpdo/39.mp4?rlkey=edk397v0for7o8ap0l8sbp4x8&st=g13e45fx&raw=1"],
+    [40, "https://www.dropbox.com/scl/fi/8t3zpvmjc0v8umwlwtxfn/40.mp4?rlkey=awqy6i0rupcv8r84sujtjryou&st=v3nss5km&raw=1"],
+    [41, "https://www.dropbox.com/scl/fi/p5vye03s70huiinlrm7bl/41.mp4?rlkey=ntzo04grs1txx3ksbkx5a3m2v&st=t5f34z2w&raw=1"],
+  ],
 };
-
-const MOVIES = [];
 
 function makeEpisodes(items) {
   return items.map(([number, url]) => ({ number, title: `Episode ${number}`, url }));
@@ -66,31 +83,137 @@ export default function EntertainmentClient() {
   const [fullscreen, setFullscreen] = useState(false);
   const episodes = useMemo(() => makeEpisodes(SHOWS[show] || []), [show]);
   const currentEpisode = useMemo(() => episodes.find((episode) => episode.number === selectedEpisode) || episodes[0], [episodes, selectedEpisode]);
-  useEffect(() => { const video = videoRef.current; if (!video) return; video.volume = volume; video.muted = muted; }, [volume, muted, selectedEpisode, show]);
-  useEffect(() => { setIsPlaying(false); setCurrentTime(0); setDuration(0); setError(""); }, [selectedEpisode, show]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.volume = volume;
+    video.muted = muted;
+  }, [volume, muted, selectedEpisode, show]);
+
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setError("");
+  }, [selectedEpisode, show]);
+
   useEffect(() => () => clearTimeout(hideTimerRef.current), []);
-  useEffect(() => { const onFullscreenChange = () => setFullscreen(Boolean(document.fullscreenElement)); document.addEventListener("fullscreenchange", onFullscreenChange); return () => document.removeEventListener("fullscreenchange", onFullscreenChange); }, []);
-  function showControls() { setControlsVisible(true); clearTimeout(hideTimerRef.current); if (isPlaying) hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2600); }
-  function chooseCategory(nextCategory) { setCategory(nextCategory); setControlsVisible(true); }
-  function chooseShow(nextShow) { const nextEpisodes = SHOWS[nextShow] || []; setCategory("Anime"); setShow(nextShow); setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1); setError(""); setControlsVisible(true); requestAnimationFrame(() => { const video = videoRef.current; if (!video) return; video.load(); video.play().catch(() => {}); }); }
-  function chooseEpisode(number) { if (!episodes.some((item) => item.number === number)) return; setSelectedEpisode(number); setControlsVisible(true); requestAnimationFrame(() => { const video = videoRef.current; if (!video) return; video.load(); video.play().catch(() => {}); }); }
-  function togglePlay() { const video = videoRef.current; if (!video) return; if (video.paused) video.play().catch(() => setError("The episode could not be played.")); else video.pause(); showControls(); }
-  function seek(event) { const value = Number(event.target.value); const video = videoRef.current; if (!video || !Number.isFinite(video.duration)) return; video.currentTime = value; setCurrentTime(value); }
-  function changeVolume(event) { const value = Number(event.target.value); setVolume(value); setMuted(value === 0); showControls(); }
-  function toggleMute() { setMuted((value) => !value); showControls(); }
-  function toggleExpand() { setExpanded((value) => !value); showControls(); }
-  async function toggleFullscreen() { const element = playerRef.current; if (!element) return; try { if (!document.fullscreenElement) await element.requestFullscreen(); else await document.exitFullscreen(); } catch { toggleExpand(); } }
-  function goToEpisode(number) { if (episodes.some((episode) => episode.number === number)) chooseEpisode(number); }
-  function handleEnded() { const currentIndex = episodes.findIndex((episode) => episode.number === selectedEpisode); const nextEpisode = episodes[currentIndex + 1]; if (nextEpisode) chooseEpisode(nextEpisode.number); else setIsPlaying(false); }
+
+  useEffect(() => {
+    const onFullscreenChange = () => setFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
+
+  function showControls() {
+    setControlsVisible(true);
+    clearTimeout(hideTimerRef.current);
+    if (isPlaying) hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2600);
+  }
+
+  function chooseCategory(nextCategory) {
+    setCategory(nextCategory);
+    setControlsVisible(true);
+  }
+
+  function chooseShow(nextShow) {
+    const nextEpisodes = SHOWS[nextShow] || [];
+    setCategory("Anime");
+    setShow(nextShow);
+    setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1);
+    setError("");
+    setControlsVisible(true);
+    requestAnimationFrame(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      video.load();
+      video.play().catch(() => {});
+    });
+  }
+
+  function chooseEpisode(number) {
+    if (!episodes.some((item) => item.number === number)) return;
+    setSelectedEpisode(number);
+    setControlsVisible(true);
+    requestAnimationFrame(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      video.load();
+      video.play().catch(() => {});
+    });
+  }
+
+  function togglePlay() {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) video.play().catch(() => setError("The episode could not be played."));
+    else video.pause();
+    showControls();
+  }
+
+  function seek(event) {
+    const value = Number(event.target.value);
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    video.currentTime = value;
+    setCurrentTime(value);
+  }
+
+  function changeVolume(event) {
+    const value = Number(event.target.value);
+    setVolume(value);
+    setMuted(value === 0);
+    showControls();
+  }
+
+  function toggleMute() {
+    setMuted((value) => !value);
+    showControls();
+  }
+
+  function toggleExpand() {
+    setExpanded((value) => !value);
+    showControls();
+  }
+
+  async function toggleFullscreen() {
+    const element = playerRef.current;
+    if (!element) return;
+    try {
+      if (!document.fullscreenElement) await element.requestFullscreen();
+      else await document.exitFullscreen();
+    } catch {
+      toggleExpand();
+    }
+  }
+
+  function goToEpisode(number) {
+    if (episodes.some((episode) => episode.number === number)) chooseEpisode(number);
+  }
+
+  function handleEnded() {
+    const currentIndex = episodes.findIndex((episode) => episode.number === selectedEpisode);
+    const nextEpisode = episodes[currentIndex + 1];
+    if (nextEpisode) chooseEpisode(nextEpisode.number);
+    else setIsPlaying(false);
+  }
+
   const firstEpisode = episodes[0]?.number;
   const lastEpisode = episodes[episodes.length - 1]?.number;
   const animeNames = Object.keys(SHOWS);
+
   return (
     <div style={{ width: "100%", maxWidth: expanded ? 1180 : 900, margin: "0 auto", padding: "28px 20px 70px", transition: "max-width .25s ease" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-        <h2 style={{ margin: 0, flex: 1, fontSize: 24 }}>{category === "Anime" ? show : "Movies"}</h2>
-        <div style={{ display: "flex", gap: 8 }}>{["Anime", "Movies"].map((name) => <button key={name} type="button" onClick={() => chooseCategory(name)} style={{ minWidth: 105, padding: "11px 18px", borderRadius: 10, border: category === name ? "1px solid rgba(255,255,255,.2)" : "1px solid rgba(255,255,255,.07)", background: category === name ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{name}</button>)}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
+        <h2 style={{ margin: 0, flex: 1, minWidth: 220, fontSize: 24 }}>{show}</h2>
+        <div style={{ display: "flex", gap: 8 }}>
+          {["Anime", "Movies"].map((name) => (
+            <button key={name} type="button" onClick={() => chooseCategory(name)} style={{ minWidth: 105, padding: "11px 18px", borderRadius: 10, border: category === name ? "1px solid rgba(255,255,255,.2)" : "1px solid rgba(255,255,255,.07)", background: category === name ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{name}</button>
+          ))}
+        </div>
       </div>
+
       {category === "Anime" && currentEpisode ? (
         <>
           <section style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "rgba(17,17,24,.82)", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
@@ -100,25 +223,45 @@ export default function EntertainmentClient() {
                 <input aria-label="Seek" type="range" min="0" max={duration || 0} step="0.1" value={currentTime} onChange={seek} style={{ width: "100%", height: 3, accentColor: "#ff0000", marginBottom: 8, display: "block", cursor: "pointer" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#fff" }}>
                   <button type="button" onClick={() => goToEpisode(selectedEpisode - 1)} disabled={selectedEpisode === firstEpisode} aria-label="Previous episode" style={{ ...controlStyle, opacity: selectedEpisode === firstEpisode ? .35 : 1 }}>⏮</button>
-                  <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"} style={{ ...controlStyle, width: 34, height: 34, fontSize: 14 }}>{isPlaying ? "❚❚" : "▶"}</button>
+                  <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"} style={{ ...controlStyle, width: 34, height: 34 }}>{isPlaying ? "❚❚" : "▶"}</button>
                   <button type="button" onClick={() => goToEpisode(selectedEpisode + 1)} disabled={selectedEpisode === lastEpisode} aria-label="Next episode" style={{ ...controlStyle, opacity: selectedEpisode === lastEpisode ? .35 : 1 }}>⏭</button>
                   <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} style={controlStyle}>{muted || volume === 0 ? "🔇" : "🔊"}</button>
                   <input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={muted ? 0 : volume} onChange={changeVolume} style={{ width: 70, accentColor: "#fff", cursor: "pointer" }} />
-                  <span style={{ fontSize: 12, opacity: .9, minWidth: 75 }}>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                  <span style={{ fontSize: 12, minWidth: 82 }}>{formatTime(currentTime)} / {formatTime(duration)}</span>
                   <div style={{ flex: 1 }} />
-                  <button type="button" onClick={toggleExpand} aria-label={expanded ? "Shrink" : "Expand"} style={controlStyle}>{expanded ? "↙" : "↗"}</button>
-                  <button type="button" onClick={toggleFullscreen} aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} style={controlStyle}>⛶</button>
+                  <button type="button" onClick={toggleExpand} aria-label={expanded ? "Shrink player" : "Expand player"} style={controlStyle}>{expanded ? "↙" : "↗"}</button>
+                  <button type="button" onClick={toggleFullscreen} aria-label="Fullscreen" style={controlStyle}>{fullscreen ? "⤢" : "⛶"}</button>
                 </div>
               </div>
-              {error && <div style={{ position: "absolute", left: 14, right: 14, top: 14, padding: "10px 12px", borderRadius: 9, background: "rgba(0,0,0,.72)", color: "#fff", fontSize: 12 }}>{error}</div>}
+              {error && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: 20, background: "rgba(0,0,0,.62)", color: "#fff", textAlign: "center", fontSize: 14 }}>{error}</div>}
             </div>
           </section>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 15 }}><div><div style={{ fontSize: 17, fontWeight: 800 }}>{show}</div><div style={{ fontSize: 13, opacity: .55, marginTop: 3 }}>Episode {selectedEpisode}</div></div></div>
-          <div style={{ marginTop: 20 }}><h3 style={{ margin: "0 0 10px", fontSize: 16 }}>Episodes</h3><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: 8 }}>{episodes.map((episode) => <button key={episode.number} type="button" onClick={() => chooseEpisode(episode.number)} style={{ padding: "12px 10px", borderRadius: 10, border: episode.number === selectedEpisode ? "1px solid rgba(255,255,255,.22)" : "1px solid rgba(255,255,255,.07)", background: episode.number === selectedEpisode ? "rgba(255,255,255,.1)" : "rgba(255,255,255,.035)", color: "#fff", cursor: "pointer", textAlign: "left" }}><div style={{ fontWeight: 800 }}>Episode {episode.number}</div></button>)}</div></div>
-          <div style={{ marginTop: 28 }}><h3 style={{ margin: "0 0 12px", fontSize: 16 }}>Anime</h3><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(190px,1fr))", gap: 12 }}>{animeNames.map((name) => <button key={name} type="button" onClick={() => chooseShow(name)} style={cardStyle}><div style={{ height: 95, background: "linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.03))", display: "grid", placeItems: "center", fontSize: 14, fontWeight: 900 }}>{name}</div><div style={{ padding: "12px 13px" }}><div style={{ fontWeight: 800 }}>{name}</div><div style={{ marginTop: 4, fontSize: 12, opacity: .55 }}>{SHOWS[name].length} episodes available</div></div></button>)}</div></div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10, marginTop: 18 }}>
+            {animeNames.map((name) => (
+              <button key={name} type="button" onClick={() => chooseShow(name)} style={{ ...cardStyle, padding: 16, borderColor: show === name ? "rgba(255,255,255,.25)" : "rgba(255,255,255,.08)" }}>
+                <div style={{ fontSize: 14, fontWeight: 800 }}>{name}</div>
+                <div style={{ marginTop: 5, fontSize: 12, opacity: .55 }}>{SHOWS[name].length} episodes available</div>
+              </button>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <h3 style={{ margin: 0, fontSize: 17 }}>Episodes</h3>
+              <span style={{ fontSize: 12, opacity: .55 }}>Episode {selectedEpisode}</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(110px,1fr))", gap: 8 }}>
+              {episodes.map((episode) => (
+                <button key={episode.number} type="button" onClick={() => chooseEpisode(episode.number)} style={{ ...cardStyle, padding: "12px 13px", borderColor: selectedEpisode === episode.number ? "rgba(255,255,255,.28)" : "rgba(255,255,255,.08)", background: selectedEpisode === episode.number ? "rgba(255,255,255,.12)" : "rgba(17,17,24,.82)" }}>
+                  <div style={{ fontSize: 13, fontWeight: 800 }}>Episode {episode.number}</div>
+                </button>
+              ))}
+            </div>
+          </div>
         </>
       ) : (
-        <section><h3 style={{ margin: "0 0 12px", fontSize: 16 }}>Movies</h3>{MOVIES.length === 0 ? <div style={{ padding: 24, border: "1px solid rgba(255,255,255,.08)", borderRadius: 14, background: "rgba(17,17,24,.65)", opacity: .7 }}>No movies added yet.</div> : <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: 12 }}>{MOVIES.map((movie) => <button key={movie.title} type="button" style={cardStyle}><div style={{ height: 120, background: "rgba(255,255,255,.08)", display: "grid", placeItems: "center", fontWeight: 800 }}>{movie.title}</div><div style={{ padding: "12px 13px" }}>{movie.title}</div></button>)}</div>}</section>
+        <div style={{ padding: 35, border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, background: "rgba(17,17,24,.6)", textAlign: "center", opacity: .7 }}>Movies will be added separately. Anime is ready.</div>
       )}
     </div>
   );
