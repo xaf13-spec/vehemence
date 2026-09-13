@@ -26,12 +26,6 @@ const spotifyPlaylists = [
     type: "playlist",
   },
   {
-    id: "28bqh5m3XyaDZahhwoNXp2",
-    name: "school playlist",
-    creator: "spotify playlist",
-    type: "playlist",
-  },
-  {
     id: "0vonmhVqP4CbuOlSbWBZ1h",
     name: "3am playlist",
     creator: "spotify playlist",
