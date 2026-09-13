@@ -17,8 +17,6 @@ create index if not exists direct_messages_recipient_sender_created_idx
 alter table public.direct_messages enable row level security;
 revoke all on public.direct_messages from anon, authenticated;
 
-after?
-
 create or replace function public.vehemence_direct_chat(p_token text, p_username text)
 returns table(id bigint, sender_id uuid, recipient_id uuid, sender_username text, message text, created_at timestamptz)
 language plpgsql
