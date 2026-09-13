@@ -17,6 +17,7 @@ export default function SoundboardClient() {
   const [current, setCurrent] = useState(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [search, setSearch] = useState("");
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function SoundboardClient() {
     const ended = () => {
       setPosition(0);
       setCurrent(null);
+      setDuration(0);
     };
 
     audio.addEventListener("timeupdate", update);
@@ -76,20 +78,41 @@ export default function SoundboardClient() {
     year: "numeric"
   }).format(now);
 
-  const formattedClock = new Intl.DateTimeFormat("en-US", {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Toronto",
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
-    hour12: true,
-    timeZoneName: "short"
-  }).format(now);
+    hour12: true
+  }).formatToParts(now);
+  const amPm = parts.find((part) => part.type === "dayPeriod")?.value || "";
+  const hour = parts.find((part) => part.type === "hour")?.value || "0";
+  const minute = parts.find((part) => part.type === "minute")?.value || "00";
+  const second = parts.find((part) => part.type === "second")?.value || "00";
+
+  const filteredSounds = sounds.filter((sound) =>
+    sound.name.toLowerCase().includes(search.trim().toLowerCase())
+  );
 
   return (
     <div className="soundboard-wrap">
       <div className="soundboard-time-card">
-        <span className="soundboard-time">{formattedClock}</span>
+        <span className="soundboard-time-period">{amPm}</span>
+        <span className="soundboard-time">
+          {hour}:{minute}:{second}
+        </span>
         <span className="soundboard-date">{formattedDate}</span>
+      </div>
+
+      <div className="soundboard-search-card">
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search sounds..."
+          aria-label="Search sounds"
+          className="soundboard-search"
+        />
       </div>
 
       {sounds.length === 0 ? (
@@ -97,10 +120,16 @@ export default function SoundboardClient() {
           <h3>No sounds added yet</h3>
           <p>Send me your sound links and the names you want for them, and they can be added here.</p>
         </div>
+      ) : filteredSounds.length === 0 ? (
+        <div className="soundboard-empty">
+          <h3>No sounds found</h3>
+          <p>Try a different search.</p>
+        </div>
       ) : (
         <div className="soundboard-grid">
-          {sounds.map((sound) => {
+          {filteredSounds.map((sound) => {
             const isCurrent = current?.id === sound.id;
+            const isPlaying = isCurrent && !audioRef.current?.paused;
             return (
               <article className="sound-card" key={sound.id}>
                 <div className="sound-card-top">
@@ -109,7 +138,7 @@ export default function SoundboardClient() {
                     <span>{formatTime(sound.duration)}</span>
                   </div>
                   <button className="primary-button" type="button" onClick={() => playSound(sound)}>
-                    {isCurrent && !audioRef.current?.paused ? "Pause" : "Play"}
+                    {isPlaying ? "Pause" : "Play"}
                   </button>
                 </div>
                 <div className="sound-progress-row">
