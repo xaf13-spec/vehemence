@@ -72,3 +72,19 @@ export async function changePassword(formData) {
   const { error } = await supabase.from("profiles").update({ password_hash: newPasswordHash }).eq("id", current.session.user_id);
   return error ? { error: "Could not change your password." } : { success: true };
 }
+
+export async function deleteAccount() {
+  const current = await getSession();
+  if (current.error) return { error: current.error };
+
+  const userId = current.session.user_id;
+
+  const { error: sessionError } = await supabase.from("sessions").delete().eq("user_id", userId);
+  if (sessionError) return { error: "Could not remove your active sessions. Your account was not deleted." };
+
+  const { error: profileError } = await supabase.from("profiles").delete().eq("id", userId);
+  if (profileError) return { error: "Could not delete your account. Your account was not changed." };
+
+  current.cookieStore.delete("vehemence_session");
+  return { success: true };
+}
