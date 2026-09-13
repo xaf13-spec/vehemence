@@ -37,7 +37,6 @@ const spotifyPlaylists = [
     id: "1HFnpLBaSM3XC3LX5UtnfO",
     name: "mj",
     creator: "spotify playlist",
-    creator: "spotify playlist",
     type: "playlist",
   },
 ];
