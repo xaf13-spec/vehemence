@@ -76,15 +76,8 @@ export async function changePassword(formData) {
 export async function deleteAccount() {
   const current = await getSession();
   if (current.error) return { error: current.error };
-
-  const userId = current.session.user_id;
-
-  const { error: sessionError } = await supabase.from("sessions").delete().eq("user_id", userId);
-  if (sessionError) return { error: "Could not remove your active sessions. Your account was not deleted." };
-
-  const { error: profileError } = await supabase.from("profiles").delete().eq("id", userId);
-  if (profileError) return { error: "Could not delete your account. Your account was not changed." };
-
+  const { error } = await supabase.rpc("vehemence_delete_account", { p_token: current.token });
+  if (error) return { error: error.message || "Could not delete your account." };
   current.cookieStore.delete("vehemence_session");
   return { success: true };
 }
