@@ -39,14 +39,29 @@ function makeEpisodes(items) {
 
 const INITIAL_SHOW = "Tokyo Ghoul";
 
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const total = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(total / 60);
+  const secs = String(total % 60).padStart(2, "0");
+  return `${minutes}:${secs}`;
+}
+
 export default function EntertainmentClient() {
   const videoRef = useRef(null);
+  const playerRef = useRef(null);
+  const hideTimerRef = useRef(null);
   const [show, setShow] = useState(INITIAL_SHOW);
   const [selectedEpisode, setSelectedEpisode] = useState(2);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
+  const [muted, setMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
 
   const episodes = useMemo(() => makeEpisodes(SHOWS[show]), [show]);
   const currentEpisode = useMemo(
@@ -58,23 +73,35 @@ export default function EntertainmentClient() {
     const video = videoRef.current;
     if (!video) return;
     video.volume = volume;
-  }, [volume, selectedEpisode, show]);
+    video.muted = muted;
+  }, [volume, muted, selectedEpisode, show]);
 
   useEffect(() => {
     setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
     setError("");
   }, [selectedEpisode, show]);
+
+  useEffect(() => () => clearTimeout(hideTimerRef.current), []);
+
+  function showControls() {
+    setControlsVisible(true);
+    clearTimeout(hideTimerRef.current);
+    if (isPlaying) hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2600);
+  }
 
   function chooseShow(nextShow) {
     setShow(nextShow);
     setSelectedEpisode(nextShow === "Tokyo Ghoul" ? 2 : 1);
     setError("");
+    setControlsVisible(true);
   }
 
   function chooseEpisode(number) {
-    const episode = episodes.find((item) => item.number === number);
-    if (!episode) return;
+    if (!episodes.some((item) => item.number === number)) return;
     setSelectedEpisode(number);
+    setControlsVisible(true);
     requestAnimationFrame(() => videoRef.current?.load());
   }
 
@@ -85,6 +112,41 @@ export default function EntertainmentClient() {
       video.play().catch(() => setError("The episode could not be played."));
     } else {
       video.pause();
+    }
+    showControls();
+  }
+
+  function seek(event) {
+    const value = Number(event.target.value);
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    video.currentTime = value;
+    setCurrentTime(value);
+  }
+
+  function toggleMute() {
+    setMuted((value) => !value);
+    showControls();
+  }
+
+  function toggleExpand() {
+    setExpanded((value) => !value);
+    showControls();
+  }
+
+  async function toggleFullscreen() {
+    const element = playerRef.current;
+    if (!element) return;
+    try {
+      if (!document.fullscreenElement) {
+        await element.requestFullscreen();
+        setFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setFullscreen(false);
+      }
+    } catch {
+      toggleExpand();
     }
   }
 
@@ -101,6 +163,7 @@ export default function EntertainmentClient() {
 
   const firstEpisode = episodes[0].number;
   const lastEpisode = episodes[episodes.length - 1].number;
+  const progress = duration ? (currentTime / duration) * 100 : 0;
 
   return (
     <div style={{ width: "100%", maxWidth: expanded ? 1180 : 900, margin: "0 auto", padding: "28px 20px 70px", transition: "max-width .25s ease" }}>
@@ -111,85 +174,41 @@ export default function EntertainmentClient() {
         </div>
         <div style={{ display: "flex", gap: 7 }}>
           {Object.keys(SHOWS).map((name) => (
-            <button
-              key={name}
-              type="button"
-              onClick={() => chooseShow(name)}
-              style={{ padding: "8px 11px", borderRadius: 9, border: "1px solid rgba(255,255,255,.08)", background: name === show ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 12, fontWeight: 700 }}
-            >
-              {name}
-            </button>
+            <button key={name} type="button" onClick={() => chooseShow(name)} style={{ padding: "8px 11px", borderRadius: 9, border: "1px solid rgba(255,255,255,.08)", background: name === show ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 12, fontWeight: 700 }}>{name}</button>
           ))}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: expanded ? "minmax(0, 1fr) 250px" : "minmax(0, 1fr) 210px", gap: 14, alignItems: "start", transition: "grid-template-columns .25s ease" }}>
+      <div style={{ display: "grid", gridTemplateColumns: expanded ? "minmax(0, 1fr) 250px" : "minmax(0, 1fr) 210px", gap: 14, alignItems: "start" }}>
         <section style={{ minWidth: 0, border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "rgba(17,17,24,.82)", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
-          <div
-            onClick={() => setExpanded((value) => !value)}
-            style={{ position: "relative", aspectRatio: "16 / 9", background: "#000", cursor: "pointer" }}
-          >
-            <video
-              ref={videoRef}
-              className="entertainment-video"
-              src={currentEpisode.url}
-              controls={false}
-              preload="metadata"
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onEnded={handleEnded}
-              onError={() => setError("This episode could not be loaded from Dropbox. Check the shared link.")}
-              style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }}
-            />
+          <div ref={playerRef} onMouseMove={showControls} onMouseLeave={() => isPlaying && setControlsVisible(false)} style={{ position: "relative", aspectRatio: "16 / 9", background: "#000", cursor: controlsVisible ? "default" : "none" }}>
+            <video ref={videoRef} className="entertainment-video" src={currentEpisode.url} controls={false} preload="metadata" onClick={togglePlay} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); showControls(); }} onPause={() => { setIsPlaying(false); setControlsVisible(true); }} onEnded={handleEnded} onError={() => setError("This episode could not be loaded from Dropbox. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
 
-            <div onClick={(event) => event.stopPropagation()} style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "42px 12px 11px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, background: "linear-gradient(transparent, rgba(0,0,0,.82))" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div onClick={(event) => event.stopPropagation()} style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "38px 12px 10px", opacity: controlsVisible ? 1 : 0, pointerEvents: controlsVisible ? "auto" : "none", transition: "opacity .2s ease", background: "linear-gradient(transparent, rgba(0,0,0,.88))" }}>
+              <input aria-label="Seek" type="range" min="0" max={duration || 0} step="0.1" value={currentTime} onChange={seek} style={{ width: "100%", height: 3, accentColor: "#fff", marginBottom: 8, display: "block", cursor: "pointer" }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#fff" }}>
                 <button type="button" onClick={() => goToEpisode(selectedEpisode - 1)} disabled={selectedEpisode === firstEpisode} aria-label="Previous episode" style={{ ...controlStyle, opacity: selectedEpisode === firstEpisode ? .35 : 1 }}>⏮</button>
-                <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"} style={{ ...controlStyle, width: 36, height: 36, fontSize: 15 }}>{isPlaying ? "❚❚" : "▶"}</button>
+                <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"} style={{ ...controlStyle, width: 34, height: 34, fontSize: 14 }}>{isPlaying ? "❚❚" : "▶"}</button>
                 <button type="button" onClick={() => goToEpisode(selectedEpisode + 1)} disabled={selectedEpisode === lastEpisode} aria-label="Next episode" style={{ ...controlStyle, opacity: selectedEpisode === lastEpisode ? .35 : 1 }}>⏭</button>
+                <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} style={controlStyle}>{muted || volume === 0 ? "🔇" : "🔊"}</button>
+                <span style={{ fontSize: 10, color: "#eee", minWidth: 72 }}>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                <div style={{ flex: 1 }} />
+                <button type="button" onClick={toggleExpand} aria-label={expanded ? "Shrink" : "Expand"} style={controlStyle}>{expanded ? "↙" : "↗"}</button>
+                <button type="button" onClick={toggleFullscreen} aria-label="Fullscreen" style={controlStyle}>{fullscreen ? "⛶" : "⛶"}</button>
               </div>
-              <label style={{ display: "flex", alignItems: "center", gap: 7, color: "#fff" }} onClick={(event) => event.stopPropagation()}>
-                <span style={{ fontSize: 13 }}>🔊</span>
-                <input type="range" min="0" max="1" step="0.01" value={volume} onChange={(event) => setVolume(Number(event.target.value))} aria-label="Volume" style={{ width: expanded ? 100 : 75 }} />
-              </label>
             </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 14px", gap: 10 }}>
-            <div style={{ minWidth: 0 }}>
-              <strong style={{ display: "block", fontSize: 13 }}>{show} · Episode {selectedEpisode}</strong>
-              <span style={{ display: "block", marginTop: 3, color: "#92929f", fontSize: 11 }}>Click the player to {expanded ? "shrink" : "expand"}</span>
-            </div>
-            <button type="button" onClick={() => setExpanded((value) => !value)} style={{ ...controlStyle, padding: "7px 10px", width: "auto", height: "auto", fontSize: 11 }}>
-              {expanded ? "Shrink" : "Expand"}
-            </button>
+            <div style={{ minWidth: 0 }}><strong style={{ display: "block", fontSize: 13 }}>{show} · Episode {selectedEpisode}</strong><span style={{ display: "block", marginTop: 3, color: "#92929f", fontSize: 11 }}>YouTube-style player controls</span></div>
           </div>
           {error && <p style={{ padding: "0 14px 13px", color: "#fca5a5", fontSize: 12 }}>{error}</p>}
         </section>
 
         <aside style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, background: "rgba(17,17,24,.82)", overflow: "hidden" }}>
-          <div style={{ padding: "13px 14px", borderBottom: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div>
-              <span className="entertainment-kicker" style={{ fontSize: 9 }}>{show}</span>
-              <h3 style={{ marginTop: 3, fontSize: 15 }}>Episodes</h3>
-            </div>
-            <span style={{ color: "#92929f", fontSize: 11 }}>{episodes.length}</span>
-          </div>
+          <div style={{ padding: "13px 14px", borderBottom: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}><div><span className="entertainment-kicker" style={{ fontSize: 9 }}>{show}</span><h3 style={{ marginTop: 3, fontSize: 15 }}>Episodes</h3></div><span style={{ color: "#92929f", fontSize: 11 }}>{episodes.length}</span></div>
           <div style={{ maxHeight: expanded ? 560 : 430, overflowY: "auto", padding: 7 }}>
-            {episodes.map((episode) => (
-              <button
-                key={episode.number}
-                type="button"
-                onClick={() => chooseEpisode(episode.number)}
-                style={{ width: "100%", display: "flex", alignItems: "center", gap: 9, padding: "9px 8px", marginBottom: 3, border: "1px solid transparent", borderRadius: 9, background: episode.number === selectedEpisode ? "rgba(255,255,255,.09)" : "transparent", color: "#fff", textAlign: "left" }}
-              >
-                <span style={{ width: 27, height: 27, display: "grid", placeItems: "center", flexShrink: 0, borderRadius: 7, background: "rgba(255,255,255,.06)", color: "#b5b5c0", fontSize: 10, fontWeight: 800 }}>{String(episode.number).padStart(2, "0")}</span>
-                <span style={{ minWidth: 0 }}>
-                  <strong style={{ display: "block", fontSize: 11 }}>{episode.title}</strong>
-                  <small style={{ display: "block", marginTop: 2, color: "#777783", fontSize: 9 }}>{episode.number === selectedEpisode ? "Playing" : "Watch episode"}</small>
-                </span>
-              </button>
-            ))}
+            {episodes.map((episode) => <button key={episode.number} type="button" onClick={() => chooseEpisode(episode.number)} style={{ width: "100%", display: "flex", alignItems: "center", gap: 9, padding: "9px 8px", marginBottom: 3, border: "1px solid transparent", borderRadius: 9, background: episode.number === selectedEpisode ? "rgba(255,255,255,.09)" : "transparent", color: "#fff", textAlign: "left" }}><span style={{ width: 27, height: 27, display: "grid", placeItems: "center", flexShrink: 0, borderRadius: 7, background: "rgba(255,255,255,.06)", color: "#b5b5c0", fontSize: 10, fontWeight: 800 }}>{String(episode.number).padStart(2, "0")}</span><span style={{ minWidth: 0 }}><strong style={{ display: "block", fontSize: 11 }}>{episode.title}</strong><small style={{ display: "block", marginTop: 2, color: "#777783", fontSize: 9 }}>{episode.number === selectedEpisode ? "Playing" : "Watch episode"}</small></span></button>)}
           </div>
         </aside>
       </div>
@@ -198,15 +217,15 @@ export default function EntertainmentClient() {
 }
 
 const controlStyle = {
-  width: 31,
-  height: 31,
+  width: 30,
+  height: 30,
   display: "grid",
   placeItems: "center",
   padding: 0,
-  border: "1px solid rgba(255,255,255,.12)",
-  borderRadius: 8,
-  background: "rgba(10,10,12,.72)",
+  border: "0",
+  borderRadius: 7,
+  background: "transparent",
   color: "#fff",
   fontSize: 12,
-  backdropFilter: "blur(10px)",
+  cursor: "pointer",
 };
