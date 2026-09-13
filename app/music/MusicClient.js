@@ -97,6 +97,15 @@ export default function MusicClient() {
       },
       (controller) => {
         controllers.current.set(playlist.key, controller);
+        controller.addListener(window.SpotifyIframeApi.EVENTS.PLAYBACK_UPDATE, (event) => {
+          const data = event?.data;
+          if (!data || data.isPaused || !Number.isFinite(data.duration) || data.duration <= 0) return;
+
+          if (data.position >= data.duration - 0.75) {
+            controller.seek(0);
+            controller.play();
+          }
+        });
       }
     );
   }
@@ -125,14 +134,6 @@ export default function MusicClient() {
                     <h3>{item.name}</h3>
                     <p>{item.creator}</p>
                   </div>
-                  <button
-                    type="button"
-                    className="secondary-button"
-                    onClick={() => controllers.current.get(item.key)?.restart()}
-                    disabled={!apiReady}
-                  >
-                    Replay
-                  </button>
                 </div>
                 <div
                   ref={(element) => registerController(item, element)}
