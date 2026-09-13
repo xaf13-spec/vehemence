@@ -115,7 +115,10 @@ export default function ProfileClient({ user }) {
         </header>
 
         {editing && <div className="profile-edit-card">
-          <label>Bio<textarea value={draftBio} onChange={(e) => setDraftBio(e.target.value)} maxLength={160} placeholder="Tell people a little about yourself..." rows={4} /><span className="profile-bio-count">{draftBio.length}/160</span></label>
+          <div className="profile-edit-bio">
+            <div className="profile-edit-bio-heading"><div><span className="profile-edit-kicker">EDIT PROFILE</span><h2>Bio</h2><p>Write something people can actually read without the field feeling cramped.</p></div><span className="profile-bio-count">{draftBio.length}/160</span></div>
+            <textarea value={draftBio} onChange={(e) => setDraftBio(e.target.value)} maxLength={160} placeholder="Tell people a little about yourself..." rows={6} />
+          </div>
           <div className="profile-customization-grid">
             <label>Profile Picture<input type="file" accept="image/*" onChange={(e) => handleImage(e, setDraftAvatar)} /></label>
             <label>Profile Banner<input type="file" accept="image/*" onChange={(e) => handleImage(e, setDraftBanner)} /></label>
