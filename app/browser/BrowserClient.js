@@ -1,62 +1,108 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-const pages = [
-  { name: "Google", url: "https://www.google.com/", host: "www.google.com" },
-  { name: "Google Snake", url: "https://www.google.com/search?q=snake+game", host: "www.google.com" },
-  { name: "Google Pac-Man", url: "https://www.google.com/logos/2010/pacman10-i.html", host: "www.google.com" },
-  { name: "Google Baseball", url: "https://www.google.com/doodles/fourth-of-july-2019", host: "www.google.com" },
-  { name: "Retro Bowl", url: "https://www.miniplay.com/embed/retro-bowl", host: "www.miniplay.com" },
-  { name: "Tomb of the Mask", url: "https://www.miniplay.com/embed/tomb-of-the-mask", host: "www.miniplay.com" },
-  { name: "Rocket Goal", url: "https://www.miniplay.com/embed/rocket-goal", host: "www.miniplay.com" },
-  { name: "Geometry Dash", url: "https://www.miniplay.com/embed/geometry-dash", host: "www.miniplay.com" },
-  { name: "Slope", url: "https://www.miniplay.com/embed/slope", host: "www.miniplay.com" },
-  { name: "Minesweeper", url: "https://play-minesweeper.games/embed/?size=beginner&theme=dark", host: "play-minesweeper.games" },
-  { name: "StreameX", url: "https://www.streamex.sh/", host: "www.streamex.sh" },
-  { name: "Eaglercraft", url: "https://eaglercraft.com/play", host: "eaglercraft.com" },
-];
+const HOME_URL = "https://www.google.com/";
+
+function normalizeUrl(value) {
+  const trimmed = value.trim();
+  if (!trimmed) return HOME_URL;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmed)) return `https://${trimmed}`;
+  return `https://www.google.com/search?q=${encodeURIComponent(trimmed)}`;
+}
 
 export default function BrowserClient() {
-  const [selected, setSelected] = useState(pages[0].name);
+  const [address, setAddress] = useState(HOME_URL);
+  const [loadedUrl, setLoadedUrl] = useState(HOME_URL);
+  const [history, setHistory] = useState([HOME_URL]);
+  const [historyIndex, setHistoryIndex] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
-  const page = useMemo(() => pages.find((item) => item.name === selected) || pages[0], [selected]);
+
+  function navigate(value, push = true) {
+    const nextUrl = normalizeUrl(value);
+    setAddress(nextUrl);
+    setLoadedUrl(nextUrl);
+    if (!push) return;
+
+    setHistory((current) => {
+      const trimmed = current.slice(0, historyIndex + 1);
+      const last = trimmed[trimmed.length - 1];
+      if (last === nextUrl) return trimmed;
+      const next = [...trimmed, nextUrl].slice(-20);
+      setHistoryIndex(next.length - 1);
+      return next;
+    });
+  }
+
+  function goBack() {
+    if (historyIndex <= 0) return;
+    const nextIndex = historyIndex - 1;
+    const nextUrl = history[nextIndex];
+    setHistoryIndex(nextIndex);
+    setLoadedUrl(nextUrl);
+    setAddress(nextUrl);
+  }
+
+  function goForward() {
+    if (historyIndex >= history.length - 1) return;
+    const nextIndex = historyIndex + 1;
+    const nextUrl = history[nextIndex];
+    setHistoryIndex(nextIndex);
+    setLoadedUrl(nextUrl);
+    setAddress(nextUrl);
+  }
 
   return (
-    <main className="games-page">
-      <div className="games-header">
-        <div>
+    <main className="browser-shell">
+      <header className="browser-heading">
+        <div className="browser-heading-copy">
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Browser</h1>
-          <p>Launch supported web experiences inside Vehemence.</p>
+          <p>A clean browser workspace inside Vehemence.</p>
         </div>
-        <div className="game-toolbar" style={{ margin: 0 }}>
-          <select className="game-sort" value={selected} onChange={(e) => setSelected(e.target.value)} aria-label="Choose a browser page">
-            {pages.map((item) => <option key={item.name}>{item.name}</option>)}
-          </select>
-          <button type="button" className="secondary-button" onClick={() => setReloadKey((value) => value + 1)}>Reload</button>
-        </div>
-      </div>
+      </header>
 
-      <section className="game-section">
-        <div className="section-title-row">
-          <div>
-            <h2>{page.name}</h2>
-            <p className="section-subtitle">Embedded from {page.host}</p>
-          </div>
+      <section className="browser-window">
+        <div className="browser-toolbar">
+          <button type="button" className="browser-toolbar-button" onClick={goBack} disabled={historyIndex === 0} aria-label="Back">‹</button>
+          <button type="button" className="browser-toolbar-button" onClick={goForward} disabled={historyIndex >= history.length - 1} aria-label="Forward">›</button>
+          <button type="button" className="browser-toolbar-button" onClick={() => setReloadKey((value) => value + 1)} aria-label="Reload">↻</button>
+          <input
+            className="browser-address"
+            value={address}
+            onChange={(event) => setAddress(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") navigate(event.currentTarget.value);
+            }}
+            aria-label="Web address"
+            spellCheck={false}
+          />
+          <button type="button" className="browser-go" onClick={() => navigate(address)}>Go</button>
         </div>
-        <div className="vb-center" style={{ padding: 0, gap: 0, minHeight: "72vh", overflow: "hidden" }}>
+
+        <div className="browser-warning">
+          <strong>Note:</strong> Some websites do not allow themselves to be displayed inside another website. Those sites can still refuse this frame even though the browser itself is working.
+        </div>
+
+        <div className="browser-body">
           <iframe
-            key={`${page.url}-${reloadKey}`}
-            src={page.url}
-            title={page.name}
-            allow="autoplay; fullscreen; gamepad; pointer-lock; clipboard-write"
+            key={`${loadedUrl}-${reloadKey}`}
+            src={loadedUrl}
+            title="Vehemence Browser"
+            allow="autoplay; fullscreen; gamepad; pointer-lock; clipboard-write; encrypted-media; picture-in-picture"
             allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
-            style={{ width: "100%", flex: 1, minHeight: "72vh", border: 0, display: "block" }}
+            referrerPolicy="strict-origin-when-cross-origin"
           />
         </div>
+
+        <div className="browser-status">
+          <span><span className="browser-dot" />Connected to {new URL(loadedUrl).hostname}</span>
+          <span>Vehemence Browser</span>
+        </div>
       </section>
+
+      <p className="browser-help">Enter a URL or a search term above. Vehemence does not route traffic through a proxy or bypass a site's own framing restrictions.</p>
     </main>
   );
 }
