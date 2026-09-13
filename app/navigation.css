@@ -9,6 +9,7 @@ html[data-nav-mode="side"] .navbar.navbar-side .notification-nav{margin-top:0;wi
 html[data-nav-mode="side"] .navbar.navbar-side .navbar-clock{display:flex;min-width:0;width:100%;align-items:center;text-align:center;white-space:normal}
 html[data-nav-mode="side"] .navbar.navbar-side .navbar-clock strong{font-size:9px}
 html[data-nav-mode="side"] .navbar.navbar-side .navbar-clock span{font-size:7px;line-height:1.3}
+html[data-nav-mode="side"] .navbar.navbar-side .navbar-clock-period{font-size:7px!important;line-height:1!important;font-weight:900;letter-spacing:.08em}
 html[data-nav-mode="side"] .page-transition{margin-left:112px}
 html[data-nav-mode="side"] .page-active-bubble{left:auto;right:18px;transform:none}
 html[data-nav-mode="side"] .page-active-bubble{animation-name:vehemence-bubble-side-in}
@@ -20,5 +21,22 @@ html[data-nav-mode="side"] .page-active-bubble{animation-name:vehemence-bubble-s
 .profile-edit-bio-heading p{color:var(--muted);font-size:11px;line-height:1.5;font-weight:400}
 .profile-edit-bio-heading .profile-bio-count{position:static;flex-shrink:0;padding-top:2px}
 .profile-edit-bio textarea{min-height:170px!important;resize:vertical;padding:15px 16px!important;line-height:1.65!important}
-@media (max-width:800px){html[data-nav-mode="side"] .navbar.navbar-side{left:9px;top:9px;bottom:9px;width:72px}.profile-page{padding-left:105px}.profile-container{max-width:none}.navbar-status{margin-left:auto}.navbar-clock{min-width:145px}.navbar-clock strong{font-size:11px}.navbar-clock span{font-size:8px}}
-@media (max-width:600px){html[data-nav-mode="side"] .page-transition{margin-left:86px}.profile-page{padding-left:96px}.profile-edit-bio-heading{flex-direction:column;gap:5px}.profile-edit-bio-heading .profile-bio-count{align-self:flex-end}.navbar-status{gap:6px}.navbar-clock{min-width:125px}.navbar-clock strong{font-size:10px}.navbar-clock span{font-size:7px}}
+@media(max-width:800px){html[data-nav-mode="side"] .navbar.navbar-side{left:9px;top:9px;bottom:9px;width:72px}.profile-page{padding-left:105px}.profile-container{max-width:none}.navbar-status{margin-left:auto}.navbar-clock{min-width:145px}.navbar-clock strong{font-size:11px}.navbar-clock span{font-size:8px}}
+@media(max-width:600px){html[data-nav-mode="side"] .page-transition{margin-left:86px}.profile-page{padding-left:96px}.profile-edit-bio-heading{flex-direction:column;gap:5px}.profile-edit-bio-heading .profile-bio-count{align-self:flex-end}.navbar-status{gap:6px}.navbar-clock{min-width:125px}.navbar-clock strong{font-size:10px}.navbar-clock span{font-size:7px}.navbar-clock-period{font-size:7px}}
+.navbar-status{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.notification-nav{position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:#d7d7df;transition:background .2s ease,transform .2s ease}
+.notification-nav:hover{background:rgba(255,255,255,.055);transform:translateY(-1px)}
+.notification-bell{font-size:17px;line-height:1}
+.notification-count{position:absolute;top:1px;right:0;min-width:15px;height:15px;padding:0 4px;border-radius:99px;background:var(--accent);color:#09090b;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900}
+.navbar-clock{display:flex;flex-direction:column;align-items:flex-end;gap:1px;white-space:nowrap}
+.navbar-clock-period{color:var(--muted);font-size:8px;font-weight:900;letter-spacing:.1em;line-height:1}
+.navbar-clock strong{font-size:12px;line-height:1;font-weight:900;letter-spacing:-.01em}
+.navbar-clock>span:last-child{color:var(--muted);font-size:8px;line-height:1.1}
+.soundboard-search-card{padding:15px 16px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+.soundboard-search{width:100%;height:46px;padding:0 14px;border:1px solid var(--border);border-radius:10px;outline:none;background:rgba(0,0,0,.2);color:var(--text);font-size:13px}
+.soundboard-search:focus{border-color:var(--border-hover);box-shadow:0 0 0 3px var(--accent-soft)}
+.soundboard-search::placeholder{color:var(--muted)}
+.soundboard-time-card{align-items:center}
+.soundboard-time-period{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--muted)}
+.soundboard-time{font-size:24px}
+@media(max-width:600px){.navbar-status{gap:6px}.navbar-clock{min-width:125px}.navbar-clock strong{font-size:10px}.navbar-clock>span:last-child{font-size:7px}.soundboard-time-card{align-items:flex-start}.soundboard-time-period{font-size:9px}}
