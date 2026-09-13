@@ -54,20 +54,23 @@ export default function Navbar() {
 
   const currentPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
   const side = navMode === "side";
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Toronto",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  }).formatToParts(now);
+  const amPm = parts.find((part) => part.type === "dayPeriod")?.value || "";
+  const hour = parts.find((part) => part.type === "hour")?.value || "0";
+  const minute = parts.find((part) => part.type === "minute")?.value || "00";
+  const second = parts.find((part) => part.type === "second")?.value || "00";
   const date = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Toronto",
     weekday: "short",
     month: "short",
     day: "numeric",
     year: "numeric"
-  }).format(now);
-  const time = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Toronto",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-    timeZoneName: "short"
   }).format(now);
 
   return (
@@ -87,7 +90,8 @@ export default function Navbar() {
           {unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}
         </Link>
         <div className="navbar-clock" aria-label="Ontario time and date">
-          <strong>{time}</strong>
+          <span className="navbar-clock-period">{amPm}</span>
+          <strong>{hour}:{minute}:{second}</strong>
           <span>{date} · Ontario / New York</span>
         </div>
       </div>
