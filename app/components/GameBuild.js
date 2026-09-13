@@ -6,8 +6,8 @@ const realGames = {
     embedUrl: "https://www.miniplay.com/embed/retro-bowl",
   },
   "Slope": {
-    url: "https://www.miniplay.com/game/slope",
-    embedUrl: "https://www.miniplay.com/embed/slope",
+    url: "https://www.bubbleshooter.net/slope/",
+    embedUrl: "https://www.bubbleshooter.net/embed.php?id=460",
   },
   "Rocket Goal": {
     url: "https://www.miniplay.com/game/rocket-goal",
@@ -18,16 +18,16 @@ const realGames = {
     embedUrl: "https://www.miniplay.com/embed/geometry-dash",
   },
   "Eaglercraft": {
-    url: "https://eaglercraft.com/play",
-    embedUrl: "https://eaglercraft.com/play",
+    url: "https://www.miniplay.com/game/eaglercraft-minecraft-online",
+    embedUrl: "https://www.miniplay.com/embed/eaglercraft-minecraft-online",
   },
   "Level Devil": {
-    url: "https://playleveldevil.com/",
-    embedUrl: "https://playleveldevil.com/",
+    url: "https://www.miniplay.com/game/level-devil",
+    embedUrl: "https://www.miniplay.com/embed/level-devil",
   },
   "Basketball Stars": {
-    url: "https://www.rocketgames.io/game/basketball-stars-2026",
-    embedUrl: "https://www.rocketgames.io/game/basketball-stars-2026",
+    url: "https://www.bubbleshooter.net/game/basketball-stars/",
+    embedUrl: "https://www.bubbleshooter.net/embed.php?id=1228",
   },
   "Minesweeper": {
     url: "https://play-minesweeper.games/",
@@ -38,12 +38,12 @@ const realGames = {
     embedUrl: "https://www.miniplay.com/embed/wordle",
   },
   "Slither.io": {
-    url: "https://slither.io/",
-    embedUrl: "https://slither.io/",
+    url: "https://www.bubbleshooter.net/game/wormate-io/",
+    embedUrl: "https://www.bubbleshooter.net/embed.php?id=1591",
   },
   "Tetris": {
-    url: "https://play.tetris.com/",
-    embedUrl: "https://play.tetris.com/",
+    url: "https://www.miniplay.com/game/tetris-2",
+    embedUrl: "https://www.miniplay.com/embed/tetris-2",
   },
   "FNAF": {
     url: "https://www.miniplay.com/game/five-nights-at-freddys",
@@ -63,21 +63,37 @@ const realGames = {
   },
   "Google Baseball": {
     url: "https://www.google.com/doodles/fourth-of-july-2019",
-    embedUrl: "https://www.google.com/doodles/fourth-of-july-2019",
+    embedUrl: null,
+    embedUnsupported: true,
   },
   "Google Snake": {
     url: "https://www.google.com/search?q=snake+game",
-    embedUrl: "https://www.google.com/search?q=snake+game",
+    embedUrl: null,
+    embedUnsupported: true,
   },
   "Google Pac-Man": {
     url: "https://www.google.com/logos/2010/pacman10-i.html",
-    embedUrl: "https://www.google.com/logos/2010/pacman10-i.html",
+    embedUrl: null,
+    embedUnsupported: true,
   },
   "Tomb of the Mask": {
     url: "https://www.miniplay.com/game/tomb-of-the-mask",
     embedUrl: "https://www.miniplay.com/embed/tomb-of-the-mask",
   },
 };
+
+function EmbedUnsupported({ name, url }) {
+  return (
+    <div className="vb-center">
+      <span className="settings-eyebrow">VEHEMENCE GAME</span>
+      <h2>{name}</h2>
+      <p>This game host does not provide a browser-safe iframe endpoint.</p>
+      <button type="button" className="vb-button" onClick={() => window.open(url, "_blank", "noopener,noreferrer")}>
+        Open game
+      </button>
+    </div>
+  );
+}
 
 function ExternalGame({ name, config }) {
   const embedUrl = config.embedUrl || config.url;
@@ -87,10 +103,10 @@ function ExternalGame({ name, config }) {
       <iframe
         src={embedUrl}
         title={name}
-        allow="autoplay; fullscreen; gamepad; pointer-lock; clipboard-write"
+        allow="autoplay; fullscreen; gamepad; pointer-lock; clipboard-write; web-share"
         allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
         loading="eager"
+        referrerPolicy="strict-origin-when-cross-origin"
         style={{ width: "100%", height: "100%", minHeight: 500, border: 0, display: "block" }}
       />
       <div style={{ position: "absolute", bottom: 14, left: 14, right: 14, display: "flex", justifyContent: "center", pointerEvents: "none" }}>
@@ -119,5 +135,7 @@ function Unavailable({ name }) {
 
 export default function GameBuild({ game }) {
   const config = realGames[game.name];
-  return config ? <ExternalGame name={game.name} config={config} /> : <Unavailable name={game.name} />;
+  if (!config) return <Unavailable name={game.name} />;
+  if (config.embedUnsupported) return <EmbedUnsupported name={game.name} url={config.url} />;
+  return <ExternalGame name={game.name} config={config} />;
 }
