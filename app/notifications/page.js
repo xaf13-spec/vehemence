@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 
 const defaults = [
-  { id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false },
-  { id: "explore", title: "Explore the Games page", text: "Search, filter, favorite, and continue playing games from one place.", type: "System", read: false }
+  { id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }
 ];
 
 export default function NotificationsPage() {
