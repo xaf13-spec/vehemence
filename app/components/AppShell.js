@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import MusicClient from "../music/MusicClient";
 import EntertainmentClient from "../entertainment/EntertainmentClient";
 import SoundboardClient from "../soundboard/SoundboardClient";
-import MarketplaceClient from "../marketplace/MarketplaceClient";
 import FriendsClient from "../friends/FriendsClient";
 import ProfileClient from "../profile/ProfileClient";
 import Settings from "../settings/page";
 import NotificationsPage from "../notifications/page";
 import { getSocialData, touchPresence } from "../friends/actions";
+
+const MarketplaceClient = dynamic(() => import("../marketplace/MarketplaceClient"), { ssr: false });
 
 const navOrder = ["/", "/rules", "/music", "/entertainment", "/soundboard", "/marketplace", "/profile", "/friends", "/settings", "/notifications"];
 const viewLabels = { "/": "Home", "/rules": "Rules", "/music": "Music", "/entertainment": "Entertainment", "/soundboard": "Soundboard", "/marketplace": "Marketplace", "/profile": "Profile", "/friends": "Friends", "/settings": "Settings", "/notifications": "Notifications" };
