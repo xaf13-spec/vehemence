@@ -26,10 +26,7 @@ export default function AppShell({ children }) {
     previousPath.current = pathname;
 
     setPages((currentPages) => {
-      const existing = currentPages.find((page) => page.pathname === pathname);
-      if (existing) {
-        return currentPages.map((page) => page.pathname === pathname ? { pathname, children } : page);
-      }
+      if (currentPages.some((page) => page.pathname === pathname)) return currentPages;
       return [...currentPages, { pathname, children }];
     });
   }, [pathname, children]);
@@ -44,8 +41,7 @@ export default function AppShell({ children }) {
       if (!navOrder.includes(url.pathname)) return;
 
       event.preventDefault();
-      const nextDirection = routeIndex(url.pathname) >= routeIndex(pathname) ? "right" : "left";
-      setDirection(nextDirection);
+      setDirection(routeIndex(url.pathname) >= routeIndex(pathname) ? "right" : "left");
       router.push(url.pathname);
     };
 
