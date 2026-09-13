@@ -83,7 +83,6 @@ export default function GamesClient() {
         <div>
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Games</h1>
-          <p>Find something to play.</p>
         </div>
         <input className="game-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search games..." />
       </div>
@@ -100,15 +99,15 @@ export default function GamesClient() {
       </div>
 
       {recentGames.length > 0 && (
-        <section className="game-section"><div className="section-title-row"><div><h2>Continue Playing</h2><p className="section-subtitle">Jump back into games you recently opened.</p></div></div><div className="game-grid">{recentGames.map((game) => <GameCard key={`recent-${game.name}`} game={game} favorite={favorites.includes(game.name)} onFavorite={toggleFavorite} />)}</div></section>
+        <section className="game-section"><div className="section-title-row"><div><h2>Continue Playing</h2></div></div><div className="game-grid">{recentGames.map((game) => <GameCard key={`recent-${game.name}`} game={game} favorite={favorites.includes(game.name)} onFavorite={toggleFavorite} />)}</div></section>
       )}
 
       {favoriteGames.length > 0 && (
-        <section className="game-section"><div className="section-title-row"><div><h2>Favorites</h2><p className="section-subtitle">Your saved games.</p></div></div><div className="game-grid">{favoriteGames.map((game) => <GameCard key={`favorite-${game.name}`} game={game} favorite onFavorite={toggleFavorite} />)}</div></section>
+        <section className="game-section"><div className="section-title-row"><div><h2>Favorites</h2></div></div><div className="game-grid">{favoriteGames.map((game) => <GameCard key={`favorite-${game.name}`} game={game} favorite onFavorite={toggleFavorite} />)}</div></section>
       )}
 
       <section className="game-section">
-        <div className="section-title-row"><div><h2>All Games</h2><p className="section-subtitle">Browse the full Vehemence library.</p></div><span className="game-count">{filteredGames.length} {filteredGames.length === 1 ? "game" : "games"}</span></div>
+        <div className="section-title-row"><div><h2>All Games</h2></div><span className="game-count">{filteredGames.length} {filteredGames.length === 1 ? "game" : "games"}</span></div>
         <div className="game-grid">{filteredGames.length ? filteredGames.map((game) => <GameCard key={game.name} game={game} favorite={favorites.includes(game.name)} onFavorite={toggleFavorite} />) : <div className="empty-games"><p>No games match your search.</p><button className="secondary-button" onClick={() => { setQuery(""); setCategory("All"); }}>Clear Filters</button></div>}</div>
       </section>
     </main>
