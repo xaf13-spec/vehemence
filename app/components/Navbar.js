@@ -16,6 +16,7 @@ const navItems = [
   ["/browser", "Browser"],
   ["/music", "Music"],
   ["/entertainment", "Entertainment"],
+  ["/soundboard", "Soundboard"],
   ["/profile", "Profile"],
   ["/friends", "Friends"],
   ["/settings", "Settings"]
@@ -25,6 +26,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [unread, setUnread] = useState(0);
   const [navMode, setNavMode] = useState("top");
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     if (!localStorage.getItem("vehemence_notifications")) localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
@@ -37,10 +39,12 @@ export default function Navbar() {
     window.addEventListener("storage", update);
     window.addEventListener("vehemence-notifications-changed", update);
     window.addEventListener("vehemence-navigation-changed", updateNav);
+    const timer = setInterval(() => setNow(new Date()), 1000);
     return () => {
       window.removeEventListener("storage", update);
       window.removeEventListener("vehemence-notifications-changed", update);
       window.removeEventListener("vehemence-navigation-changed", updateNav);
+      clearInterval(timer);
     };
   }, []);
 
@@ -50,6 +54,21 @@ export default function Navbar() {
 
   const currentPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
   const side = navMode === "side";
+  const date = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Toronto",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(now);
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Toronto",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+    timeZoneName: "short"
+  }).format(now);
 
   return (
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
@@ -62,10 +81,16 @@ export default function Navbar() {
           </Link>
         ))}
       </div>
-      <Link href="/notifications" className={`notification-nav ${currentPath === "/notifications" ? "active" : ""}`} aria-label="Notifications">
-        <span className="notification-bell">🔔</span>
-        {unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}
-      </Link>
+      <div className="navbar-status">
+        <Link href="/notifications" className={`notification-nav ${currentPath === "/notifications" ? "active" : ""}`} aria-label="Notifications">
+          <span className="notification-bell">🔔</span>
+          {unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}
+        </Link>
+        <div className="navbar-clock" aria-label="Ontario time and date">
+          <strong>{time}</strong>
+          <span>{date} · Ontario / New York</span>
+        </div>
+      </div>
     </nav>
   );
 }
