@@ -6,14 +6,14 @@ import { useEffect, useRef, useState } from "react";
 function formatTime(dateString) { return new Intl.DateTimeFormat("en-CA", { hour: "numeric", minute: "2-digit" }).format(new Date(dateString)); }
 
 export default function DirectChatClient({ username, currentUserId, embedded = false, onBack }) {
-  const [messages, setMessages] = useState([]); const [message, setMessage] = useState(""); const [viewerId, setViewerId] = useState(currentUserId || null); const [loading, setLoading] = useState(true); const [sending, setSending] = useState(false); const [error, setError] = useState(""); const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState([]); const [message, setMessage] = useState(""); const [viewerId, setViewerId] = useState(currentUserId || null); const [isFriend, setIsFriend] = useState(false); const [loading, setLoading] = useState(true); const [sending, setSending] = useState(false); const [error, setError] = useState(""); const messagesEndRef = useRef(null);
 
   async function loadMessages(showLoading = false) {
     if (showLoading) setLoading(true);
     try {
       const response = await fetch(`/api/direct-chat?username=${encodeURIComponent(username)}`, { cache: "no-store" }); const data = await response.json();
       if (!response.ok) { setError(data.error || "Could not load this chat."); return; }
-      setMessages(data.messages || []); if (data.currentUserId) setViewerId(data.currentUserId); setError("");
+      setMessages(data.messages || []); if (data.currentUserId) setViewerId(data.currentUserId); setIsFriend(Boolean(data.isFriend)); setError("");
     } catch { setError("Could not connect to chat."); } finally { if (showLoading) setLoading(false); }
   }
   useEffect(() => { loadMessages(true); const interval = setInterval(() => loadMessages(false), 2000); return () => clearInterval(interval); }, [username]);
@@ -32,7 +32,7 @@ export default function DirectChatClient({ username, currentUserId, embedded = f
     <main className={embedded ? "direct-chat-page direct-chat-embedded" : "friends-page"}>
       <section className={embedded ? "direct-chat-card" : "friends-container direct-chat-page"} style={embedded ? { position: "relative" } : undefined}>
         <header className="friends-header direct-chat-header"><div>{embedded ? <button type="button" className="friends-back-link" onClick={onBack}>← Back to Friends</button> : <Link href="/friends" className="friends-back-link">← Back to Friends</Link>}<p className="eyebrow">VEHEMENCE</p><h1>Chat with {username}</h1><p>Private conversation between you and {username}.</p></div></header>
-        <div className="direct-chat-warning" aria-hidden="true" style={{ position: "absolute", top: "52%", left: "50%", transform: "translate(-50%, -50%)", width: "90%", textAlign: "center", fontSize: 24, fontWeight: 800, opacity: 0.11, pointerEvents: "none", zIndex: 0 }}>You have not friended each other, be careful.</div>
+        {!isFriend && <div className="direct-chat-warning" aria-hidden="true" style={{ position: "absolute", top: "52%", left: "50%", transform: "translate(-50%, -50%)", width: "90%", textAlign: "center", fontSize: 24, fontWeight: 800, opacity: 0.11, pointerEvents: "none", zIndex: 0 }}>You have not friended each other, be careful.</div>}
         <div className="direct-chat-messages" style={{ position: "relative", zIndex: 1 }}>
           {loading ? <div className="friends-empty">Loading conversation...</div> : messages.length === 0 ? <div className="friends-empty">No messages yet. Start the conversation.</div> : messages.map((item) => { const own = item.senderId === viewerId; return <div key={item.id} className={`direct-message ${own ? "direct-message-own" : ""}`}><div className="direct-message-meta"><strong>{own ? "You" : item.senderUsername}</strong><span>{formatTime(item.createdAt)}</span></div><div className="direct-message-bubble">{item.message}</div></div>; })}<div ref={messagesEndRef} /></div>
         {error && <div className="direct-chat-error">{error}</div>}
