@@ -11,6 +11,8 @@ const achievements = [
 ];
 
 export default function ProfileClient({ user }) {
+  const keyPrefix = `vehemence_user_${user.id}_`;
+  const key = (name) => `${keyPrefix}${name}`;
   const [bio, setBio] = useState("");
   const [editing, setEditing] = useState(false);
   const [draftBio, setDraftBio] = useState("");
@@ -24,17 +26,18 @@ export default function ProfileClient({ user }) {
   const [activeDays, setActiveDays] = useState([]);
   const [online, setOnline] = useState(true);
 
+  function readArray(name) {
+    try { return JSON.parse(localStorage.getItem(key(name)) || "[]"); } catch { return []; }
+  }
+
   function load() {
-    const savedBio = localStorage.getItem("vehemence_bio") || "";
-    const savedAvatar = localStorage.getItem("vehemence_profile_avatar") || "";
-    const savedBanner = localStorage.getItem("vehemence_profile_banner") || "";
-    setBio(savedBio);
-    setAvatar(savedAvatar);
-    setBanner(savedBanner);
-    setFavorites(JSON.parse(localStorage.getItem("vehemence_favorites") || "[]"));
-    setRecent(JSON.parse(localStorage.getItem("vehemence_recent_games") || "[]"));
-    setPlayed(Number(localStorage.getItem("vehemence_games_played") || 0));
-    setActiveDays(JSON.parse(localStorage.getItem("vehemence_active_days") || "[]"));
+    setBio(localStorage.getItem(key("bio")) || "");
+    setAvatar(localStorage.getItem(key("profile_avatar")) || "");
+    setBanner(localStorage.getItem(key("profile_banner")) || "");
+    setFavorites(readArray("favorites"));
+    setRecent(readArray("recent_games"));
+    setPlayed(Number(localStorage.getItem(key("games_played")) || 0));
+    setActiveDays(readArray("active_days"));
   }
 
   useEffect(() => {
@@ -49,7 +52,7 @@ export default function ProfileClient({ user }) {
       window.removeEventListener("storage", refresh);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, []);
+  }, [user.id]);
 
   const unlocked = useMemo(() => new Set([
     ...(played >= 1 ? ["first-game"] : []),
@@ -75,11 +78,9 @@ export default function ProfileClient({ user }) {
 
   function saveProfile() {
     const value = draftBio.trim().slice(0, 160);
-    localStorage.setItem("vehemence_bio", value);
-    if (draftAvatar) localStorage.setItem("vehemence_profile_avatar", draftAvatar);
-    else localStorage.removeItem("vehemence_profile_avatar");
-    if (draftBanner) localStorage.setItem("vehemence_profile_banner", draftBanner);
-    else localStorage.removeItem("vehemence_profile_banner");
+    localStorage.setItem(key("bio"), value);
+    if (draftAvatar) localStorage.setItem(key("profile_avatar"), draftAvatar); else localStorage.removeItem(key("profile_avatar"));
+    if (draftBanner) localStorage.setItem(key("profile_banner"), draftBanner); else localStorage.removeItem(key("profile_banner"));
     setBio(value);
     setAvatar(draftAvatar);
     setBanner(draftBanner);
@@ -113,7 +114,7 @@ export default function ProfileClient({ user }) {
             <label>Profile Picture<input type="file" accept="image/*" onChange={(e) => handleImage(e, setDraftAvatar)} /></label>
             <label>Profile Banner<input type="file" accept="image/*" onChange={(e) => handleImage(e, setDraftBanner)} /></label>
           </div>
-          <p className="profile-edit-note">Changes stay local to this browser until you press Save Profile.</p>
+          <p className="profile-edit-note">Profile data is now kept separately for each Vehemence account on this browser.</p>
           <div className="profile-edit-actions"><button className="secondary-button" onClick={cancelEditing}>Cancel</button><button className="primary-button" onClick={saveProfile}>Save Profile</button></div>
         </div>}
 
