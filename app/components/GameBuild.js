@@ -17,10 +17,6 @@ const realGames = {
     url: "https://www.miniplay.com/game/geometry-dash",
     embedUrl: "https://www.miniplay.com/embed/geometry-dash",
   },
-  "Eaglercraft": {
-    url: "https://www.miniplay.com/game/eaglercraft-minecraft-online",
-    embedUrl: "https://www.miniplay.com/embed/eaglercraft-minecraft-online",
-  },
   "Level Devil": {
     url: "https://www.miniplay.com/game/level-devil",
     embedUrl: "https://www.miniplay.com/embed/level-devil",
@@ -98,7 +94,6 @@ function EmbedUnsupported({ name, url }) {
 
 function ExternalGame({ name, config }) {
   const embedUrl = config.embedUrl || config.url;
-
   return (
     <div className="vb-center" style={{ padding: 0, gap: 0, position: "relative", overflow: "hidden" }}>
       <iframe
