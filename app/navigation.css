@@ -40,3 +40,10 @@ html[data-nav-mode="side"] .page-active-bubble{animation-name:vehemence-bubble-s
 .soundboard-time-period{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--muted)}
 .soundboard-time{font-size:24px}
 @media(max-width:600px){.navbar-status{gap:6px}.navbar-clock{min-width:150px}.navbar-clock strong{font-size:15px}.navbar-clock>span:last-child{font-size:8px}.soundboard-time-card{align-items:flex-start}.soundboard-time-period{font-size:9px}}
+
+.navbar-button-reset{appearance:none;-webkit-appearance:none;border:0;margin:0;font:inherit;color:inherit;background:transparent;padding:0;line-height:normal}
+.logo.navbar-button-reset{display:block;cursor:pointer}
+.nav-links .navbar-button-reset{position:relative;padding:10px 13px;border-radius:9px;color:#a7a7b2;font-size:14px;font-weight:700;letter-spacing:.035em;transition:color .2s ease,background .2s ease,transform .2s ease}
+.nav-links .navbar-button-reset:hover{color:#fff;background:rgba(255,255,255,.055);transform:translateY(-1px)}
+.nav-links .navbar-button-reset:active{transform:translateY(0)}
+.notification-nav.navbar-button-reset{padding:0}
