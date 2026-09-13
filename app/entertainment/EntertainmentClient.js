@@ -2,50 +2,77 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const EPISODES = [
-  [2, "https://www.dropbox.com/scl/fi/le0ct19zbddvaehk1pgrd/2.mp4?rlkey=ugane14tnue0po2czk6r2ba6y&st=lbmtz2q4&raw=1"],
-  [3, "https://www.dropbox.com/scl/fi/t8xyrh4o8lhoxck2tvmwd/3.mp4?rlkey=qramzc1huee7n12ocbqfal17t&st=2t9llmwa&raw=1"],
-  [4, "https://www.dropbox.com/scl/fi/fg31a37k6x2m31hco564v/4.mp4?rlkey=ike0z9qp0oocr2gchouyi0ggv&st=1ikvtyri&raw=1"],
-  [5, "https://www.dropbox.com/scl/fi/92w6w0ind7irhq0nimzvg/5.mp4?rlkey=htujdf8b6o36p53gpxf8ahelr&st=k0o0hzvw&raw=1"],
-  [6, "https://www.dropbox.com/scl/fi/gcuyp4cp4ud3yejj8bq3x/6.mp4?rlkey=sfn47kitkrpty3ga9tz5vrjjg&st=kxcxplcb&raw=1"],
-  [7, "https://www.dropbox.com/scl/fi/16tjg8g23zz4vifcduvve/7.mp4?rlkey=da2esh1yx1c9prly3n0t420ba&st=2anr9hom&raw=1"],
-  [8, "https://www.dropbox.com/scl/fi/k5bfp3b6sm4ngx37jd2b1/8.mp4?rlkey=looncmesdtqbghx967ag4ukkt&st=c6h0bne2&raw=1"],
-  [9, "https://www.dropbox.com/scl/fi/hsmvwu05s39mamatbu70h/9.mp4?rlkey=nr882nj6h4d75gp1fpa2coczw&st=0258p21j&raw=1"],
-  [10, "https://www.dropbox.com/scl/fi/x8fmx276vj2zk2s30gje4/10.mp4?rlkey=6f4zr993stmuhywmw2vchcwa7&st=rwc4wwhq&raw=1"],
-  [11, "https://www.dropbox.com/scl/fi/8fjfftqfuz7bjepi7yohx/11.mp4?rlkey=6dxys92sm4kqfnn946nr236m4&st=u3a9z68g&raw=1"],
-  [12, "https://www.dropbox.com/scl/fi/cgvp82t0r8xe1llkro8rd/12.mp4?rlkey=6ie7y0742zsn8lhc9fb0ni156&st=vqg8eqqd&raw=1"],
-  [13, "https://www.dropbox.com/scl/fi/iuieok928d2q240lh33pq/13.mp4?rlkey=6265rhuh9ujcwehk80zw9uz96&st=boxbw192&raw=1"],
-].map(([number, url]) => ({
-  number,
-  title: `Episode ${number}`,
-  url,
-}));
+const SHOWS = {
+  "Tokyo Ghoul": [
+    [2, "https://www.dropbox.com/scl/fi/le0ct19zbddvaehk1pgrd/2.mp4?rlkey=ugane14tnue0po2czk6r2ba6y&st=lbmtz2q4&raw=1"],
+    [3, "https://www.dropbox.com/scl/fi/t8xyrh4o8lhoxck2tvmwd/3.mp4?rlkey=qramzc1huee7n12ocbqfal17t&st=2t9llmwa&raw=1"],
+    [4, "https://www.dropbox.com/scl/fi/fg31a37k6x2m31hco564v/4.mp4?rlkey=ike0z9qp0oocr2gchouyi0ggv&st=1ikvtyri&raw=1"],
+    [5, "https://www.dropbox.com/scl/fi/92w6w0ind7irhq0nimzvg/5.mp4?rlkey=htujdf8b6o36p53gpxf8ahelr&st=k0o0hzvw&raw=1"],
+    [6, "https://www.dropbox.com/scl/fi/gcuyp4cp4ud3yejj8bq3x/6.mp4?rlkey=sfn47kitkrpty3ga9tz5vrjjg&st=kxcxplcb&raw=1"],
+    [7, "https://www.dropbox.com/scl/fi/16tjg8g23zz4vifcduvve/7.mp4?rlkey=da2esh1yx1c9prly3n0t420ba&st=2anr9hom&raw=1"],
+    [8, "https://www.dropbox.com/scl/fi/k5bfp3b6sm4ngx37jd2b1/8.mp4?rlkey=looncmesdtqbghx967ag4ukkt&st=c6h0bne2&raw=1"],
+    [9, "https://www.dropbox.com/scl/fi/hsmvwu05s39mamatbu70h/9.mp4?rlkey=nr882nj6h4d75gp1fpa2coczw&st=0258p21j&raw=1"],
+    [10, "https://www.dropbox.com/scl/fi/x8fmx276vj2zk2s30gje4/10.mp4?rlkey=6f4zr993stmuhywmw2vchcwa7&st=rwc4wwhq&raw=1"],
+    [11, "https://www.dropbox.com/scl/fi/8fjfftqfuz7bjepi7yohx/11.mp4?rlkey=6dxys92sm4kqfnn946nr236m4&st=u3a9z68g&raw=1"],
+    [12, "https://www.dropbox.com/scl/fi/cgvp82t0r8xe1llkro8rd/12.mp4?rlkey=6ie7y0742zsn8lhc9fb0ni156&st=vqg8eqqd&raw=1"],
+    [13, "https://www.dropbox.com/scl/fi/iuieok928d2q240lh33pq/13.mp4?rlkey=6265rhuh9ujcwehk80zw9uz96&st=boxbw192&raw=1"],
+  ],
+  "Chainsaw Man": [
+    [1, "https://www.dropbox.com/scl/fi/i8hckffvgnzvzv8p5is5d/1.mp4?rlkey=2ztslm3qc250zmwnfxbowpphx&st=jdkphkg2&raw=1"],
+    [2, "https://www.dropbox.com/scl/fi/nxpgyc2xgunom8udadrjb/2.mp4?rlkey=nbki93x811zud7xwvbvb5g85i&st=qpc466qp&raw=1"],
+    [3, "https://www.dropbox.com/scl/fi/zvkwdi1ti634yta91r75d/3.mp4?rlkey=sxinbcerl0a8f0p8avf6bar0k&st=j72buypy&raw=1"],
+    [4, "https://www.dropbox.com/scl/fi/fqc8bmmebrt7gsh4eascy/4.mp4?rlkey=x85vrzvvi9mi01sim0no2y9ab&st=ta8k9q2e&raw=1"],
+    [5, "https://www.dropbox.com/scl/fi/no1oza0g9270tl3cqwbop/5.mp4?rlkey=8lfwdtllhd6xnqao0bg0kh96f&st=79edfmxa&raw=1"],
+    [6, "https://www.dropbox.com/scl/fi/xhn045vzxsahgrrbbhtmi/6.mp4?rlkey=afp9dc1v4qeg4fiu9l1pz7fo9&st=vuxybc6p&raw=1"],
+    [7, "https://www.dropbox.com/scl/fi/t9jc1p4dbdf313a772zyk/7.mp4?rlkey=cz1iwv9j3333bs8mlhppuuykt&st=osf11tmy&raw=1"],
+    [8, "https://www.dropbox.com/scl/fi/41ccdxlpx1ytfvbonbq73/8.mp4?rlkey=47a21w561efohuxmnuuuxsnja&st=z0o2br55&raw=1"],
+    [9, "https://www.dropbox.com/scl/fi/6fedw56coppiq183fqo1m/9.mp4?rlkey=zbuz7cm9cnrfnzyxmjat369en&st=y7nxls2e&raw=1"],
+    [10, "https://www.dropbox.com/scl/fi/mhct6uwhsoet5hqze6qwv/10.mp4?rlkey=xrbsluakuttxywwwheebyqhfj&st=jcd84rht&raw=1"],
+    [11, "https://www.dropbox.com/scl/fi/2uewgbyy6nntp79dx6avf/11.mp4?rlkey=583ebdni64t2jsdl0ojyblekm&st=mln5sihw&raw=1"],
+    [12, "https://www.dropbox.com/scl/fi/vj5ks45012npp7jd40uu3/12.mp4?rlkey=64apetb0m5wmunqt27ut2bgp1&st=qh0vfqsk&raw=1"],
+  ],
+};
+
+function makeEpisodes(items) {
+  return items.map(([number, url]) => ({ number, title: `Episode ${number}`, url }));
+}
+
+const INITIAL_SHOW = "Tokyo Ghoul";
 
 export default function EntertainmentClient() {
   const videoRef = useRef(null);
+  const [show, setShow] = useState(INITIAL_SHOW);
   const [selectedEpisode, setSelectedEpisode] = useState(2);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [error, setError] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
+  const episodes = useMemo(() => makeEpisodes(SHOWS[show]), [show]);
   const currentEpisode = useMemo(
-    () => EPISODES.find((episode) => episode.number === selectedEpisode) || EPISODES[0],
-    [selectedEpisode]
+    () => episodes.find((episode) => episode.number === selectedEpisode) || episodes[0],
+    [episodes, selectedEpisode]
   );
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.volume = volume;
-  }, [volume, selectedEpisode]);
+  }, [volume, selectedEpisode, show]);
 
   useEffect(() => {
     setIsPlaying(false);
     setError("");
-  }, [selectedEpisode]);
+  }, [selectedEpisode, show]);
+
+  function chooseShow(nextShow) {
+    setShow(nextShow);
+    setSelectedEpisode(nextShow === "Tokyo Ghoul" ? 2 : 1);
+    setError("");
+  }
 
   function chooseEpisode(number) {
-    const episode = EPISODES.find((item) => item.number === number);
+    const episode = episodes.find((item) => item.number === number);
     if (!episode) return;
     setSelectedEpisode(number);
     requestAnimationFrame(() => videoRef.current?.load());
@@ -54,7 +81,6 @@ export default function EntertainmentClient() {
   function togglePlay() {
     const video = videoRef.current;
     if (!video) return;
-
     if (video.paused) {
       video.play().catch(() => setError("The episode could not be played."));
     } else {
@@ -63,34 +89,46 @@ export default function EntertainmentClient() {
   }
 
   function goToEpisode(number) {
-    if (EPISODES.some((episode) => episode.number === number)) chooseEpisode(number);
+    if (episodes.some((episode) => episode.number === number)) chooseEpisode(number);
   }
 
   function handleEnded() {
-    const currentIndex = EPISODES.findIndex((episode) => episode.number === selectedEpisode);
-    const nextEpisode = EPISODES[currentIndex + 1];
-    if (nextEpisode) {
-      chooseEpisode(nextEpisode.number);
-    } else {
-      setIsPlaying(false);
-    }
+    const currentIndex = episodes.findIndex((episode) => episode.number === selectedEpisode);
+    const nextEpisode = episodes[currentIndex + 1];
+    if (nextEpisode) chooseEpisode(nextEpisode.number);
+    else setIsPlaying(false);
   }
 
+  const firstEpisode = episodes[0].number;
+  const lastEpisode = episodes[episodes.length - 1].number;
+
   return (
-    <div className="entertainment-player-shell">
-      <div className="entertainment-player-header">
+    <div style={{ width: "100%", maxWidth: expanded ? 1180 : 900, margin: "0 auto", padding: "28px 20px 70px", transition: "max-width .25s ease" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 16 }}>
         <div>
-          <span className="entertainment-kicker">NOW PLAYING</span>
-          <h2>Tokyo Ghoul</h2>
+          <span className="entertainment-kicker">ENTERTAINMENT</span>
+          <h2 style={{ marginTop: 5 }}>{show}</h2>
         </div>
-        <button className="entertainment-close" type="button" aria-label="Close player">
-          ×
-        </button>
+        <div style={{ display: "flex", gap: 7 }}>
+          {Object.keys(SHOWS).map((name) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => chooseShow(name)}
+              style={{ padding: "8px 11px", borderRadius: 9, border: "1px solid rgba(255,255,255,.08)", background: name === show ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 12, fontWeight: 700 }}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="entertainment-player-layout">
-        <section className="entertainment-video-panel">
-          <div className="entertainment-video-wrap">
+      <div style={{ display: "grid", gridTemplateColumns: expanded ? "minmax(0, 1fr) 250px" : "minmax(0, 1fr) 210px", gap: 14, alignItems: "start", transition: "grid-template-columns .25s ease" }}>
+        <section style={{ minWidth: 0, border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "rgba(17,17,24,.82)", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
+          <div
+            onClick={() => setExpanded((value) => !value)}
+            style={{ position: "relative", aspectRatio: "16 / 9", background: "#000", cursor: "pointer" }}
+          >
             <video
               ref={videoRef}
               className="entertainment-video"
@@ -101,61 +139,54 @@ export default function EntertainmentClient() {
               onPause={() => setIsPlaying(false)}
               onEnded={handleEnded}
               onError={() => setError("This episode could not be loaded from Dropbox. Check the shared link.")}
+              style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }}
             />
-          </div>
 
-          <div className="entertainment-controls">
-            <div className="entertainment-main-controls">
-              <button type="button" onClick={() => goToEpisode(selectedEpisode - 1)} disabled={selectedEpisode === 2} aria-label="Previous episode">
-                ⏮
-              </button>
-              <button type="button" className="entertainment-play-button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
-                {isPlaying ? "❚❚" : "▶"}
-              </button>
-              <button type="button" onClick={() => goToEpisode(selectedEpisode + 1)} disabled={selectedEpisode === 13} aria-label="Next episode">
-                ⏭
-              </button>
+            <div onClick={(event) => event.stopPropagation()} style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "42px 12px 11px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, background: "linear-gradient(transparent, rgba(0,0,0,.82))" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <button type="button" onClick={() => goToEpisode(selectedEpisode - 1)} disabled={selectedEpisode === firstEpisode} aria-label="Previous episode" style={{ ...controlStyle, opacity: selectedEpisode === firstEpisode ? .35 : 1 }}>⏮</button>
+                <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"} style={{ ...controlStyle, width: 36, height: 36, fontSize: 15 }}>{isPlaying ? "❚❚" : "▶"}</button>
+                <button type="button" onClick={() => goToEpisode(selectedEpisode + 1)} disabled={selectedEpisode === lastEpisode} aria-label="Next episode" style={{ ...controlStyle, opacity: selectedEpisode === lastEpisode ? .35 : 1 }}>⏭</button>
+              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: 7, color: "#fff" }} onClick={(event) => event.stopPropagation()}>
+                <span style={{ fontSize: 13 }}>🔊</span>
+                <input type="range" min="0" max="1" step="0.01" value={volume} onChange={(event) => setVolume(Number(event.target.value))} aria-label="Volume" style={{ width: expanded ? 100 : 75 }} />
+              </label>
             </div>
-
-            <label className="entertainment-volume" htmlFor="entertainment-volume">
-              <span aria-hidden="true">🔊</span>
-              <input
-                id="entertainment-volume"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={(event) => setVolume(Number(event.target.value))}
-                aria-label="Volume"
-              />
-            </label>
           </div>
 
-          {error && <p className="entertainment-player-error">{error}</p>}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 14px", gap: 10 }}>
+            <div style={{ minWidth: 0 }}>
+              <strong style={{ display: "block", fontSize: 13 }}>{show} · Episode {selectedEpisode}</strong>
+              <span style={{ display: "block", marginTop: 3, color: "#92929f", fontSize: 11 }}>Click the player to {expanded ? "shrink" : "expand"}</span>
+            </div>
+            <button type="button" onClick={() => setExpanded((value) => !value)} style={{ ...controlStyle, padding: "7px 10px", width: "auto", height: "auto", fontSize: 11 }}>
+              {expanded ? "Shrink" : "Expand"}
+            </button>
+          </div>
+          {error && <p style={{ padding: "0 14px 13px", color: "#fca5a5", fontSize: 12 }}>{error}</p>}
         </section>
 
-        <aside className="entertainment-episodes">
-          <div className="entertainment-episodes-heading">
+        <aside style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, background: "rgba(17,17,24,.82)", overflow: "hidden" }}>
+          <div style={{ padding: "13px 14px", borderBottom: "1px solid rgba(255,255,255,.06)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
-              <span className="entertainment-kicker">TOKYO GHOUL</span>
-              <h3>Episodes</h3>
+              <span className="entertainment-kicker" style={{ fontSize: 9 }}>{show}</span>
+              <h3 style={{ marginTop: 3, fontSize: 15 }}>Episodes</h3>
             </div>
-            <span>{EPISODES.length}</span>
+            <span style={{ color: "#92929f", fontSize: 11 }}>{episodes.length}</span>
           </div>
-
-          <div className="entertainment-episode-list">
-            {EPISODES.map((episode) => (
+          <div style={{ maxHeight: expanded ? 560 : 430, overflowY: "auto", padding: 7 }}>
+            {episodes.map((episode) => (
               <button
                 key={episode.number}
                 type="button"
-                className={`entertainment-episode ${episode.number === selectedEpisode ? "entertainment-episode-active" : ""}`}
                 onClick={() => chooseEpisode(episode.number)}
+                style={{ width: "100%", display: "flex", alignItems: "center", gap: 9, padding: "9px 8px", marginBottom: 3, border: "1px solid transparent", borderRadius: 9, background: episode.number === selectedEpisode ? "rgba(255,255,255,.09)" : "transparent", color: "#fff", textAlign: "left" }}
               >
-                <span className="entertainment-episode-number">{String(episode.number).padStart(2, "0")}</span>
-                <span className="entertainment-episode-info">
-                  <strong>{episode.title}</strong>
-                  <small>{episode.number === selectedEpisode ? "Playing" : "Watch episode"}</small>
+                <span style={{ width: 27, height: 27, display: "grid", placeItems: "center", flexShrink: 0, borderRadius: 7, background: "rgba(255,255,255,.06)", color: "#b5b5c0", fontSize: 10, fontWeight: 800 }}>{String(episode.number).padStart(2, "0")}</span>
+                <span style={{ minWidth: 0 }}>
+                  <strong style={{ display: "block", fontSize: 11 }}>{episode.title}</strong>
+                  <small style={{ display: "block", marginTop: 2, color: "#777783", fontSize: 9 }}>{episode.number === selectedEpisode ? "Playing" : "Watch episode"}</small>
                 </span>
               </button>
             ))}
@@ -165,3 +196,17 @@ export default function EntertainmentClient() {
     </div>
   );
 }
+
+const controlStyle = {
+  width: 31,
+  height: 31,
+  display: "grid",
+  placeItems: "center",
+  padding: 0,
+  border: "1px solid rgba(255,255,255,.12)",
+  borderRadius: 8,
+  background: "rgba(10,10,12,.72)",
+  color: "#fff",
+  fontSize: 12,
+  backdropFilter: "blur(10px)",
+};
