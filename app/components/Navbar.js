@@ -26,22 +26,30 @@ export default function Navbar() {
   const [now, setNow] = useState(null);
 
   useEffect(() => {
-    if (!localStorage.getItem("vehemence_notifications")) localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
-    const update = () => {
-      try { setUnread(JSON.parse(localStorage.getItem("vehemence_notifications") || "[]").filter((item) => !item.read).length); } catch { setUnread(0); }
+    const cleanNotifications = () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem("vehemence_notifications") || "[]");
+        const cleaned = saved.filter((item) => item.id !== "explore");
+        if (cleaned.length !== saved.length) localStorage.setItem("vehemence_notifications", JSON.stringify(cleaned));
+        setUnread(cleaned.filter((item) => !item.read).length);
+      } catch {
+        localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
+        setUnread(0);
+      }
     };
+    if (!localStorage.getItem("vehemence_notifications")) localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
     const updateNav = () => setNavMode(localStorage.getItem("vehemence_nav_mode") || "top");
     const updateClock = () => setNow(new Date());
-    update();
+    cleanNotifications();
     updateNav();
     updateClock();
-    window.addEventListener("storage", update);
-    window.addEventListener("vehemence-notifications-changed", update);
+    window.addEventListener("storage", cleanNotifications);
+    window.addEventListener("vehemence-notifications-changed", cleanNotifications);
     window.addEventListener("vehemence-navigation-changed", updateNav);
     const timer = setInterval(updateClock, 1000);
     return () => {
-      window.removeEventListener("storage", update);
-      window.removeEventListener("vehemence-notifications-changed", update);
+      window.removeEventListener("storage", cleanNotifications);
+      window.removeEventListener("vehemence-notifications-changed", cleanNotifications);
       window.removeEventListener("vehemence-navigation-changed", updateNav);
       clearInterval(timer);
     };
