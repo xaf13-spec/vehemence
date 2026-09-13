@@ -33,12 +33,7 @@ const SHOWS = {
   ],
 };
 
-const MOVIES = [
-  { title: "Kingdom of the Planet of the Apes", embed: "https://anonmp4.art/embed/JpOSYXFhQobeCL6" },
-  { title: "Despicable Me 3", embed: "https://anonmp4.art/embed/zLFFdhPwEhDPs6T" },
-  { title: "Despicable Me 2", embed: "https://anonmp4.art/embed/hhzNXtvx3jK85ss" },
-  { title: "Despicable Me", embed: "https://anonmp4.art/embed/BO2bwOOHrdOtVpf" },
-];
+const MOVIES = [];
 
 function makeEpisodes(items) {
   return items.map(([number, url]) => ({ number, title: `Episode ${number}`, url }));
@@ -50,40 +45,16 @@ function formatTime(seconds) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 }
 
-const controlStyle = {
-  border: 0,
-  background: "transparent",
-  color: "#fff",
-  width: 30,
-  height: 30,
-  padding: 0,
-  display: "grid",
-  placeItems: "center",
-  cursor: "pointer",
-  fontSize: 15,
-};
-
-const cardStyle = {
-  border: "1px solid rgba(255,255,255,.08)",
-  borderRadius: 14,
-  overflow: "hidden",
-  background: "rgba(17,17,24,.82)",
-  color: "#fff",
-  cursor: "pointer",
-  textAlign: "left",
-  padding: 0,
-  transition: "transform .18s ease, border-color .18s ease, background .18s ease",
-};
+const controlStyle = { border: 0, background: "transparent", color: "#fff", width: 30, height: 30, padding: 0, display: "grid", placeItems: "center", cursor: "pointer", fontSize: 15 };
+const cardStyle = { border: "1px solid rgba(255,255,255,.08)", borderRadius: 14, overflow: "hidden", background: "rgba(17,17,24,.82)", color: "#fff", cursor: "pointer", textAlign: "left", padding: 0, transition: "transform .18s ease, border-color .18s ease, background .18s ease" };
 
 export default function EntertainmentClient() {
   const videoRef = useRef(null);
   const playerRef = useRef(null);
   const hideTimerRef = useRef(null);
-
   const [category, setCategory] = useState("Anime");
   const [show, setShow] = useState("Tokyo Ghoul");
   const [selectedEpisode, setSelectedEpisode] = useState(2);
-  const [selectedMovie, setSelectedMovie] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
@@ -93,186 +64,62 @@ export default function EntertainmentClient() {
   const [expanded, setExpanded] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
-
   const episodes = useMemo(() => makeEpisodes(SHOWS[show] || []), [show]);
   const currentEpisode = useMemo(() => episodes.find((episode) => episode.number === selectedEpisode) || episodes[0], [episodes, selectedEpisode]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.volume = volume;
-    video.muted = muted;
-  }, [volume, muted, selectedEpisode, show]);
-
-  useEffect(() => {
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setError("");
-  }, [selectedEpisode, show]);
-
+  useEffect(() => { const video = videoRef.current; if (!video) return; video.volume = volume; video.muted = muted; }, [volume, muted, selectedEpisode, show]);
+  useEffect(() => { setIsPlaying(false); setCurrentTime(0); setDuration(0); setError(""); }, [selectedEpisode, show]);
   useEffect(() => () => clearTimeout(hideTimerRef.current), []);
-
-  useEffect(() => {
-    const onFullscreenChange = () => setFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
-  }, []);
-
-  function showControls() {
-    setControlsVisible(true);
-    clearTimeout(hideTimerRef.current);
-    if (isPlaying) hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2600);
-  }
-
-  function chooseCategory(nextCategory) {
-    setCategory(nextCategory);
-    setSelectedMovie(null);
-    setControlsVisible(true);
-    setError("");
-  }
-
-  function chooseShow(nextShow) {
-    const nextEpisodes = SHOWS[nextShow] || [];
-    setCategory("Anime");
-    setSelectedMovie(null);
-    setShow(nextShow);
-    setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1);
-    setError("");
-    setControlsVisible(true);
-  }
-
-  function chooseMovie(movie) {
-    setCategory("Movies");
-    setSelectedMovie(movie);
-    setShow(movie.title);
-    setError("");
-    setControlsVisible(true);
-  }
-
-  function chooseEpisode(number) {
-    if (!episodes.some((item) => item.number === number)) return;
-    setSelectedEpisode(number);
-    setControlsVisible(true);
-  }
-
-  function togglePlay() {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) video.play().catch(() => setError("The episode could not be played."));
-    else video.pause();
-    showControls();
-  }
-
-  function seek(event) {
-    const value = Number(event.target.value);
-    const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration)) return;
-    video.currentTime = value;
-    setCurrentTime(value);
-  }
-
-  function changeVolume(event) {
-    const value = Number(event.target.value);
-    setVolume(value);
-    setMuted(value === 0);
-    showControls();
-  }
-
-  function toggleMute() {
-    setMuted((value) => !value);
-    showControls();
-  }
-
-  function toggleExpand() {
-    setExpanded((value) => !value);
-    showControls();
-  }
-
-  async function toggleFullscreen() {
-    const element = playerRef.current;
-    if (!element) return;
-    try {
-      if (!document.fullscreenElement) await element.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch {
-      toggleExpand();
-    }
-  }
-
-  function handleEnded() {
-    const currentIndex = episodes.findIndex((episode) => episode.number === selectedEpisode);
-    const nextEpisode = episodes[currentIndex + 1];
-    if (nextEpisode) chooseEpisode(nextEpisode.number);
-    else setIsPlaying(false);
-  }
-
+  useEffect(() => { const onFullscreenChange = () => setFullscreen(Boolean(document.fullscreenElement)); document.addEventListener("fullscreenchange", onFullscreenChange); return () => document.removeEventListener("fullscreenchange", onFullscreenChange); }, []);
+  function showControls() { setControlsVisible(true); clearTimeout(hideTimerRef.current); if (isPlaying) hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2600); }
+  function chooseCategory(nextCategory) { setCategory(nextCategory); setControlsVisible(true); }
+  function chooseShow(nextShow) { const nextEpisodes = SHOWS[nextShow] || []; setCategory("Anime"); setShow(nextShow); setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1); setError(""); setControlsVisible(true); requestAnimationFrame(() => { const video = videoRef.current; if (!video) return; video.load(); video.play().catch(() => {}); }); }
+  function chooseEpisode(number) { if (!episodes.some((item) => item.number === number)) return; setSelectedEpisode(number); setControlsVisible(true); requestAnimationFrame(() => { const video = videoRef.current; if (!video) return; video.load(); video.play().catch(() => {}); }); }
+  function togglePlay() { const video = videoRef.current; if (!video) return; if (video.paused) video.play().catch(() => setError("The episode could not be played.")); else video.pause(); showControls(); }
+  function seek(event) { const value = Number(event.target.value); const video = videoRef.current; if (!video || !Number.isFinite(video.duration)) return; video.currentTime = value; setCurrentTime(value); }
+  function changeVolume(event) { const value = Number(event.target.value); setVolume(value); setMuted(value === 0); showControls(); }
+  function toggleMute() { setMuted((value) => !value); showControls(); }
+  function toggleExpand() { setExpanded((value) => !value); showControls(); }
+  async function toggleFullscreen() { const element = playerRef.current; if (!element) return; try { if (!document.fullscreenElement) await element.requestFullscreen(); else await document.exitFullscreen(); } catch { toggleExpand(); } }
+  function goToEpisode(number) { if (episodes.some((episode) => episode.number === number)) chooseEpisode(number); }
+  function handleEnded() { const currentIndex = episodes.findIndex((episode) => episode.number === selectedEpisode); const nextEpisode = episodes[currentIndex + 1]; if (nextEpisode) chooseEpisode(nextEpisode.number); else setIsPlaying(false); }
+  const firstEpisode = episodes[0]?.number;
+  const lastEpisode = episodes[episodes.length - 1]?.number;
   const animeNames = Object.keys(SHOWS);
-
   return (
     <div style={{ width: "100%", maxWidth: expanded ? 1180 : 900, margin: "0 auto", padding: "28px 20px 70px", transition: "max-width .25s ease" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-        <h2 style={{ margin: 0, flex: 1, fontSize: 24 }}>{category === "Anime" ? show : selectedMovie?.title || "Movies"}</h2>
-        <div style={{ display: "flex", gap: 8 }}>
-          {["Anime", "Movies"].map((name) => (
-            <button key={name} type="button" onClick={() => chooseCategory(name)} style={{ minWidth: 105, padding: "11px 18px", borderRadius: 10, border: category === name ? "1px solid rgba(255,255,255,.2)" : "1px solid rgba(255,255,255,.07)", background: category === name ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{name}</button>
-          ))}
-        </div>
+        <h2 style={{ margin: 0, flex: 1, fontSize: 24 }}>{category === "Anime" ? show : "Movies"}</h2>
+        <div style={{ display: "flex", gap: 8 }}>{["Anime", "Movies"].map((name) => <button key={name} type="button" onClick={() => chooseCategory(name)} style={{ minWidth: 105, padding: "11px 18px", borderRadius: 10, border: category === name ? "1px solid rgba(255,255,255,.2)" : "1px solid rgba(255,255,255,.07)", background: category === name ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{name}</button>)}</div>
       </div>
-
       {category === "Anime" && currentEpisode ? (
         <>
           <section style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "rgba(17,17,24,.82)", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
             <div ref={playerRef} onMouseMove={showControls} onMouseLeave={() => isPlaying && setControlsVisible(false)} style={{ position: "relative", aspectRatio: "16 / 9", background: "#000", cursor: controlsVisible ? "default" : "none" }}>
-              <video ref={videoRef} src={currentEpisode.url} controls={false} preload="metadata" onClick={togglePlay} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); showControls(); }} onPause={() => { setIsPlaying(false); setControlsVisible(true); }} onEnded={handleEnded} onError={() => setError("This episode could not be loaded from Dropbox. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
+              <video ref={videoRef} className="entertainment-video" src={currentEpisode.url} controls={false} preload="metadata" onClick={togglePlay} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); showControls(); }} onPause={() => { setIsPlaying(false); setControlsVisible(true); }} onEnded={handleEnded} onError={() => setError("This episode could not be loaded from Dropbox. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
               <div onClick={(event) => event.stopPropagation()} style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "38px 12px 10px", opacity: controlsVisible ? 1 : 0, pointerEvents: controlsVisible ? "auto" : "none", transition: "opacity .2s ease", background: "linear-gradient(transparent, rgba(0,0,0,.88))" }}>
-                <input aria-label="Seek" type="range" min="0" max={duration || 0} step="0.1" value={Math.min(currentTime, duration || 0)} onChange={seek} style={{ width: "100%", accentColor: "#fff" }} />
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-                  <button type="button" onClick={togglePlay} style={controlStyle}>{isPlaying ? "❚❚" : "▶"}</button>
-                  <button type="button" onClick={() => chooseEpisode(Math.max(episodes[0]?.number ?? selectedEpisode, selectedEpisode - 1))} style={controlStyle}>⏮</button>
-                  <button type="button" onClick={() => chooseEpisode(Math.min(episodes[episodes.length - 1]?.number ?? selectedEpisode, selectedEpisode + 1))} style={controlStyle}>⏭</button>
-                  <button type="button" onClick={toggleMute} style={controlStyle}>{muted || volume === 0 ? "🔇" : "🔊"}</button>
-                  <input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={muted ? 0 : volume} onChange={changeVolume} style={{ width: 80, accentColor: "#fff" }} />
-                  <span style={{ fontSize: 12, color: "rgba(255,255,255,.8)", minWidth: 80 }}>{formatTime(currentTime)} / {formatTime(duration)}</span>
+                <input aria-label="Seek" type="range" min="0" max={duration || 0} step="0.1" value={currentTime} onChange={seek} style={{ width: "100%", height: 3, accentColor: "#ff0000", marginBottom: 8, display: "block", cursor: "pointer" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#fff" }}>
+                  <button type="button" onClick={() => goToEpisode(selectedEpisode - 1)} disabled={selectedEpisode === firstEpisode} aria-label="Previous episode" style={{ ...controlStyle, opacity: selectedEpisode === firstEpisode ? .35 : 1 }}>⏮</button>
+                  <button type="button" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"} style={{ ...controlStyle, width: 34, height: 34, fontSize: 14 }}>{isPlaying ? "❚❚" : "▶"}</button>
+                  <button type="button" onClick={() => goToEpisode(selectedEpisode + 1)} disabled={selectedEpisode === lastEpisode} aria-label="Next episode" style={{ ...controlStyle, opacity: selectedEpisode === lastEpisode ? .35 : 1 }}>⏭</button>
+                  <button type="button" onClick={toggleMute} aria-label={muted ? "Unmute" : "Mute"} style={controlStyle}>{muted || volume === 0 ? "🔇" : "🔊"}</button>
+                  <input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={muted ? 0 : volume} onChange={changeVolume} style={{ width: 70, accentColor: "#fff", cursor: "pointer" }} />
+                  <span style={{ fontSize: 12, opacity: .9, minWidth: 75 }}>{formatTime(currentTime)} / {formatTime(duration)}</span>
                   <div style={{ flex: 1 }} />
-                  <button type="button" onClick={toggleExpand} style={controlStyle}>{expanded ? "↙" : "↗"}</button>
-                  <button type="button" onClick={toggleFullscreen} style={controlStyle}>{fullscreen ? "⛶" : "⛶"}</button>
+                  <button type="button" onClick={toggleExpand} aria-label={expanded ? "Shrink" : "Expand"} style={controlStyle}>{expanded ? "↙" : "↗"}</button>
+                  <button type="button" onClick={toggleFullscreen} aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} style={controlStyle}>⛶</button>
                 </div>
               </div>
               {error && <div style={{ position: "absolute", left: 14, right: 14, top: 14, padding: "10px 12px", borderRadius: 9, background: "rgba(0,0,0,.72)", color: "#fff", fontSize: 12 }}>{error}</div>}
             </div>
           </section>
-
-          <div style={{ marginTop: 20 }}>
-            <h3 style={{ margin: "0 0 10px", fontSize: 16 }}>Episodes</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: 8 }}>
-              {episodes.map((episode) => <button key={episode.number} type="button" onClick={() => chooseEpisode(episode.number)} style={{ padding: "10px 12px", borderRadius: 9, border: episode.number === selectedEpisode ? "1px solid rgba(255,255,255,.22)" : "1px solid rgba(255,255,255,.07)", background: episode.number === selectedEpisode ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", cursor: "pointer", textAlign: "left" }}>Episode {episode.number}</button>)}
-            </div>
-          </div>
-
-          <div style={{ marginTop: 28 }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 16 }}>Available Anime</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 12 }}>
-              {animeNames.map((name) => <button key={name} type="button" onClick={() => chooseShow(name)} style={cardStyle}><div style={{ height: 105, background: "linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.025))", display: "grid", placeItems: "center", fontSize: 22, fontWeight: 900 }}>{name === "Chainsaw Man" ? "CSM" : "TG"}</div><div style={{ padding: 12 }}><div style={{ fontWeight: 800 }}>{name}</div><div style={{ marginTop: 4, fontSize: 12, color: "rgba(255,255,255,.55)" }}>{SHOWS[name].length} episodes available</div></div></button>)}
-            </div>
-          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 15 }}><div><div style={{ fontSize: 17, fontWeight: 800 }}>{show}</div><div style={{ fontSize: 13, opacity: .55, marginTop: 3 }}>Episode {selectedEpisode}</div></div></div>
+          <div style={{ marginTop: 20 }}><h3 style={{ margin: "0 0 10px", fontSize: 16 }}>Episodes</h3><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: 8 }}>{episodes.map((episode) => <button key={episode.number} type="button" onClick={() => chooseEpisode(episode.number)} style={{ padding: "12px 10px", borderRadius: 10, border: episode.number === selectedEpisode ? "1px solid rgba(255,255,255,.22)" : "1px solid rgba(255,255,255,.07)", background: episode.number === selectedEpisode ? "rgba(255,255,255,.1)" : "rgba(255,255,255,.035)", color: "#fff", cursor: "pointer", textAlign: "left" }}><div style={{ fontWeight: 800 }}>Episode {episode.number}</div></button>)}</div></div>
+          <div style={{ marginTop: 28 }}><h3 style={{ margin: "0 0 12px", fontSize: 16 }}>Anime</h3><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(190px,1fr))", gap: 12 }}>{animeNames.map((name) => <button key={name} type="button" onClick={() => chooseShow(name)} style={cardStyle}><div style={{ height: 95, background: "linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.03))", display: "grid", placeItems: "center", fontSize: 14, fontWeight: 900 }}>{name}</div><div style={{ padding: "12px 13px" }}><div style={{ fontWeight: 800 }}>{name}</div><div style={{ marginTop: 4, fontSize: 12, opacity: .55 }}>{SHOWS[name].length} episodes available</div></div></button>)}</div></div>
         </>
-      ) : category === "Movies" ? (
-        <>
-          {selectedMovie ? (
-            <section style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "#000", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
-              <div style={{ aspectRatio: "16 / 9", width: "100%" }}>
-                <iframe title={selectedMovie.title} src={selectedMovie.embed} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen referrerPolicy="no-referrer" style={{ width: "100%", height: "100%", display: "block", border: 0 }} />
-              </div>
-            </section>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: 14 }}>
-              {MOVIES.map((movie) => <button key={movie.embed} type="button" onClick={() => chooseMovie(movie)} style={cardStyle}><div style={{ height: 125, background: "linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.025))", display: "grid", placeItems: "center", padding: 12, textAlign: "center", fontWeight: 900 }}>{movie.title}</div><div style={{ padding: 12, fontWeight: 800 }}>{movie.title}</div></button>)}
-            </div>
-          )}
-          {selectedMovie && <button type="button" onClick={() => setSelectedMovie(null)} style={{ marginTop: 14, padding: "9px 14px", borderRadius: 9, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", color: "#fff", cursor: "pointer" }}>← Back to Movies</button>}
-        </>
-      ) : null}
+      ) : (
+        <section><h3 style={{ margin: "0 0 12px", fontSize: 16 }}>Movies</h3>{MOVIES.length === 0 ? <div style={{ padding: 24, border: "1px solid rgba(255,255,255,.08)", borderRadius: 14, background: "rgba(17,17,24,.65)", opacity: .7 }}>No movies added yet.</div> : <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: 12 }}>{MOVIES.map((movie) => <button key={movie.title} type="button" style={cardStyle}><div style={{ height: 120, background: "rgba(255,255,255,.08)", display: "grid", placeItems: "center", fontWeight: 800 }}>{movie.title}</div><div style={{ padding: "12px 13px" }}>{movie.title}</div></button>)}</div>}</section>
+      )}
     </div>
   );
 }
