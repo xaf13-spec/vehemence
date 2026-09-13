@@ -50,6 +50,39 @@ const SHOWS = {
     [40, "https://www.dropbox.com/scl/fi/8t3zpvmjc0v8umwlwtxfn/40.mp4?rlkey=awqy6i0rupcv8r84sujtjryou&st=v3nss5km&raw=1"],
     [41, "https://www.dropbox.com/scl/fi/p5vye03s70huiinlrm7bl/41.mp4?rlkey=ntzo04grs1txx3ksbkx5a3m2v&st=t5f34z2w&raw=1"],
   ],
+  "Solo Leveling": [],
+};
+
+const SOLO_SEASONS = {
+  1: [
+    [1, "https://www.dropbox.com/scl/fi/c5mnimkh17nv55nb7axx5/Solo1.mp4?rlkey=pgg3yxdfw9ptcm8t2y1dm8dgu&st=bimv0x6r&dl=0"],
+    [2, "https://www.dropbox.com/scl/fi/0ek9ygy9lt2touljbb8hq/Solo2.mp4?rlkey=kczjy1uxnw0usmglfoizkj110&st=m2nnzcmu&dl=0"],
+    [3, "https://www.dropbox.com/scl/fi/mzv2xzd74fnitu41jzte5/Solo3.mp4?rlkey=ahhzhnpqe26do9ie1dv3jz5hc&st=g59p2zpq&dl=0"],
+    [4, "https://www.dropbox.com/scl/fi/pridfzpwuuhnr1ei66xyb/Solo4.mp4?rlkey=4bsmfnktgqblyn1orascqel86&st=zj1b2767&dl=0"],
+    [5, "https://www.dropbox.com/scl/fi/uq16dwy4y9oaugz7ze2tn/Solo5.mp4?rlkey=s1ml7zd8853i4z1q575svucx6&st=3r63aq5l&dl=0"],
+    [6, "https://www.dropbox.com/scl/fi/nwd3xezibmizecq5vpbmk/Solo6.mp4?rlkey=hvccsgmzs0hpxudcrqvhsoxul&st=vrfsc1ne&dl=0"],
+    [7, "https://www.dropbox.com/scl/fi/qj1vip5f25qy6rogerviy/Solo7.mp4?rlkey=x52ifj6vt0efyej8turmip9cs&st=wvbaukj6&dl=0"],
+    [8, "https://www.dropbox.com/scl/fi/0eg9ofpv7nezkck5z2y1d/Solo8.mp4?rlkey=9nhvsrf4kypra6h3mk05ucas6&st=2zbgktsd&dl=0"],
+    [9, "https://www.dropbox.com/scl/fi/9idatvzkzfpq6r70qx69l/Solo9.mp4?rlkey=shsvs6fjx5z2jipy8ueqfg0i4&st=iyku6xwx&dl=0"],
+    [10, "https://www.dropbox.com/scl/fi/q0crpnaf7cy1eokhrjwjw/Solo10.mp4?rlkey=hz2ee63cesmv6a5xqgtsi1tex&st=sbdoi419&dl=0"],
+    [11, "https://www.dropbox.com/scl/fi/3o0vak5o9nvcir7sf1m0h/Solo11.mp4?rlkey=xuih8fdm768x2butj3y4zjzcs&st=syf2bflg&dl=0"],
+    [12, "https://www.dropbox.com/scl/fi/fgqu38b2uyw9n5wysd5vs/Solo12.mp4?rlkey=5hltbfurcbfv3yfmpv5dderxn&st=162iy10l&dl=0"],
+  ],
+  2: [
+    [1, "https://www.dropbox.com/scl/fi/qzkfgxl6u5qccdpnc62ye/1.SoloS2.mp4?rlkey=xvl9hsdr3l4ibn4cvdg2qlmqa&st=t3j5ztx4&dl=0"],
+    [2, "https://www.dropbox.com/scl/fi/e3qwr2bzfxolse8drlkrv/2.SoloS2.mp4?rlkey=kf0zbgp109h9pozly9735sam0&st=z0zmr7sz&dl=0"],
+    [3, "https://www.dropbox.com/scl/fi/hr4g63lpolhhb8venmgng/3.SoloS2.mp4?rlkey=rriocqx9tca1gzisvhijmre58&st=sobki97n&dl=0"],
+    [4, "https://www.dropbox.com/scl/fi/cavu8jv690rul03tgczaw/4.SoloS2.mp4?rlkey=4gv0opmfhvazk9z4zssncuxiw&st=w6mx15m1&dl=0"],
+    [5, "https://www.dropbox.com/scl/fi/rualpz1f4q2pon4h2j141/5.SoloS2.mp4?rlkey=h8ofqmekkgq871giindfdfu6d&st=pwnf7o1m&dl=0"],
+    [6, "https://www.dropbox.com/scl/fi/5lvpym5ioasw2org7fvh1/6.SoloS2.mp4?rlkey=es2drj8692pb56iyo3mi0g248&st=v2lvdff8&dl=0"],
+    [7, "https://www.dropbox.com/scl/fi/kbb54ykf58jlha80wezw1/7.SoloS2.mp4?rlkey=trc06ded6umalqxh8bawzkmv1&st=43m5ni5a&dl=0"],
+    [8, "https://www.dropbox.com/scl/fi/bf34lbtstv7ec8mc6nyqc/8.SoloS2.mp4?rlkey=ccqf5mm63hqxlv83fkcwr2cqj&st=w42xl8jr&dl=0"],
+    [9, "https://www.dropbox.com/scl/fi/0yhuo1nunk397hx8wvtc4/9.SoloS2.mp4?rlkey=6ofgzl7l6eabpnb26pct4cd6z&st=lp5tr1li&dl=0"],
+    [10, "https://www.dropbox.com/scl/fi/fxk3cwcknj06memh14hld/10SoloS2.mp4?rlkey=e7acgd3dfs5fgb7929emlr11f&st=8f29ut8t&dl=0"],
+    [11, "https://www.dropbox.com/scl/fi/8l1oerk77cduxszzzs89v/11.SoloS2.mp4?rlkey=u256qvp5a589bhol5moq8jnyh&st=me04gmu8&dl=0"],
+    [12, "https://www.dropbox.com/scl/fi/l3jazcwibgkpc5ov32a92/12.SoloS2.mp4?rlkey=86erxe017z471amveadr1hjhy&st=zx9m6s2w&dl=0"],
+    [13, "https://www.dropbox.com/scl/fi/z7xn90ed9rmaxjm5s37th/13.SoloS2.mp4?rlkey=v4pxho1grd45w2vl8nllkpa0j&st=st6chvop&dl=0"],
+  ],
 };
 
 const MOVIES = [
@@ -80,6 +113,7 @@ export default function EntertainmentClient() {
   const hideTimerRef = useRef(null);
   const [category, setCategory] = useState("Anime");
   const [show, setShow] = useState("Tokyo Ghoul");
+  const [soloSeason, setSoloSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(2);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -91,7 +125,8 @@ export default function EntertainmentClient() {
   const [expanded, setExpanded] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
-  const episodes = useMemo(() => makeEpisodes(SHOWS[show] || []), [show]);
+
+  const episodes = useMemo(() => makeEpisodes(show === "Solo Leveling" ? (SOLO_SEASONS[soloSeason] || []) : (SHOWS[show] || [])), [show, soloSeason]);
   const currentEpisode = useMemo(() => episodes.find((episode) => episode.number === selectedEpisode) || episodes[0], [episodes, selectedEpisode]);
 
   useEffect(() => {
@@ -99,14 +134,14 @@ export default function EntertainmentClient() {
     if (!video) return;
     video.volume = volume;
     video.muted = muted;
-  }, [volume, muted, selectedEpisode, show]);
+  }, [volume, muted, selectedEpisode, show, soloSeason]);
 
   useEffect(() => {
     setIsPlaying(false);
     setCurrentTime(0);
     setDuration(0);
     setError("");
-  }, [selectedEpisode, show]);
+  }, [selectedEpisode, show, soloSeason]);
 
   useEffect(() => () => clearTimeout(hideTimerRef.current), []);
 
@@ -130,11 +165,28 @@ export default function EntertainmentClient() {
   }
 
   function chooseShow(nextShow) {
-    const nextEpisodes = SHOWS[nextShow] || [];
+    const nextEpisodes = nextShow === "Solo Leveling" ? SOLO_SEASONS[1] : (SHOWS[nextShow] || []);
     setCategory("Anime");
     setSelectedMovie(null);
     setShow(nextShow);
+    if (nextShow === "Solo Leveling") setSoloSeason(1);
     setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1);
+    setError("");
+    setControlsVisible(true);
+    requestAnimationFrame(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      video.load();
+      video.play().catch(() => {});
+    });
+  }
+
+  function chooseSeason(nextSeason) {
+    if (show !== "Solo Leveling" || !SOLO_SEASONS[nextSeason]) return;
+    const nextEpisodes = SOLO_SEASONS[nextSeason];
+    setSoloSeason(nextSeason);
+    setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1);
+    setSelectedMovie(null);
     setError("");
     setControlsVisible(true);
     requestAnimationFrame(() => {
@@ -263,15 +315,24 @@ export default function EntertainmentClient() {
             {animeNames.map((name) => (
               <button key={name} type="button" onClick={() => chooseShow(name)} style={{ ...cardStyle, padding: 16, borderColor: show === name ? "rgba(255,255,255,.25)" : "rgba(255,255,255,.08)" }}>
                 <div style={{ fontSize: 14, fontWeight: 800 }}>{name}</div>
-                <div style={{ marginTop: 5, fontSize: 12, opacity: .55 }}>{SHOWS[name].length} episodes available</div>
+                <div style={{ marginTop: 5, fontSize: 12, opacity: .55 }}>{name === "Solo Leveling" ? "2 seasons · 25 episodes" : `${SHOWS[name].length} episodes available`}</div>
               </button>
             ))}
           </div>
 
           <div style={{ marginTop: 24 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 10, flexWrap: "wrap" }}>
               <h3 style={{ margin: 0, fontSize: 17 }}>Episodes</h3>
-              <span style={{ fontSize: 12, opacity: .55 }}>Episode {selectedEpisode}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {show === "Solo Leveling" && (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {[1, 2].map((seasonNumber) => (
+                      <button key={seasonNumber} type="button" onClick={() => chooseSeason(seasonNumber)} style={{ padding: "7px 11px", borderRadius: 8, border: soloSeason === seasonNumber ? "1px solid rgba(255,255,255,.24)" : "1px solid rgba(255,255,255,.07)", background: soloSeason === seasonNumber ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 12, fontWeight: 800, cursor: "pointer" }}>Season {seasonNumber}</button>
+                    ))}
+                  </div>
+                )}
+                <span style={{ fontSize: 12, opacity: .55 }}>Episode {selectedEpisode}</span>
+              </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(110px,1fr))", gap: 8 }}>
               {episodes.map((episode) => (
