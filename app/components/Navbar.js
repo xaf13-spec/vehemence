@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 
 const defaultNotifications = [
   { id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }
@@ -19,8 +17,7 @@ const navItems = [
   ["/settings", "Settings"]
 ];
 
-export default function Navbar() {
-  const pathname = usePathname();
+export default function Navbar({ activePath = "/", onNavigate }) {
   const [unread, setUnread] = useState(0);
   const [navMode, setNavMode] = useState("top");
   const [now, setNow] = useState(null);
@@ -59,7 +56,6 @@ export default function Navbar() {
     document.documentElement.setAttribute("data-nav-mode", navMode);
   }, [navMode]);
 
-  const currentPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
   const side = navMode === "side";
   const parts = now ? new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Toronto",
@@ -80,22 +76,35 @@ export default function Navbar() {
     year: "numeric"
   }).format(now) : "Loading date...";
 
+  function go(path) {
+    onNavigate?.(path);
+  }
+
   return (
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
-      <Link href="/" className="logo">VEHEMENCE</Link>
+      <button className="logo navbar-button-reset" type="button" onClick={() => go("/")} aria-label="Go to Home">VEHEMENCE</button>
       <div className="nav-links">
-        {navItems.map(([href, label]) => (
-          <Link href={href} className={`nav-link ${currentPath === href ? "active" : ""}`} key={href} aria-current={currentPath === href ? "page" : undefined}>
-            <span>{label}</span>
-            {currentPath === href && <span className="nav-active-bubble" aria-hidden="true" />}
-          </Link>
-        ))}
+        {navItems.map(([href, label]) => {
+          const active = activePath === href;
+          return (
+            <button
+              type="button"
+              className={`nav-link navbar-button-reset ${active ? "active" : ""}`}
+              onClick={() => go(href)}
+              key={href}
+              aria-current={active ? "page" : undefined}
+            >
+              <span>{label}</span>
+              {active && <span className="nav-active-bubble" aria-hidden="true" />}
+            </button>
+          );
+        })}
       </div>
       <div className="navbar-status">
-        <Link href="/notifications" className={`notification-nav ${currentPath === "/notifications" ? "active" : ""}`} aria-label="Notifications">
+        <button type="button" className={`notification-nav navbar-button-reset ${activePath === "/notifications" ? "active" : ""}`} onClick={() => go("/notifications")} aria-label="Notifications">
           <span className="notification-bell">🔔</span>
           {unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}
-        </Link>
+        </button>
         <div className="navbar-clock" aria-label="Ontario time and date">
           <span className="navbar-clock-period">{amPm}</span>
           <strong>{hour}:{minute}:{second}</strong>
