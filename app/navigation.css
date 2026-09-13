@@ -1,0 +1,20 @@
+html[data-nav-mode="side"] .navbar.navbar-side{position:fixed;left:16px;top:16px;bottom:16px;width:88px;height:auto;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:18px 10px;border:1px solid var(--border);border-radius:20px;background:rgba(7,7,10,.88);box-shadow:0 18px 55px rgba(0,0,0,.32);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+html[data-nav-mode="side"] .navbar.navbar-side .logo{font-size:13px;letter-spacing:.08em;writing-mode:vertical-rl;transform:rotate(180deg);margin-bottom:22px}
+html[data-nav-mode="side"] .navbar.navbar-side .nav-links{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:5px;margin:0}
+html[data-nav-mode="side"] .navbar.navbar-side .nav-link{width:100%;display:flex;align-items:center;justify-content:center;min-height:42px;padding:9px 5px;border-radius:11px;text-align:center}
+html[data-nav-mode="side"] .navbar.navbar-side .nav-link span:first-child{font-size:10px;line-height:1.15}
+html[data-nav-mode="side"] .navbar.navbar-side .nav-active-bubble{position:absolute;left:3px;top:50%;width:4px;height:22px;border-radius:99px;background:var(--accent);box-shadow:0 0 12px var(--accent-soft);transform:translateY(-50%)}
+html[data-nav-mode="side"] .navbar.navbar-side .notification-nav{margin-top:auto;width:42px;height:42px;display:flex;align-items:center;justify-content:center}
+html[data-nav-mode="side"] .page-transition{margin-left:112px}
+html[data-nav-mode="side"] .page-active-bubble{left:auto;right:18px;transform:none}
+html[data-nav-mode="side"] .page-active-bubble{animation-name:vehemence-bubble-side-in}
+@keyframes vehemence-bubble-side-in{from{opacity:0;transform:translateX(7px) scale(.94)}to{opacity:1;transform:translateX(0) scale(1)}}
+.profile-edit-bio{display:grid;gap:10px}
+.profile-edit-bio-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.profile-edit-kicker{display:block;margin-bottom:5px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.18em}
+.profile-edit-bio-heading h2{font-size:18px;letter-spacing:-.025em;margin-bottom:4px}
+.profile-edit-bio-heading p{color:var(--muted);font-size:11px;line-height:1.5;font-weight:400}
+.profile-edit-bio-heading .profile-bio-count{position:static;flex-shrink:0;padding-top:2px}
+.profile-edit-bio textarea{min-height:170px!important;resize:vertical;padding:15px 16px!important;line-height:1.65!important}
+@media (max-width:800px){html[data-nav-mode="side"] .navbar.navbar-side{left:9px;top:9px;bottom:9px;width:72px}.profile-page{padding-left:105px}.profile-container{max-width:none}}
+@media (max-width:600px){html[data-nav-mode="side"] .page-transition{margin-left:86px}.profile-page{padding-left:96px}.profile-edit-bio-heading{flex-direction:column;gap:5px}.profile-edit-bio-heading .profile-bio-count{align-self:flex-end}}
