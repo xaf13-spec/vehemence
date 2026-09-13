@@ -8,7 +8,16 @@ const defaults = [
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState(defaults);
-  useEffect(() => { const saved = localStorage.getItem("vehemence_notifications"); if (saved) setNotifications(JSON.parse(saved)); }, []);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("vehemence_notifications") || "[]");
+      const cleaned = saved.filter((item) => item.id !== "explore");
+      if (cleaned.length !== saved.length) localStorage.setItem("vehemence_notifications", JSON.stringify(cleaned));
+      setNotifications(cleaned);
+    } catch {
+      setNotifications(defaults);
+    }
+  }, []);
   function persist(next) { setNotifications(next); localStorage.setItem("vehemence_notifications", JSON.stringify(next)); window.dispatchEvent(new Event("vehemence-notifications-changed")); }
   function markAllRead() { persist(notifications.map((item) => ({ ...item, read: true }))); }
   function clearAll() { persist([]); }
