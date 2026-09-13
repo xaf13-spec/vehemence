@@ -104,7 +104,7 @@ export default function FriendsClient() {
                     >
                       Chat
                     </Link>
-                    <StartCallButton calleeId={item.user_id || item.id} />
+                    <StartCallButton calleeUsername={item.username} />
                     <button className="secondary-button" onClick={() => remove(item.id)}>Remove</button>
                   </>
                 )}
