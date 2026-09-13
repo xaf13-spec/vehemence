@@ -11,7 +11,7 @@ const supabase = createClient(
 const inputStyle = { width: "100%", boxSizing: "border-box", padding: "12px 13px", borderRadius: 10, border: "1px solid rgba(255,255,255,.1)", background: "rgba(255,255,255,.045)", color: "#fff", outline: "none" };
 const buttonStyle = { border: "1px solid rgba(255,255,255,.1)", borderRadius: 10, padding: "10px 14px", color: "#fff", background: "rgba(255,255,255,.07)", cursor: "pointer", fontWeight: 700 };
 
-export default function MarketplaceClient({ user }) {
+export default function MarketplaceClient({ user, onNavigate }) {
   const [listings, setListings] = useState([]);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
@@ -48,24 +48,30 @@ export default function MarketplaceClient({ user }) {
       setMessage("Fill out the name, description, and price.");
       return;
     }
+    const price = Number(form.price);
+    if (!Number.isFinite(price) || price < 0) {
+      setMessage("Enter a valid price.");
+      return;
+    }
     setSaving(true);
-    const { data: authData } = await supabase.auth.getUser();
-    const currentUser = authData?.user;
-    if (!currentUser) {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData?.user) {
       setMessage("You need to be signed in to create a listing.");
       setSaving(false);
       return;
     }
+    const currentUser = authData.user;
     const { data, error } = await supabase.from("listings").insert({
       seller_id: currentUser.id,
       seller_username: user?.username || currentUser.user_metadata?.username || "User",
       name: form.name.trim(),
       description: form.description.trim(),
-      price: Number(form.price),
+      price,
       image_url: form.image_url.trim() || null,
     }).select().single();
-    if (error) setMessage(error.message);
-    else {
+    if (error) {
+      setMessage(error.message);
+    } else {
       setListings((current) => [data, ...current]);
       setForm({ name: "", description: "", price: "", image_url: "" });
       setCreating(false);
@@ -75,9 +81,10 @@ export default function MarketplaceClient({ user }) {
   }
 
   async function deleteListing(listing) {
+    if (listing.seller_id !== user?.id) return;
     if (!window.confirm("Delete this listing?")) return;
     setMessage("");
-    const { error } = await supabase.from("listings").delete().eq("id", listing.id);
+    const { error } = await supabase.from("listings").delete().eq("id", listing.id).eq("seller_id", user.id);
     if (error) setMessage(error.message);
     else {
       setListings((current) => current.filter((item) => item.id !== listing.id));
@@ -100,7 +107,7 @@ export default function MarketplaceClient({ user }) {
             </div>
             <p style={{ marginTop: 24, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{selected.description}</p>
             <div style={{ display: "flex", gap: 10, marginTop: 24, flexWrap: "wrap" }}>
-              <button type="button" style={buttonStyle} onClick={() => setMessage(`Message seller: ${selected.seller_username}`)}>Message Seller</button>
+              {selected.seller_id !== user?.id && <button type="button" style={buttonStyle} onClick={() => onNavigate?.("/friends")}>Message Seller</button>}
               {own && <button type="button" onClick={() => deleteListing(selected)} style={{ ...buttonStyle, borderColor: "rgba(255,80,80,.3)", background: "rgba(255,60,60,.08)" }}>Delete Listing</button>}
             </div>
             {message && <p style={{ marginTop: 14, opacity: .7 }}>{message}</p>}
