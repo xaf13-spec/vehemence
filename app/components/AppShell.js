@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import { touchPresence } from "../friends/actions";
 
-const navOrder = ["/", "/rules", "/games", "/browser", "/music", "/entertainment", "/profile", "/friends", "/settings", "/notifications"];
+const navOrder = ["/", "/rules", "/games", "/browser", "/music", "/entertainment", "/soundboard", "/profile", "/friends", "/settings", "/notifications"];
 
 function routeIndex(pathname) {
   const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
