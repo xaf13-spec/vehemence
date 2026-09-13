@@ -10,8 +10,11 @@ const pages = [
   { name: "Retro Bowl", url: "https://www.miniplay.com/embed/retro-bowl", host: "www.miniplay.com" },
   { name: "Tomb of the Mask", url: "https://www.miniplay.com/embed/tomb-of-the-mask", host: "www.miniplay.com" },
   { name: "Rocket Goal", url: "https://www.miniplay.com/embed/rocket-goal", host: "www.miniplay.com" },
+  { name: "Geometry Dash", url: "https://www.miniplay.com/embed/geometry-dash", host: "www.miniplay.com" },
+  { name: "Slope", url: "https://www.miniplay.com/embed/slope", host: "www.miniplay.com" },
   { name: "Minesweeper", url: "https://play-minesweeper.games/embed/?size=beginner&theme=dark", host: "play-minesweeper.games" },
   { name: "StreameX", url: "https://www.streamex.sh/", host: "www.streamex.sh" },
+  { name: "Eaglercraft", url: "https://eaglercraft.com/play", host: "eaglercraft.com" },
 ];
 
 export default function BrowserClient() {
