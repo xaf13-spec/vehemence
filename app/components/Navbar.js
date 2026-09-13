@@ -5,14 +5,12 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const defaultNotifications = [
-  { id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false },
-  { id: "explore", title: "Explore the Games page", text: "Search, filter, favorite, and continue playing games from one place.", type: "System", read: false }
+  { id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }
 ];
 
 const navItems = [
   ["/", "Home"],
   ["/rules", "Rules"],
-  ["/games", "Games"],
   ["/music", "Music"],
   ["/entertainment", "Entertainment"],
   ["/soundboard", "Soundboard"],
