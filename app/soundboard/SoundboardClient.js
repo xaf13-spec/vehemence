@@ -18,14 +18,6 @@ export default function SoundboardClient() {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [search, setSearch] = useState("");
-  const [now, setNow] = useState(null);
-
-  useEffect(() => {
-    const updateClock = () => setNow(new Date());
-    updateClock();
-    const timer = setInterval(updateClock, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   function playSound(sound) {
     if (!audioRef.current) audioRef.current = new Audio();
@@ -72,40 +64,12 @@ export default function SoundboardClient() {
     };
   }, [current]);
 
-  const formattedDate = now ? new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Toronto",
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric"
-  }).format(now) : "Loading date...";
-
-  const parts = now ? new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Toronto",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true
-  }).formatToParts(now) : [];
-  const amPm = parts.find((part) => part.type === "dayPeriod")?.value || "--";
-  const hour = parts.find((part) => part.type === "hour")?.value || "--";
-  const minute = parts.find((part) => part.type === "minute")?.value || "--";
-  const second = parts.find((part) => part.type === "second")?.value || "--";
-
   const filteredSounds = sounds.filter((sound) =>
     sound.name.toLowerCase().includes(search.trim().toLowerCase())
   );
 
   return (
     <div className="soundboard-wrap">
-      <div className="soundboard-time-card">
-        <div>
-          <span className="soundboard-time-period">{amPm}</span>
-          <span className="soundboard-time">{hour}:{minute}:{second}</span>
-        </div>
-        <span className="soundboard-date">{formattedDate} · Ontario / New York</span>
-      </div>
-
       <div className="soundboard-search-card">
         <input
           type="search"
