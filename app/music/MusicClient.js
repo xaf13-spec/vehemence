@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
 const spotifyPlaylists = [
   {
     id: "0U28P0QVB1QRxpqp5IHOlH",
@@ -47,89 +45,11 @@ const spotifyPlaylists = [
   },
 ];
 
+function playPlaylist(playlist) {
+  window.dispatchEvent(new CustomEvent("vehemence:spotify-select", { detail: playlist }));
+}
+
 export default function MusicClient() {
-  const controllers = useRef(new Map());
-  const repeatState = useRef(new Map());
-  const repeatedTrack = useRef(new Map());
-  const [apiReady, setApiReady] = useState(false);
-  const [, forceRender] = useState(0);
-
-  useEffect(() => {
-    if (window.SpotifyIframeApi) {
-      setApiReady(true);
-      return undefined;
-    }
-
-    const previous = window.onSpotifyIframeApiReady;
-    window.onSpotifyIframeApiReady = (IFrameAPI) => {
-      window.SpotifyIframeApi = IFrameAPI;
-      setApiReady(true);
-      if (typeof previous === "function") previous(IFrameAPI);
-    };
-
-    const script = document.createElement("script");
-    script.src = "https://open.spotify.com/embed/iframe-api/v1";
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      script.remove();
-      if (window.onSpotifyIframeApiReady && window.onSpotifyIframeApiReady !== previous) {
-        delete window.onSpotifyIframeApiReady;
-      }
-      controllers.current.clear();
-      repeatState.current.clear();
-      repeatedTrack.current.clear();
-    };
-  }, []);
-
-  function registerController(playlist, element) {
-    if (!apiReady || !window.SpotifyIframeApi || !element || controllers.current.has(playlist.key)) return;
-
-    window.SpotifyIframeApi.createController(
-      element,
-      {
-        width: "100%",
-        height: 152,
-        uri: `spotify:${playlist.type}:${playlist.id}`,
-        theme: "dark",
-      },
-      (controller) => {
-        controllers.current.set(playlist.key, controller);
-        repeatState.current.set(playlist.key, false);
-
-        controller.addListener(window.SpotifyIframeApi.EVENTS.PLAYBACK_UPDATE, (event) => {
-          const data = event?.data;
-          if (!data || !Number.isFinite(data.duration) || data.duration <= 0) return;
-
-          const position = Number(data.position) || 0;
-          const track = data.playingURI || "current";
-
-          if (position < 1000) {
-            repeatedTrack.current.delete(playlist.key);
-            return;
-          }
-
-          if (
-            repeatState.current.get(playlist.key) &&
-            !data.isPaused &&
-            position >= data.duration - 500 &&
-            repeatedTrack.current.get(playlist.key) !== track
-          ) {
-            repeatedTrack.current.set(playlist.key, track);
-            controller.seek(0);
-            controller.play();
-          }
-        });
-      }
-    );
-  }
-
-  function toggleRepeat(key) {
-    repeatState.current.set(key, !repeatState.current.get(key));
-    forceRender((value) => value + 1);
-  }
-
   return (
     <main className="music-page">
       <section className="music-hero">
@@ -144,36 +64,24 @@ export default function MusicClient() {
           <div><h2>Spotify</h2></div>
         </div>
         <div className="spotify-grid">
-          {spotifyPlaylists.map((playlist, index) => {
-            const item = { ...playlist, key: `${playlist.type}-${playlist.id}-${index}` };
-            const repeatOn = Boolean(repeatState.current.get(item.key));
-
-            return (
-              <article className="spotify-card" key={item.key}>
-                <div className="spotify-card-heading">
-                  <div>
-                    <span className="music-status">{item.type === "album" ? "ALBUM" : "SPOTIFY"}</span>
-                    <h3>{item.name}</h3>
-                    <p>{item.creator}</p>
-                  </div>
-                  <button
-                    type="button"
-                    className={`secondary-button ${repeatOn ? "active" : ""}`}
-                    onClick={() => toggleRepeat(item.key)}
-                    disabled={!apiReady}
-                    aria-pressed={repeatOn}
-                  >
-                    {repeatOn ? "Repeat on" : "Repeat"}
-                  </button>
+          {spotifyPlaylists.map((playlist) => (
+            <article className="spotify-card" key={`${playlist.type}-${playlist.id}`}>
+              <div className="spotify-card-heading">
+                <div>
+                  <span className="music-status">{playlist.type === "album" ? "album" : "playlist"}</span>
+                  <h3>{playlist.name}</h3>
+                  <p>{playlist.creator}</p>
                 </div>
-                <div
-                  ref={(element) => registerController(item, element)}
-                  className="spotify-embed"
-                  aria-label={`${item.name} Spotify embed`}
-                />
-              </article>
-            );
-          })}
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => playPlaylist(playlist)}
+                >
+                  play
+                </button>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>
