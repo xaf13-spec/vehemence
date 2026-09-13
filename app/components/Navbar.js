@@ -17,6 +17,7 @@ const navItems = [
   ["/music", "Music"],
   ["/entertainment", "Entertainment"],
   ["/profile", "Profile"],
+  ["/friends", "Friends"],
   ["/settings", "Settings"]
 ];
 
