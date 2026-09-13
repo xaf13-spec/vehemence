@@ -34,12 +34,6 @@ const spotifyPlaylists = [
     type: "playlist",
   },
   {
-    id: "28bqh5m3XyaDZahhwoNXp2",
-    name: "locked in",
-    creator: "spotify playlist",
-    type: "playlist",
-  },
-  {
     id: "0vonmhVqP4CbuOlSbWBZ1h",
     name: "3am playlist",
     creator: "spotify playlist",
@@ -55,7 +49,10 @@ const spotifyPlaylists = [
 
 export default function MusicClient() {
   const controllers = useRef(new Map());
+  const repeatState = useRef(new Map());
+  const repeatedTrack = useRef(new Map());
   const [apiReady, setApiReady] = useState(false);
+  const [, forceRender] = useState(0);
 
   useEffect(() => {
     if (window.SpotifyIframeApi) {
@@ -81,6 +78,8 @@ export default function MusicClient() {
         delete window.onSpotifyIframeApiReady;
       }
       controllers.current.clear();
+      repeatState.current.clear();
+      repeatedTrack.current.clear();
     };
   }, []);
 
@@ -97,8 +96,38 @@ export default function MusicClient() {
       },
       (controller) => {
         controllers.current.set(playlist.key, controller);
+        repeatState.current.set(playlist.key, false);
+
+        controller.addListener(window.SpotifyIframeApi.EVENTS.PLAYBACK_UPDATE, (event) => {
+          const data = event?.data;
+          if (!data || !Number.isFinite(data.duration) || data.duration <= 0) return;
+
+          const position = Number(data.position) || 0;
+          const track = data.playingURI || "current";
+
+          if (position < 1000) {
+            repeatedTrack.current.delete(playlist.key);
+            return;
+          }
+
+          if (
+            repeatState.current.get(playlist.key) &&
+            !data.isPaused &&
+            position >= data.duration - 500 &&
+            repeatedTrack.current.get(playlist.key) !== track
+          ) {
+            repeatedTrack.current.set(playlist.key, track);
+            controller.seek(0);
+            controller.play();
+          }
+        });
       }
     );
+  }
+
+  function toggleRepeat(key) {
+    repeatState.current.set(key, !repeatState.current.get(key));
+    forceRender((value) => value + 1);
   }
 
   return (
@@ -117,6 +146,8 @@ export default function MusicClient() {
         <div className="spotify-grid">
           {spotifyPlaylists.map((playlist, index) => {
             const item = { ...playlist, key: `${playlist.type}-${playlist.id}-${index}` };
+            const repeatOn = Boolean(repeatState.current.get(item.key));
+
             return (
               <article className="spotify-card" key={item.key}>
                 <div className="spotify-card-heading">
@@ -127,11 +158,12 @@ export default function MusicClient() {
                   </div>
                   <button
                     type="button"
-                    className="secondary-button"
-                    onClick={() => controllers.current.get(item.key)?.restart()}
+                    className={`secondary-button ${repeatOn ? "active" : ""}`}
+                    onClick={() => toggleRepeat(item.key)}
                     disabled={!apiReady}
+                    aria-pressed={repeatOn}
                   >
-                    Replay
+                    {repeatOn ? "Repeat on" : "Repeat"}
                   </button>
                 </div>
                 <div
