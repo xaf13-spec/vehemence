@@ -4,22 +4,16 @@ const realGames = {
   "Retro Bowl": "https://retrobowl.me/play.html",
   "Slope": "https://www.crazygames.com/game/slope",
   "Rocket Goal": "https://rocket-goal.io/",
-  "Basketball Stars": "https://playcutegames.com/game/basketball-stars",
   "Geometry Dash": "https://geometrydash-pc.com/",
+  "Eaglercraft": "https://eaglercraft.com/play?version=1.8.8-wasm",
+  "Level Devil": "https://playleveldevil.com/",
+  "Basketball Stars": "https://www.crazygames.com/game/basketball-stars-2019",
   "Minesweeper": "https://minesweeper.online/",
   "Worlde": "https://www.nytimes.com/games/wordle/index.html",
   "Slither.io": "https://slither.io/",
   "Chess": "https://lichess.org/",
   "Tetris": "https://play.tetris.com/",
-  "FNAF": "https://www.gameflare.com/search/five%20nights%20at%20freddys/",
-  "Subway Surfers": "https://subwaysurfers.com/",
-  "Among Us": "https://cards.crazygames.to/game-among-us",
   "Space Waves": "https://www.crazygames.com/game/space-waves",
-  "Speed Stars": "https://speedstars.ai/",
-  "Stickman Hook": "https://www.crazygames.com/game/stickman-hook",
-  "Eaglercraft": "https://eaglercraft.com/",
-  "Level Devil": "https://playleveldevil.com/",
-  "Happy Wheels": "https://totaljerkface.com/happy_wheels.tjf",
 };
 
 function ExternalGame({ name, url }) {
@@ -51,7 +45,7 @@ function Unavailable({ name }) {
     <div className="vb-center">
       <span className="settings-eyebrow">VEHEMENCE GAME</span>
       <h2>{name}</h2>
-      <p>There isn't a legitimate browser build available for this title in Vehemence right now.</p>
+      <p>There isn't a verified browser build available for this title in Vehemence right now.</p>
     </div>
   );
 }
