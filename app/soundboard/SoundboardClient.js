@@ -18,10 +18,12 @@ export default function SoundboardClient() {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [search, setSearch] = useState("");
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState(null);
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
+    const updateClock = () => setNow(new Date());
+    updateClock();
+    const timer = setInterval(updateClock, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -70,25 +72,25 @@ export default function SoundboardClient() {
     };
   }, [current]);
 
-  const formattedDate = new Intl.DateTimeFormat("en-CA", {
+  const formattedDate = now ? new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Toronto",
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric"
-  }).format(now);
+  }).format(now) : "Loading date...";
 
-  const parts = new Intl.DateTimeFormat("en-US", {
+  const parts = now ? new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Toronto",
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
     hour12: true
-  }).formatToParts(now);
-  const amPm = parts.find((part) => part.type === "dayPeriod")?.value || "";
-  const hour = parts.find((part) => part.type === "hour")?.value || "0";
-  const minute = parts.find((part) => part.type === "minute")?.value || "00";
-  const second = parts.find((part) => part.type === "second")?.value || "00";
+  }).formatToParts(now) : [];
+  const amPm = parts.find((part) => part.type === "dayPeriod")?.value || "--";
+  const hour = parts.find((part) => part.type === "hour")?.value || "--";
+  const minute = parts.find((part) => part.type === "minute")?.value || "--";
+  const second = parts.find((part) => part.type === "second")?.value || "--";
 
   const filteredSounds = sounds.filter((sound) =>
     sound.name.toLowerCase().includes(search.trim().toLowerCase())
@@ -97,11 +99,11 @@ export default function SoundboardClient() {
   return (
     <div className="soundboard-wrap">
       <div className="soundboard-time-card">
-        <span className="soundboard-time-period">{amPm}</span>
-        <span className="soundboard-time">
-          {hour}:{minute}:{second}
-        </span>
-        <span className="soundboard-date">{formattedDate}</span>
+        <div>
+          <span className="soundboard-time-period">{amPm}</span>
+          <span className="soundboard-time">{hour}:{minute}:{second}</span>
+        </div>
+        <span className="soundboard-date">{formattedDate} · Ontario / New York</span>
       </div>
 
       <div className="soundboard-search-card">
