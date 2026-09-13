@@ -12,7 +12,6 @@ export default async function EntertainmentPage() {
         <div>
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Entertainment</h1>
-          <p>Click a card to watch without leaving Vehemence.</p>
         </div>
       </header>
 
@@ -20,7 +19,6 @@ export default async function EntertainmentPage() {
         <div className="section-title-row">
           <div>
             <h2>Entertainment</h2>
-            <p className="section-subtitle">Your entertainment sites, in the same card layout as Games.</p>
           </div>
         </div>
         <EntertainmentClient />
