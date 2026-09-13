@@ -84,19 +84,19 @@ export default function MusicClient() {
     };
   }, []);
 
-  function registerController(key, element) {
-    if (!apiReady || !window.SpotifyIframeApi || !element || controllers.current.has(key)) return;
+  function registerController(playlist, element) {
+    if (!apiReady || !window.SpotifyIframeApi || !element || controllers.current.has(playlist.key)) return;
 
     window.SpotifyIframeApi.createController(
       element,
       {
         width: "100%",
         height: 152,
-        uri: `spotify:playlist:${spotifyPlaylists.find((item) => `${item.type}-${item.id}` === key)?.id}`,
+        uri: `spotify:${playlist.type}:${playlist.id}`,
         theme: "dark",
       },
       (controller) => {
-        controllers.current.set(key, controller);
+        controllers.current.set(playlist.key, controller);
       }
     );
   }
@@ -116,28 +116,28 @@ export default function MusicClient() {
         </div>
         <div className="spotify-grid">
           {spotifyPlaylists.map((playlist, index) => {
-            const key = `${playlist.type}-${playlist.id}-${index}`;
+            const item = { ...playlist, key: `${playlist.type}-${playlist.id}-${index}` };
             return (
-              <article className="spotify-card" key={key}>
+              <article className="spotify-card" key={item.key}>
                 <div className="spotify-card-heading">
                   <div>
-                    <span className="music-status">{playlist.type === "album" ? "ALBUM" : "SPOTIFY"}</span>
-                    <h3>{playlist.name}</h3>
-                    <p>{playlist.creator}</p>
+                    <span className="music-status">{item.type === "album" ? "ALBUM" : "SPOTIFY"}</span>
+                    <h3>{item.name}</h3>
+                    <p>{item.creator}</p>
                   </div>
                   <button
                     type="button"
                     className="secondary-button"
-                    onClick={() => controllers.current.get(key)?.restart()}
+                    onClick={() => controllers.current.get(item.key)?.restart()}
                     disabled={!apiReady}
                   >
                     Replay
                   </button>
                 </div>
                 <div
-                  ref={(element) => registerController(key, element)}
+                  ref={(element) => registerController(item, element)}
                   className="spotify-embed"
-                  aria-label={`${playlist.name} Spotify embed`}
+                  aria-label={`${item.name} Spotify embed`}
                 />
               </article>
             );
