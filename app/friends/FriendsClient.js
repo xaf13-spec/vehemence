@@ -69,7 +69,7 @@ export default function FriendsClient() {
     <main className="friends-page">
       <section className="friends-container">
         <header className="friends-header">
-          <div><p className="eyebrow">VEHEMENCE</p><h1>Friends</h1><p>Add people, accept requests, and see what your friends are playing.</p></div>
+          <div><p className="eyebrow">VEHEMENCE</p><h1>Friends</h1></div>
         </header>
 
         <section className="friends-search-card">
