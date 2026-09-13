@@ -59,7 +59,6 @@ export default function BrowserClient() {
         <div className="browser-heading-copy">
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Browser</h1>
-          <p>A clean browser workspace inside Vehemence.</p>
         </div>
       </header>
 
