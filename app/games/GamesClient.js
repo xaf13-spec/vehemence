@@ -8,27 +8,15 @@ const games = [
   { name: "Slope", description: "Roll down the track, dodge obstacles, and stay on course.", category: "Arcade", hasSound: true },
   { name: "Rocket Goal", description: "Fast arcade soccer with rockets and quick reactions.", category: "Sports", hasSound: true },
   { name: "Geometry Dash", description: "Jump, fly, and time your moves through rhythmic levels.", category: "Arcade", hasSound: true, url: "https://geometrydash-pc.com/" },
-  { name: "Moto X3M", description: "Race through obstacle courses and pull off wild stunts.", category: "Racing", hasSound: true },
-  { name: "Moto X3M 2", description: "More tracks, more jumps, and more motorcycle chaos.", category: "Racing", hasSound: true },
-  { name: "Moto X3M 3", description: "Keep the bike moving through another set of tricky tracks.", category: "Racing", hasSound: true },
-  { name: "Moto X3M 4 Winter", description: "Take the Moto X3M challenge into snowy tracks.", category: "Racing", hasSound: true },
-  { name: "Moto X3M 5 Pool Party", description: "Race through a bright pool-party obstacle course.", category: "Racing", hasSound: true },
-  { name: "Moto X3M 6 Spooky Land", description: "A spooky Moto X3M ride packed with dangerous-looking tracks.", category: "Racing", hasSound: true },
-  { name: "Eaglercraft", description: "Open-source Minecraft-style browser gameplay.", category: "Adventure", hasSound: true, url: "https://eaglercraft.com/#google_vignette" },
+  { name: "Eaglercraft", description: "Open-source Minecraft-style browser gameplay.", category: "Adventure", hasSound: true, url: "https://eaglercraft.com/play?version=1.8.8-wasm" },
   { name: "Level Devil", description: "A platformer where the level itself keeps trying to surprise you.", category: "Platformer", hasSound: true, url: "https://playleveldevil.com/" },
   { name: "Basketball Stars", description: "Take on fast basketball matches and work on your shots.", category: "Sports", hasSound: true },
-  { name: "Happy Wheels", description: "Physics-based obstacle courses with unpredictable movement.", category: "Arcade", hasSound: true },
   { name: "Minesweeper", description: "Clear the board, mark the mines, and don't hit one.", category: "Puzzle", hasSound: false, url: "https://minesweeper.online/" },
   { name: "Worlde", description: "Guess the hidden word in as few tries as possible.", category: "Puzzle", hasSound: false },
   { name: "Slither.io", description: "Grow your snake, collect dots, and avoid crashing.", category: "Arcade", hasSound: true },
   { name: "Chess", description: "Play classic chess right in the browser.", category: "Board", hasSound: false, url: "https://lichess.org/" },
   { name: "Tetris", description: "Stack falling pieces and clear lines before the board fills.", category: "Puzzle", hasSound: true, url: "https://play.tetris.com/" },
-  { name: "FNAF", description: "Survive the night by keeping an eye on what is happening around you.", category: "Horror", hasSound: true },
-  { name: "Subway Surfers", description: "Dash through the tracks, dodge obstacles, and grab coins.", category: "Arcade", hasSound: true },
-  { name: "Among Us", description: "Complete tasks, watch the crew, and figure out who is suspicious.", category: "Social", hasSound: true },
   { name: "Space Waves", description: "Guide your ship through tight spaces and keep your timing sharp.", category: "Arcade", hasSound: true },
-  { name: "Speed Stars", description: "Sprint, time your steps, and chase faster runs.", category: "Sports", hasSound: true },
-  { name: "Stickman Hook", description: "Swing from point to point and keep your momentum going.", category: "Arcade", hasSound: true }
 ];
 
 const categories = ["All", ...Array.from(new Set(games.map((game) => game.category)))];
