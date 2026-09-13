@@ -34,13 +34,12 @@ export default function MusicClient() {
         <div>
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Music</h1>
-          <p>Play your playlists and music without leaving Vehemence.</p>
         </div>
       </section>
 
       <section className="music-section">
         <div className="music-section-heading">
-          <div><h2>Spotify</h2><p>Playlists and albums you added to Vehemence.</p></div>
+          <div><h2>Spotify</h2></div>
         </div>
         <div className="spotify-grid">
           {spotifyPlaylists.map((playlist) => (
