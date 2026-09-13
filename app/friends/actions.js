@@ -1,122 +1,120 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
-import { getCurrentUser } from "../../lib/auth";
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY);
-const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
-  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { autoRefreshToken: false, persistSession: false } })
-  : null;
 
-async function getCurrentUserId() {
-  const user = await getCurrentUser();
-  return user?.id || null;
+async function getSessionToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get("vehemence_session")?.value || null;
 }
 
-function db() {
-  return admin || supabase;
+function rpcError(error) {
+  const code = error?.message || "";
+  if (code.includes("not_logged_in")) return "You are not logged in.";
+  if (code.includes("user_not_found")) return "User not found.";
+  if (code.includes("cannot_add_self")) return "You cannot add yourself.";
+  if (code.includes("already_friends")) return "You are already friends.";
+  if (code.includes("request_exists")) return "Friend request already sent.";
+  if (code.includes("request_not_found")) return "Friend request no longer exists.";
+  if (code.includes("friend_not_found")) return "Friend no longer exists.";
+  return null;
 }
 
 export async function searchUsers(query) {
-  const userId = await getCurrentUserId();
-  if (!userId) return { error: "You are not logged in." };
+  const token = await getSessionToken();
+  if (!token) return { error: "You are not logged in." };
+
   const value = query?.trim();
   if (!value) return { users: [] };
-  const { data, error } = await db().from("profiles").select("id, username, created_at").ilike("username", `%${value}%`).neq("id", userId).order("username").limit(20);
+
+  const { data, error } = await supabase.rpc("vehemence_search_users", {
+    p_token: token,
+    p_query: value
+  });
+
   if (error) return { error: "Could not search users." };
   return { users: data || [] };
 }
 
 export async function getSocialData() {
-  const userId = await getCurrentUserId();
-  if (!userId) return { error: "You are not logged in." };
-  const client = db();
-  const { data: rows, error } = await client.from("friendships").select("id, requester_id, addressee_id, status, created_at").or(`requester_id.eq.${userId},addressee_id.eq.${userId}`).order("created_at", { ascending: false });
-  if (error) return { error: "Could not load your friends." };
+  const token = await getSessionToken();
+  if (!token) return { error: "You are not logged in." };
 
-  const relatedIds = [...new Set((rows || []).flatMap((row) => [row.requester_id, row.addressee_id]).filter((id) => id !== userId))];
-  if (!relatedIds.length) return { friends: [], incoming: [], outgoing: [] };
+  const { data, error } = await supabase.rpc("vehemence_social_data", {
+    p_token: token
+  });
 
-  const [{ data: profiles }, { data: activityRows }] = await Promise.all([
-    client.from("profiles").select("id, username, created_at").in("id", relatedIds),
-    client.from("user_activity").select("user_id, last_seen_at, last_game, last_game_at").in("user_id", relatedIds),
-  ]);
-
-  const profileMap = new Map((profiles || []).map((profile) => [profile.id, profile]));
-  const activityMap = new Map((activityRows || []).map((activity) => [activity.user_id, activity]));
-  const decorate = (row, otherId) => {
-    const profile = profileMap.get(otherId);
-    const activity = activityMap.get(otherId);
-    const online = Boolean(activity?.last_seen_at && Date.now() - new Date(activity.last_seen_at).getTime() < 120000);
-    return { id: row.id, username: profile?.username || "Unknown user", created_at: profile?.created_at || row.created_at, online, last_game: activity?.last_game || null, last_game_at: activity?.last_game_at || null };
-  };
-
-  const friends = [];
-  const incoming = [];
-  const outgoing = [];
-  for (const row of rows || []) {
-    const otherId = row.requester_id === userId ? row.addressee_id : row.requester_id;
-    if (row.status === "accepted") friends.push(decorate(row, otherId));
-    else if (row.addressee_id === userId) incoming.push(decorate(row, row.requester_id));
-    else outgoing.push(decorate(row, row.addressee_id));
+  if (error) {
+    return { error: rpcError(error) || "Could not load your friends." };
   }
-  return { friends, incoming, outgoing };
+
+  return data || { friends: [], incoming: [], outgoing: [] };
 }
 
 export async function sendFriendRequest(username) {
-  const userId = await getCurrentUserId();
-  if (!userId) return { error: "You are not logged in." };
+  const token = await getSessionToken();
+  if (!token) return { error: "You are not logged in." };
+
   const targetName = username?.trim();
   if (!targetName) return { error: "Enter a username." };
-  const client = db();
-  const { data: target } = await client.from("profiles").select("id, username").ilike("username", targetName).maybeSingle();
-  if (!target) return { error: "User not found." };
-  if (target.id === userId) return { error: "You cannot add yourself." };
 
-  const { data: existing } = await client.from("friendships").select("id, requester_id, addressee_id, status").or(`and(requester_id.eq.${userId},addressee_id.eq.${target.id}),and(requester_id.eq.${target.id},addressee_id.eq.${userId})`).maybeSingle();
-  if (existing?.status === "accepted") return { error: "You are already friends." };
-  if (existing?.requester_id === target.id && existing?.addressee_id === userId && existing?.status === "pending") {
-    const { error } = await client.from("friendships").update({ status: "accepted" }).eq("id", existing.id);
-    return error ? { error: "Could not accept the request." } : { success: true, accepted: true };
-  }
-  if (existing) return { error: "Friend request already sent." };
+  const { data, error } = await supabase.rpc("vehemence_send_friend_request", {
+    p_token: token,
+    p_username: targetName
+  });
 
-  const { error } = await client.from("friendships").insert({ requester_id: userId, addressee_id: target.id });
-  return error ? { error: "Could not send the friend request." } : { success: true };
+  if (error) return { error: rpcError(error) || "Could not send the friend request." };
+  return data || { success: true };
 }
 
 export async function respondToFriendRequest(friendshipId, accept) {
-  const userId = await getCurrentUserId();
-  if (!userId) return { error: "You are not logged in." };
-  const client = db();
-  const { data: row } = await client.from("friendships").select("id").eq("id", friendshipId).eq("addressee_id", userId).eq("status", "pending").maybeSingle();
-  if (!row) return { error: "Friend request no longer exists." };
-  if (accept) {
-    const { error } = await client.from("friendships").update({ status: "accepted" }).eq("id", friendshipId);
-    return error ? { error: "Could not accept the request." } : { success: true };
-  }
-  const { error } = await client.from("friendships").delete().eq("id", friendshipId).eq("addressee_id", userId).eq("status", "pending");
-  return error ? { error: "Could not decline the request." } : { success: true };
+  const token = await getSessionToken();
+  if (!token) return { error: "You are not logged in." };
+
+  const { data, error } = await supabase.rpc("vehemence_respond_friend_request", {
+    p_token: token,
+    p_friendship_id: friendshipId,
+    p_accept: Boolean(accept)
+  });
+
+  if (error) return { error: rpcError(error) || "Could not update the friend request." };
+  return data || { success: true };
 }
 
 export async function removeFriend(friendshipId) {
-  const userId = await getCurrentUserId();
-  if (!userId) return { error: "You are not logged in." };
-  const { error } = await db().from("friendships").delete().eq("id", friendshipId).eq("status", "accepted").or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
-  return error ? { error: "Could not remove this friend." } : { success: true };
+  const token = await getSessionToken();
+  if (!token) return { error: "You are not logged in." };
+
+  const { data, error } = await supabase.rpc("vehemence_remove_friend", {
+    p_token: token,
+    p_friendship_id: friendshipId
+  });
+
+  if (error) return { error: rpcError(error) || "Could not remove this friend." };
+  return data || { success: true };
 }
 
 export async function touchPresence() {
-  const userId = await getCurrentUserId();
-  if (!userId || !admin) return { success: false };
-  const { error } = await admin.from("user_activity").upsert({ user_id: userId, last_seen_at: new Date().toISOString() });
-  return error ? { error: "Could not update presence." } : { success: true };
+  const token = await getSessionToken();
+  if (!token) return { success: false };
+
+  const { data, error } = await supabase.rpc("vehemence_touch_presence", {
+    p_token: token
+  });
+
+  return error ? { success: false } : (data || { success: true });
 }
 
 export async function recordGameActivity(gameName) {
-  const userId = await getCurrentUserId();
-  if (!userId || !admin) return { success: false };
-  const now = new Date().toISOString();
-  const { error } = await admin.from("user_activity").upsert({ user_id: userId, last_seen_at: now, last_game: String(gameName || "").slice(0, 120), last_game_at: now });
-  return error ? { error: "Could not update activity." } : { success: true };
+  const token = await getSessionToken();
+  if (!token) return { success: false };
+
+  const { data, error } = await supabase.rpc("vehemence_record_game_activity", {
+    p_token: token,
+    p_game: String(gameName || "").slice(0, 120)
+  });
+
+  return error ? { success: false } : (data || { success: true });
 }
