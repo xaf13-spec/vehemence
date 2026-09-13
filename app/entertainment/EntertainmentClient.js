@@ -52,6 +52,39 @@ const SHOWS = {
   ],
 };
 
+const MOVIES = [
+  {
+    title: "Kingdom of the Planet of the Apes",
+    url: "https://anonmp4.art/embed/JpOSYXFhQobeCL6",
+    type: "embed",
+  },
+  {
+    title: "Despicable Me 3",
+    url: "https://anonmp4.art/embed/zLFFdhPwEhDPs6T",
+    type: "embed",
+  },
+  {
+    title: "Despicable Me 2",
+    url: "https://anonmp4.art/embed/hhzNXtvx3jK85ss",
+    type: "embed",
+  },
+  {
+    title: "Despicable Me",
+    url: "https://anonmp4.art/embed/BO2bwOOHrdOtVpf",
+    type: "embed",
+  },
+  {
+    title: "SpongeBob Movie: Sponge on the Run",
+    url: "https://www.dropbox.com/scl/fi/nbadlujqjccn6h4bvxnbb/SpongeBob-Movie-Sponge-on-the-Run-full-movie.mp4?rlkey=13h63756fwhy1ytbwreg0m68a&st=5thzmpsj&raw=1",
+    type: "video",
+  },
+  {
+    title: "Despicable Me 4",
+    url: "https://www.dropbox.com/scl/fi/4gjqovym5depxl6kvkgux/Despicable-Me-4-2024-Awafim.tv.mp4?rlkey=1b41xmd5dhk0z1weo0ohra3wm&st=eue6y2a0&raw=1",
+    type: "video",
+  },
+];
+
 function makeEpisodes(items) {
   return items.map(([number, url]) => ({ number, title: `Episode ${number}`, url }));
 }
@@ -72,6 +105,7 @@ export default function EntertainmentClient() {
   const [category, setCategory] = useState("Anime");
   const [show, setShow] = useState("Tokyo Ghoul");
   const [selectedEpisode, setSelectedEpisode] = useState(2);
+  const [selectedMovie, setSelectedMovie] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
@@ -114,12 +148,14 @@ export default function EntertainmentClient() {
 
   function chooseCategory(nextCategory) {
     setCategory(nextCategory);
+    setSelectedMovie(null);
     setControlsVisible(true);
   }
 
   function chooseShow(nextShow) {
     const nextEpisodes = SHOWS[nextShow] || [];
     setCategory("Anime");
+    setSelectedMovie(null);
     setShow(nextShow);
     setSelectedEpisode(nextEpisodes[0]?.[0] ?? 1);
     setError("");
@@ -135,6 +171,7 @@ export default function EntertainmentClient() {
   function chooseEpisode(number) {
     if (!episodes.some((item) => item.number === number)) return;
     setSelectedEpisode(number);
+    setSelectedMovie(null);
     setControlsVisible(true);
     requestAnimationFrame(() => {
       const video = videoRef.current;
@@ -142,6 +179,14 @@ export default function EntertainmentClient() {
       video.load();
       video.play().catch(() => {});
     });
+  }
+
+  function chooseMovie(movie) {
+    setCategory("Movies");
+    setSelectedMovie(movie);
+    setError("");
+    setControlsVisible(true);
+    setIsPlaying(false);
   }
 
   function togglePlay() {
@@ -206,7 +251,7 @@ export default function EntertainmentClient() {
   return (
     <div style={{ width: "100%", maxWidth: expanded ? 1180 : 900, margin: "0 auto", padding: "28px 20px 70px", transition: "max-width .25s ease" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
-        <h2 style={{ margin: 0, flex: 1, minWidth: 220, fontSize: 24 }}>{show}</h2>
+        <h2 style={{ margin: 0, flex: 1, minWidth: 220, fontSize: 24 }}>{category === "Anime" ? show : selectedMovie?.title || "Movies"}</h2>
         <div style={{ display: "flex", gap: 8 }}>
           {["Anime", "Movies"].map((name) => (
             <button key={name} type="button" onClick={() => chooseCategory(name)} style={{ minWidth: 105, padding: "11px 18px", borderRadius: 10, border: category === name ? "1px solid rgba(255,255,255,.2)" : "1px solid rgba(255,255,255,.07)", background: category === name ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.035)", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{name}</button>
@@ -260,8 +305,31 @@ export default function EntertainmentClient() {
             </div>
           </div>
         </>
+      ) : category === "Movies" && selectedMovie ? (
+        <>
+          <button type="button" onClick={() => setSelectedMovie(null)} style={{ marginBottom: 12, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", color: "#fff", borderRadius: 9, padding: "9px 13px", cursor: "pointer", fontWeight: 700 }}>← Back to Movies</button>
+          <section style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "#000", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
+            <div ref={playerRef} style={{ position: "relative", aspectRatio: "16 / 9", background: "#000" }}>
+              {selectedMovie.type === "embed" ? (
+                <iframe title={selectedMovie.title} src={selectedMovie.url} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={{ width: "100%", height: "100%", border: 0, display: "block" }} />
+              ) : (
+                <video ref={videoRef} className="entertainment-video" src={selectedMovie.url} controls preload="metadata" onError={() => setError("This movie could not be loaded from Dropbox. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
+              )}
+              {error && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: 20, background: "rgba(0,0,0,.62)", color: "#fff", textAlign: "center", fontSize: 14 }}>{error}</div>}
+            </div>
+          </section>
+        </>
       ) : (
-        <div style={{ padding: 35, border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, background: "rgba(17,17,24,.6)", textAlign: "center", opacity: .7 }}>Movies will be added separately. Anime is ready.</div>
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12 }}>
+            {MOVIES.map((movie) => (
+              <button key={movie.title} type="button" onClick={() => chooseMovie(movie)} style={{ ...cardStyle, padding: 18, minHeight: 125 }}>
+                <div style={{ fontSize: 15, fontWeight: 800 }}>{movie.title}</div>
+                <div style={{ marginTop: 7, fontSize: 12, opacity: .55 }}>{movie.type === "embed" ? "Embedded movie" : "Dropbox movie"}</div>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
