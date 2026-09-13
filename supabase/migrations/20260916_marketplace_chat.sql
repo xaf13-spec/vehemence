@@ -1,0 +1,131 @@
+create or replace function public.vehemence_chat_relationship(p_token text, p_username text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_other_id uuid;
+begin
+  v_user_id := public.vehemence_user_id(p_token);
+  if v_user_id is null then
+    raise exception 'not_logged_in';
+  end if;
+
+  select p.id into v_other_id
+  from public.profiles p
+  where lower(p.username) = lower(trim(p_username))
+  limit 1;
+
+  if v_other_id is null then
+    raise exception 'user_not_found';
+  end if;
+
+  return exists (
+    select 1
+    from public.friendships f
+    where f.status = 'accepted'
+      and ((f.requester_id = v_user_id and f.addressee_id = v_other_id)
+        or (f.requester_id = v_other_id and f.addressee_id = v_user_id))
+  );
+end;
+$$;
+
+create or replace function public.vehemence_direct_chat(p_token text, p_username text)
+returns table(id bigint, sender_id uuid, recipient_id uuid, sender_username text, message text, created_at timestamptz)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_other_id uuid;
+begin
+  v_user_id := public.vehemence_user_id(p_token);
+  if v_user_id is null then
+    raise exception 'not_logged_in';
+  end if;
+
+  select p.id into v_other_id
+  from public.profiles p
+  where lower(p.username) = lower(trim(p_username))
+  limit 1;
+
+  if v_other_id is null then
+    raise exception 'user_not_found';
+  end if;
+
+  return query
+  select dm.id,
+         dm.sender_id,
+         dm.recipient_id,
+         p.username,
+         dm.message,
+         dm.created_at
+  from public.direct_messages dm
+  join public.profiles p on p.id = dm.sender_id
+  where (dm.sender_id = v_user_id and dm.recipient_id = v_other_id)
+     or (dm.sender_id = v_other_id and dm.recipient_id = v_user_id)
+  order by dm.created_at asc
+  limit 200;
+end;
+$$;
+
+create or replace function public.vehemence_send_direct_message(p_token text, p_username text, p_message text)
+returns table(id bigint, sender_id uuid, recipient_id uuid, sender_username text, message text, created_at timestamptz)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+  v_other_id uuid;
+  v_message text;
+  v_id bigint;
+  v_created_at timestamptz;
+  v_username text;
+begin
+  v_user_id := public.vehemence_user_id(p_token);
+  if v_user_id is null then
+    raise exception 'not_logged_in';
+  end if;
+
+  select p.id into v_other_id
+  from public.profiles p
+  where lower(p.username) = lower(trim(p_username))
+  limit 1;
+
+  if v_other_id is null then
+    raise exception 'user_not_found';
+  end if;
+
+  if v_other_id = v_user_id then
+    raise exception 'cannot_message_self';
+  end if;
+
+  v_message := trim(coalesce(p_message, ''));
+  if v_message = '' then
+    raise exception 'empty_message';
+  end if;
+
+  if char_length(v_message) > 500 then
+    raise exception 'message_too_long';
+  end if;
+
+  insert into public.direct_messages(sender_id, recipient_id, message)
+  values (v_user_id, v_other_id, v_message)
+  returning direct_messages.id, direct_messages.created_at
+  into v_id, v_created_at;
+
+  select p.username into v_username
+  from public.profiles p
+  where p.id = v_user_id;
+
+  return query select v_id, v_user_id, v_other_id, v_username, v_message, v_created_at;
+end;
+$$;
+
+grant execute on function public.vehemence_chat_relationship(text, text) to anon, authenticated;
+grant execute on function public.vehemence_direct_chat(text, text) to anon, authenticated;
+grant execute on function public.vehemence_send_direct_message(text, text, text) to anon, authenticated;
