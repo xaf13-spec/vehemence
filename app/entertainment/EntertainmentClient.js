@@ -53,36 +53,12 @@ const SHOWS = {
 };
 
 const MOVIES = [
-  {
-    title: "Kingdom of the Planet of the Apes",
-    url: "https://anonmp4.art/embed/JpOSYXFhQobeCL6",
-    type: "embed",
-  },
-  {
-    title: "Despicable Me 3",
-    url: "https://anonmp4.art/embed/zLFFdhPwEhDPs6T",
-    type: "embed",
-  },
-  {
-    title: "Despicable Me 2",
-    url: "https://anonmp4.art/embed/hhzNXtvx3jK85ss",
-    type: "embed",
-  },
-  {
-    title: "Despicable Me",
-    url: "https://anonmp4.art/embed/BO2bwOOHrdOtVpf",
-    type: "embed",
-  },
-  {
-    title: "SpongeBob Movie: Sponge on the Run",
-    url: "https://www.dropbox.com/scl/fi/nbadlujqjccn6h4bvxnbb/SpongeBob-Movie-Sponge-on-the-Run-full-movie.mp4?rlkey=13h63756fwhy1ytbwreg0m68a&st=5thzmpsj&raw=1",
-    type: "video",
-  },
-  {
-    title: "Despicable Me 4",
-    url: "https://www.dropbox.com/scl/fi/4gjqovym5depxl6kvkgux/Despicable-Me-4-2024-Awafim.tv.mp4?rlkey=1b41xmd5dhk0z1weo0ohra3wm&st=eue6y2a0&raw=1",
-    type: "video",
-  },
+  { title: "Kingdom of the Planet of the Apes", url: "https://anonmp4.art/embed/JpOSYXFhQobeCL6", type: "embed" },
+  { title: "Despicable Me 3", url: "https://anonmp4.art/embed/zLFFdhPwEhDPs6T", type: "embed" },
+  { title: "Despicable Me 2", url: "https://anonmp4.art/embed/hhzNXtvx3jK85ss", type: "embed" },
+  { title: "Despicable Me", url: "https://anonmp4.art/embed/BO2bwOOHrdOtVpf", type: "embed" },
+  { title: "SpongeBob Movie: Sponge on the Run", url: "https://dl.dropboxusercontent.com/scl/fi/nbadlujqjccn6h4bvxnbb/SpongeBob-Movie-Sponge-on-the-Run-full-movie.mp4?rlkey=13h63756fwhy1ytbwreg0m68a&st=5thzmpsj&raw=1", type: "video" },
+  { title: "Despicable Me 4", url: "https://dl.dropboxusercontent.com/scl/fi/4gjqovym5depxl6kvkgux/Despicable-Me-4-2024-Awafim.tv.mp4?rlkey=1b41xmd5dhk0z1weo0ohra3wm&st=eue6y2a0&raw=1", type: "video" },
 ];
 
 function makeEpisodes(items) {
@@ -149,6 +125,7 @@ export default function EntertainmentClient() {
   function chooseCategory(nextCategory) {
     setCategory(nextCategory);
     setSelectedMovie(null);
+    setError("");
     setControlsVisible(true);
   }
 
@@ -185,14 +162,14 @@ export default function EntertainmentClient() {
     setCategory("Movies");
     setSelectedMovie(movie);
     setError("");
-    setControlsVisible(true);
     setIsPlaying(false);
+    setControlsVisible(true);
   }
 
   function togglePlay() {
     const video = videoRef.current;
     if (!video) return;
-    if (video.paused) video.play().catch(() => setError("The episode could not be played."));
+    if (video.paused) video.play().catch(() => setError("This video could not be played."));
     else video.pause();
     showControls();
   }
@@ -263,7 +240,7 @@ export default function EntertainmentClient() {
         <>
           <section style={{ border: "1px solid rgba(255,255,255,.08)", borderRadius: 15, overflow: "hidden", background: "rgba(17,17,24,.82)", boxShadow: "0 12px 40px rgba(0,0,0,.18)" }}>
             <div ref={playerRef} onMouseMove={showControls} onMouseLeave={() => isPlaying && setControlsVisible(false)} style={{ position: "relative", aspectRatio: "16 / 9", background: "#000", cursor: controlsVisible ? "default" : "none" }}>
-              <video ref={videoRef} className="entertainment-video" src={currentEpisode.url} controls={false} preload="metadata" onClick={togglePlay} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); showControls(); }} onPause={() => { setIsPlaying(false); setControlsVisible(true); }} onEnded={handleEnded} onError={() => setError("This episode could not be loaded from Dropbox. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
+              <video ref={videoRef} className="entertainment-video" src={currentEpisode.url} controls={false} preload="metadata" onClick={togglePlay} onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); showControls(); }} onPause={() => { setIsPlaying(false); setControlsVisible(true); }} onEnded={handleEnded} onError={() => setError("This episode could not be loaded. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
               <div onClick={(event) => event.stopPropagation()} style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "38px 12px 10px", opacity: controlsVisible ? 1 : 0, pointerEvents: controlsVisible ? "auto" : "none", transition: "opacity .2s ease", background: "linear-gradient(transparent, rgba(0,0,0,.88))" }}>
                 <input aria-label="Seek" type="range" min="0" max={duration || 0} step="0.1" value={currentTime} onChange={seek} style={{ width: "100%", height: 3, accentColor: "#ff0000", marginBottom: 8, display: "block", cursor: "pointer" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#fff" }}>
@@ -313,22 +290,19 @@ export default function EntertainmentClient() {
               {selectedMovie.type === "embed" ? (
                 <iframe title={selectedMovie.title} src={selectedMovie.url} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={{ width: "100%", height: "100%", border: 0, display: "block" }} />
               ) : (
-                <video ref={videoRef} className="entertainment-video" src={selectedMovie.url} controls preload="metadata" onError={() => setError("This movie could not be loaded from Dropbox. Check the shared link.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
+                <video key={selectedMovie.url} className="entertainment-video" src={selectedMovie.url} controls preload="metadata" playsInline onError={() => setError("This movie could not be loaded. The video host is refusing the browser request.")} style={{ width: "100%", height: "100%", display: "block", objectFit: "contain" }} />
               )}
               {error && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: 20, background: "rgba(0,0,0,.62)", color: "#fff", textAlign: "center", fontSize: 14 }}>{error}</div>}
             </div>
           </section>
         </>
       ) : (
-        <div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12 }}>
-            {MOVIES.map((movie) => (
-              <button key={movie.title} type="button" onClick={() => chooseMovie(movie)} style={{ ...cardStyle, padding: 18, minHeight: 125 }}>
-                <div style={{ fontSize: 15, fontWeight: 800 }}>{movie.title}</div>
-                <div style={{ marginTop: 7, fontSize: 12, opacity: .55 }}>{movie.type === "embed" ? "Embedded movie" : "Dropbox movie"}</div>
-              </button>
-            ))}
-          </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12 }}>
+          {MOVIES.map((movie) => (
+            <button key={movie.title} type="button" onClick={() => chooseMovie(movie)} style={{ ...cardStyle, padding: 18, minHeight: 125 }}>
+              <div style={{ fontSize: 15, fontWeight: 800 }}>{movie.title}</div>
+            </button>
+          ))}
         </div>
       )}
     </div>
