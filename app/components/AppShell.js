@@ -1,37 +1,143 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
-import PersistentSpotifyEmbed from "./PersistentSpotifyEmbed";
+import MusicClient from "../music/MusicClient";
+import EntertainmentClient from "../entertainment/EntertainmentClient";
+import SoundboardClient from "../soundboard/SoundboardClient";
+import FriendsClient from "../friends/FriendsClient";
+import ProfileClient from "../profile/ProfileClient";
+import Settings from "../settings/page";
+import NotificationsPage from "../notifications/page";
 import { touchPresence } from "../friends/actions";
 
 const navOrder = ["/", "/rules", "/music", "/entertainment", "/soundboard", "/profile", "/friends", "/settings", "/notifications"];
 
+const viewLabels = {
+  "/": "Home",
+  "/rules": "Rules",
+  "/music": "Music",
+  "/entertainment": "Entertainment",
+  "/soundboard": "Soundboard",
+  "/profile": "Profile",
+  "/friends": "Friends",
+  "/settings": "Settings",
+  "/notifications": "Notifications",
+};
+
+function normalizePath(pathname) {
+  if (!pathname) return "/";
+  return pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+}
+
 function routeIndex(pathname) {
-  const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
-  const index = navOrder.indexOf(normalized);
+  const index = navOrder.indexOf(normalizePath(pathname));
   return index === -1 ? 0 : index;
 }
 
-export default function AppShell({ children }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const previousPath = useRef(pathname);
+function AuthRequired() {
+  return (
+    <main className="auth-required-page">
+      <section className="auth-required-card">
+        <p className="eyebrow">VEHEMENCE</p>
+        <h1>Sign in to use this</h1>
+        <p>You need a Vehemence account to access this section.</p>
+        <div className="hero-buttons">
+          <a className="secondary-button" href="/rules">Back to Rules</a>
+          <a className="primary-button" href="/login">Log In</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function HomeView({ user, onNavigate }) {
+  return (
+    <main className="home">
+      <section className="hero">
+        <div className="hero-content">
+          <p className="eyebrow">WELCOME TO VEHEMENCE</p>
+          <h1>VEHEMENCE</h1>
+          <p className="hero-description">Your new home for music, community, and more.</p>
+          <div className="hero-buttons">
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => user ? onNavigate("/music") : window.location.assign("/rules")}
+            >
+              {user ? "Enter Vehemence" : "Sign Up / Log In"}
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function RulesView({ user, onNavigate }) {
+  return (
+    <main className="rules-page">
+      <div className="rules-container">
+        <p className="eyebrow">VEHEMENCE</p>
+        <h1>Rules</h1>
+        <section className="rules-card">
+          <p>• Do not impersonate other users, staff, or admins.</p>
+          <p>• Do not abuse bugs, glitches, or vulnerabilities.</p>
+          <p>• Do not damage, disrupt, or intentionally interfere with the site.</p>
+          <p>• Follow the rules and respect staff decisions.</p>
+          <p>• Do not do anything that could get Vehemence taken down or put the community at risk.</p>
+          <p>• Do not leak private Vehemence information, documents, links, or internal information to unauthorized people.</p>
+          <div className="rules-bottom">
+            <p>{user ? "You are already signed in. You can continue to Vehemence." : "By continuing, you agree to follow the Vehemence rules."}</p>
+            <button className="primary-button" type="button" onClick={() => user ? onNavigate("/music") : window.location.assign("/signup")}>
+              {user ? "Continue to Vehemence" : "I Agree"}
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function renderView(pathname, user, onNavigate) {
+  switch (pathname) {
+    case "/":
+      return <HomeView user={user} onNavigate={onNavigate} />;
+    case "/rules":
+      return <RulesView user={user} onNavigate={onNavigate} />;
+    case "/music":
+      return <MusicClient />;
+    case "/entertainment":
+      return <main className="games-page"><header className="games-header"><div><p className="eyebrow">VEHEMENCE</p><h1>Entertainment</h1></div></header><section className="game-section"><div className="section-title-row"><div><h2>Entertainment</h2></div></div><EntertainmentClient /></section></main>;
+    case "/soundboard":
+      return <main className="games-page"><header className="games-header"><div><p className="eyebrow">VEHEMENCE</p><h1>Soundboard</h1></div></header><section className="game-section"><div className="section-title-row"><div><h2>Sounds</h2></div></div><SoundboardClient /></section></main>;
+    case "/profile":
+      return user ? <ProfileClient user={user} /> : <AuthRequired />;
+    case "/friends":
+      return user ? <FriendsClient /> : <AuthRequired />;
+    case "/settings":
+      return user ? <Settings /> : <AuthRequired />;
+    case "/notifications":
+      return <NotificationsPage />;
+    default:
+      return null;
+  }
+}
+
+export default function AppShell({ children, user }) {
+  const pathname = normalizePath(usePathname());
+  const isMainView = navOrder.includes(pathname);
+  const initialPath = isMainView ? pathname : "/";
+  const previousView = useRef(initialPath);
+  const [activeView, setActiveView] = useState(initialPath);
   const [direction, setDirection] = useState("right");
-  const [pages, setPages] = useState(() => [{ pathname, children }]);
 
   useEffect(() => {
-    const previousIndex = routeIndex(previousPath.current);
-    const currentIndex = routeIndex(pathname);
-    setDirection(currentIndex >= previousIndex ? "right" : "left");
-    previousPath.current = pathname;
-
-    setPages((currentPages) => {
-      if (currentPages.some((page) => page.pathname === pathname)) return currentPages;
-      return [...currentPages, { pathname, children }];
-    });
-  }, [pathname, children]);
+    if (isMainView && pathname !== activeView) {
+      setActiveView(pathname);
+    }
+  }, [isMainView, pathname, activeView]);
 
   useEffect(() => {
     touchPresence().catch(() => {});
@@ -39,48 +145,35 @@ export default function AppShell({ children }) {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    const onClick = (event) => {
-      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const link = event.target.closest("a[href]");
-      if (!link) return;
-      const url = new URL(link.href, window.location.origin);
-      if (url.origin !== window.location.origin || url.pathname === pathname) return;
-      if (!navOrder.includes(url.pathname)) return;
+  function navigate(nextPath) {
+    const normalized = normalizePath(nextPath);
+    if (!navOrder.includes(normalized) || normalized === activeView) return;
+    setDirection(routeIndex(normalized) >= routeIndex(activeView) ? "right" : "left");
+    previousView.current = activeView;
+    setActiveView(normalized);
+  }
 
-      event.preventDefault();
-      setDirection(routeIndex(url.pathname) >= routeIndex(pathname) ? "right" : "left");
-      router.push(url.pathname);
-    };
+  const pageLabel = useMemo(() => viewLabels[activeView] || "Vehemence", [activeView]);
 
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, [pathname, router]);
-
-  const pageLabel = useMemo(() => {
-    if (pathname === "/") return "Home";
-    return pathname.slice(1).replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-  }, [pathname]);
+  if (!isMainView) {
+    return children;
+  }
 
   return (
     <>
-      <Navbar />
+      <Navbar activePath={activeView} onNavigate={navigate} />
       <div className="page-stack">
-        {pages.map((page) => {
-          const active = page.pathname === pathname;
-          return (
-            <div
-              className={`page-layer ${active ? "page-layer-active" : "page-layer-hidden"} ${active ? `page-transition page-transition-${direction}` : ""}`}
-              key={page.pathname}
-              aria-hidden={!active}
-            >
-              {page.children}
-            </div>
-          );
-        })}
+        {navOrder.map((path) => (
+          <div
+            className={`page-layer ${path === activeView ? "page-layer-active" : "page-layer-hidden"} ${path === activeView ? `page-transition page-transition-${direction}` : ""}`}
+            key={path}
+            aria-hidden={path !== activeView}
+          >
+            {renderView(path, user, navigate)}
+          </div>
+        ))}
       </div>
-      <PersistentSpotifyEmbed />
-      <div className="page-active-bubble" key={pathname} aria-live="polite">
+      <div className="page-active-bubble" key={activeView} aria-live="polite">
         <span />
         {pageLabel}
       </div>
