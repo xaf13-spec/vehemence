@@ -36,7 +36,7 @@ function routeIndex(pathname) {
   return index === -1 ? 0 : index;
 }
 
-function AuthRequired() {
+function AuthRequired({ onNavigate }) {
   return (
     <main className="auth-required-page">
       <section className="auth-required-card">
@@ -44,8 +44,8 @@ function AuthRequired() {
         <h1>Sign in to use this</h1>
         <p>You need a Vehemence account to access this section.</p>
         <div className="hero-buttons">
-          <a className="secondary-button" href="/rules">Back to Rules</a>
-          <a className="primary-button" href="/login">Log In</a>
+          <button className="secondary-button" type="button" onClick={() => onNavigate("/rules")}>Back to Rules</button>
+          <button className="primary-button" type="button" onClick={() => window.location.assign("/login")}>Log In</button>
         </div>
       </section>
     </main>
@@ -113,11 +113,11 @@ function renderView(pathname, user, onNavigate) {
     case "/soundboard":
       return <main className="games-page"><header className="games-header"><div><p className="eyebrow">VEHEMENCE</p><h1>Soundboard</h1></div></header><section className="game-section"><div className="section-title-row"><div><h2>Sounds</h2></div></div><SoundboardClient /></section></main>;
     case "/profile":
-      return user ? <ProfileClient user={user} /> : <AuthRequired />;
+      return user ? <ProfileClient user={user} /> : <AuthRequired onNavigate={onNavigate} />;
     case "/friends":
-      return user ? <FriendsClient /> : <AuthRequired />;
+      return user ? <FriendsClient /> : <AuthRequired onNavigate={onNavigate} />;
     case "/settings":
-      return user ? <Settings /> : <AuthRequired />;
+      return user ? <Settings /> : <AuthRequired onNavigate={onNavigate} />;
     case "/notifications":
       return <NotificationsPage />;
     default:
@@ -129,15 +129,15 @@ export default function AppShell({ children, user }) {
   const pathname = normalizePath(usePathname());
   const isMainView = navOrder.includes(pathname);
   const initialPath = isMainView ? pathname : "/";
-  const previousView = useRef(initialPath);
   const [activeView, setActiveView] = useState(initialPath);
   const [direction, setDirection] = useState("right");
+  const initializedFromPath = useRef(false);
 
   useEffect(() => {
-    if (isMainView && pathname !== activeView) {
-      setActiveView(pathname);
-    }
-  }, [isMainView, pathname, activeView]);
+    if (initializedFromPath.current || !isMainView) return;
+    initializedFromPath.current = true;
+    setActiveView(initialPath);
+  }, [initialPath, isMainView]);
 
   useEffect(() => {
     touchPresence().catch(() => {});
@@ -149,7 +149,6 @@ export default function AppShell({ children, user }) {
     const normalized = normalizePath(nextPath);
     if (!navOrder.includes(normalized) || normalized === activeView) return;
     setDirection(routeIndex(normalized) >= routeIndex(activeView) ? "right" : "left");
-    previousView.current = activeView;
     setActiveView(normalized);
   }
 
