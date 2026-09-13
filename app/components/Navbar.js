@@ -23,22 +23,35 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
   const [unread, setUnread] = useState(0);
+  const [navMode, setNavMode] = useState("top");
 
   useEffect(() => {
     if (!localStorage.getItem("vehemence_notifications")) localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
     const update = () => {
       try { setUnread(JSON.parse(localStorage.getItem("vehemence_notifications") || "[]").filter((item) => !item.read).length); } catch { setUnread(0); }
     };
+    const updateNav = () => setNavMode(localStorage.getItem("vehemence_nav_mode") || "top");
     update();
+    updateNav();
     window.addEventListener("storage", update);
     window.addEventListener("vehemence-notifications-changed", update);
-    return () => { window.removeEventListener("storage", update); window.removeEventListener("vehemence-notifications-changed", update); };
+    window.addEventListener("vehemence-navigation-changed", updateNav);
+    return () => {
+      window.removeEventListener("storage", update);
+      window.removeEventListener("vehemence-notifications-changed", update);
+      window.removeEventListener("vehemence-navigation-changed", updateNav);
+    };
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-nav-mode", navMode);
+  }, [navMode]);
+
   const currentPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+  const side = navMode === "side";
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${side ? "navbar-side" : ""}`}>
       <Link href="/" className="logo">VEHEMENCE</Link>
       <div className="nav-links">
         {navItems.map(([href, label]) => (
