@@ -22,7 +22,6 @@ export default function ProfileClient({ user }) {
   const [recent, setRecent] = useState([]);
   const [played, setPlayed] = useState(0);
   const [activeDays, setActiveDays] = useState([]);
-  const [friends, setFriends] = useState([]);
   const [online, setOnline] = useState(true);
 
   function load() {
@@ -36,7 +35,6 @@ export default function ProfileClient({ user }) {
     setRecent(JSON.parse(localStorage.getItem("vehemence_recent_games") || "[]"));
     setPlayed(Number(localStorage.getItem("vehemence_games_played") || 0));
     setActiveDays(JSON.parse(localStorage.getItem("vehemence_active_days") || "[]"));
-    setFriends(JSON.parse(localStorage.getItem("vehemence_friends") || "[]"));
   }
 
   useEffect(() => {
@@ -97,14 +95,6 @@ export default function ProfileClient({ user }) {
     event.target.value = "";
   }
 
-  function addFriend() {
-    const name = window.prompt("Enter a Vehemence username to add:");
-    if (!name?.trim() || name.trim().toLowerCase() === user.username.toLowerCase()) return;
-    const next = Array.from(new Set([...friends, name.trim()])).slice(0, 100);
-    setFriends(next);
-    localStorage.setItem("vehemence_friends", JSON.stringify(next));
-  }
-
   return (
     <main className="profile-page">
       <section className="profile-container">
@@ -130,7 +120,6 @@ export default function ProfileClient({ user }) {
         <div className="profile-stats-grid">
           <div className="profile-stat"><strong>{played}</strong><span>Games Played</span></div>
           <div className="profile-stat"><strong>{favorites.length}</strong><span>Favorites</span></div>
-          <div className="profile-stat"><strong>{friends.length}</strong><span>Friends</span></div>
           <div className="profile-stat"><strong>{unlocked.size}</strong><span>Achievements</span></div>
         </div>
 
@@ -145,8 +134,6 @@ export default function ProfileClient({ user }) {
         <section className="profile-section"><div className="profile-section-header"><h2>Favorites</h2><p>Your saved games.</p></div><div className="profile-card profile-list-card">{favorites.length ? favorites.map((name) => <div className="profile-list-item" key={name}><span>★ {name}</span><span>Favorite</span></div>) : <p className="profile-empty">No favorite games yet.</p>}</div></section>
 
         <section className="profile-section"><div className="profile-section-header"><h2>Achievements</h2><p>Milestones you've unlocked. No badges or showcase system.</p></div><div className="achievement-grid">{achievements.map(([id, name, description]) => <div className={`achievement-card ${unlocked.has(id) ? "unlocked" : ""}`} key={id}><div className="achievement-mark">{unlocked.has(id) ? "✓" : "○"}</div><div><h3>{name}</h3><p>{description}</p></div></div>)}</div></section>
-
-        <section className="profile-section"><div className="profile-section-header"><h2>Friends</h2><p>Keep a simple list of people you play with.</p></div><div className="profile-card profile-list-card"><div className="friends-toolbar"><span>{friends.length} {friends.length === 1 ? "friend" : "friends"}</span><button className="secondary-button" onClick={addFriend}>Add Friend</button></div>{friends.length ? friends.map((name) => <div className="profile-list-item" key={name}><span><span className="profile-status-dot" />{name}</span><span>Offline</span></div>) : <p className="profile-empty">No friends added yet.</p>}</div></section>
       </section>
     </main>
   );
