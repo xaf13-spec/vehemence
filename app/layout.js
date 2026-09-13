@@ -9,6 +9,7 @@ import "./game-player.css";
 import "./browser/browser.css";
 import "./page-transition.css";
 import "./navigation.css";
+import "./friends/friends.css";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
 import BrowserCustomization from "./components/BrowserCustomization";
