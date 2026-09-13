@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Navbar from "./Navbar";
-import PersistentSpotifyPlayer from "./PersistentSpotifyPlayer";
 import { touchPresence } from "../friends/actions";
 
-const navOrder = ["/", "/rules", "/games", "/music", "/entertainment", "/soundboard", "/profile", "/friends", "/settings", "/notifications"];
+const navOrder = ["/", "/rules", "/music", "/entertainment", "/soundboard", "/profile", "/friends", "/settings", "/notifications"];
 
 function routeIndex(pathname) {
   const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
@@ -79,7 +78,6 @@ export default function AppShell({ children }) {
           );
         })}
       </div>
-      <PersistentSpotifyPlayer />
       <div className="page-active-bubble" key={pathname} aria-live="polite">
         <span />
         {pageLabel}
