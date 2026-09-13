@@ -1,7 +1,7 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUser } from "../../lib/auth";
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY);
 const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -9,13 +9,8 @@ const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
   : null;
 
 async function getCurrentUserId() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("vehemence_session")?.value;
-  if (!token) return null;
-  const client = admin || supabase;
-  const { data: session } = await client.from("sessions").select("user_id, expires_at").eq("token", token).single();
-  if (!session || new Date(session.expires_at) <= new Date()) return null;
-  return session.user_id;
+  const user = await getCurrentUser();
+  return user?.id || null;
 }
 
 function db() {
