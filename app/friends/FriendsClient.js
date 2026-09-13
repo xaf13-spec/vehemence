@@ -59,7 +59,7 @@ export default function FriendsClient() {
     <div className="friend-row">
       <Link href={`/profile/${encodeURIComponent(item.username)}`} className="friend-person">
         <span className={`friend-dot ${item.online ? "online" : ""}`} />
-        <span><strong>{item.username}</strong>{item.online ? <small>Online{item.last_game ? ` · Playing ${item.last_game}` : ""}</small> : <small>{item.last_game ? `Last played ${item.last_game}` : "Offline"}</small>}</span>
+        <span><strong>{item.username}</strong><small>{item.online ? "Online" : "Offline"}</small></span>
       </Link>
       <div className="friend-actions">{action}</div>
     </div>
@@ -98,12 +98,7 @@ export default function FriendsClient() {
                 item={item}
                 action={(
                   <>
-                    <Link
-                      href={`/chat/${encodeURIComponent(item.username)}`}
-                      className="secondary-button friend-action-link"
-                    >
-                      Chat
-                    </Link>
+                    <Link href={`/chat/${encodeURIComponent(item.username)}`} className="secondary-button friend-action-link">Chat</Link>
                     <StartCallButton calleeUsername={item.username} />
                     <button className="secondary-button" onClick={() => remove(item.id)}>Remove</button>
                   </>
