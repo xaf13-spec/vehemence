@@ -41,6 +41,25 @@ begin
   return jsonb_build_object('rolls',p.rolls,'pity',p.pity,'luck',effective_luck,'base_luck',p.luck,'equipped',p.equipped_aura,'inventory',inv,'gear',gear,'auras',public.vehemence_rng_auras(),'gear_defs',public.vehemence_rng_gear());
 end; $$;
 
+create or replace function public.vehemence_rng_roll(p_token text) returns jsonb language plpgsql security definer set search_path=public as $$
+declare uid uuid; p record; aura jsonb; next_pity integer; roll_luck numeric; inv_qty integer;
+begin
+  uid:=public.vehemence_user_id(p_token); if uid is null then raise exception 'You are not logged in.'; end if;
+  insert into public.rng_players(user_id) values(uid) on conflict do nothing;
+  select * into p from public.rng_players where user_id=uid for update;
+  next_pity:=p.pity+1;
+  select p.luck + coalesce(sum(case when g.equipped then (d->>'luck_bonus')::numeric else 0 end),0)
+    into roll_luck from public.rng_gear_inventory g cross join lateral jsonb_array_elements(public.vehemence_rng_gear()) d
+    where g.user_id=uid and d->>'id'=g.gear_id;
+  if next_pity>=10 then roll_luck:=roll_luck*2; next_pity:=0; end if;
+  aura:=public.vehemence_rng_pick(roll_luck);
+  insert into public.rng_inventory(user_id,aura_id,quantity) values(uid,aura->>'id',1)
+    on conflict(user_id,aura_id) do update set quantity=public.rng_inventory.quantity+1;
+  update public.rng_players set rolls=p.rolls+1,pity=next_pity,updated_at=now() where user_id=uid;
+  select quantity into inv_qty from public.rng_inventory where user_id=uid and aura_id=aura->>'id';
+  return jsonb_build_object('aura',aura,'quantity',inv_qty,'show_cutscene',coalesce((aura->>'one_in')::bigint,0)>=1000000,'state',public.vehemence_rng_state(p_token));
+end; $$;
+
 create or replace function public.vehemence_rng_craft(p_token text,p_gear_id text) returns jsonb language plpgsql security definer set search_path=public as $$
 declare uid uuid; recipe jsonb; ingredient jsonb; aura_id text; need_qty integer; have_qty integer;
 begin
@@ -74,5 +93,7 @@ begin
 end; $$;
 
 drop function if exists public.vehemence_rng_sacrifice(text,text,integer);
+grant execute on function public.vehemence_rng_state(text) to anon, authenticated;
+grant execute on function public.vehemence_rng_roll(text) to anon, authenticated;
 grant execute on function public.vehemence_rng_craft(text,text) to anon, authenticated;
 grant execute on function public.vehemence_rng_equip_gear(text,text) to anon, authenticated;
