@@ -42,10 +42,18 @@ export async function equipAura(auraId) {
   return { result: data };
 }
 
-export async function sacrificeAura(auraId, quantity) {
+export async function craftGear(gearId) {
   const token = await getToken();
   if (!token) return { error: "You are not logged in." };
-  const { data, error } = await supabase.rpc("vehemence_rng_sacrifice", { p_token: token, p_aura_id: auraId, p_quantity: quantity });
-  if (error) return { error: error.message || "Could not sacrifice aura." };
+  const { data, error } = await supabase.rpc("vehemence_rng_craft", { p_token: token, p_gear_id: gearId });
+  if (error) return { error: error.message || "Could not craft gear." };
+  return { result: data };
+}
+
+export async function equipGear(gearId) {
+  const token = await getToken();
+  if (!token) return { error: "You are not logged in." };
+  const { data, error } = await supabase.rpc("vehemence_rng_equip_gear", { p_token: token, p_gear_id: gearId });
+  if (error) return { error: error.message || "Could not equip gear." };
   return { result: data };
 }
