@@ -52,6 +52,7 @@ const categories = ["All", ...new Set(games.map((game) => game.category))];
 export default function GamesClient() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
+  const [selectedGame, setSelectedGame] = useState(null);
 
   const filteredGames = useMemo(() => games.filter((game) =>
     (category === "All" || game.category === category) &&
@@ -78,6 +79,16 @@ export default function GamesClient() {
           </select>
         </div>
 
+        {selectedGame && (
+          <section className="games-player" aria-label={`Playing ${selectedGame.name}`}>
+            <div className="games-player-header">
+              <div><h2>{selectedGame.name}</h2><p>Playing on Vehemence</p></div>
+              <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close game ✕</button>
+            </div>
+            <iframe className="games-player-frame" src={selectedGame.playUrl} title={selectedGame.name} allow="fullscreen; autoplay; gamepad" allowFullScreen />
+            <p className="games-player-note">If this game does not load here, its original host may block embedding; that game needs to be hosted directly on Vehemence.</p>
+          </section>
+        )}
         <p className="games-results-count">{filteredGames.length} games</p>
         <div className="games-grid">
           {filteredGames.map((game) => (
@@ -93,7 +104,7 @@ export default function GamesClient() {
                 <span>{game.description}</span>
               </div>
               <div className="game-card-actions">
-                <a className="primary-button" href={game.playUrl} target={game.local ? undefined : "_blank"} rel={game.local ? undefined : "noreferrer"}>Play</a>
+                <button type="button" className="primary-button" onClick={() => { setSelectedGame(game); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Play</button>
                 <a href={game.source} target="_blank" rel="noreferrer">Source</a>
               </div>
             </article>
@@ -101,7 +112,7 @@ export default function GamesClient() {
         </div>
 
         {filteredGames.length === 0 && <p className="games-empty">No games found.</p>}
-        <p className="games-footnote">Some games open in a new tab on their original hosted demo. Their source code is linked on each card.</p>
+        <p className="games-footnote">Games launch in the player above. Source code is linked on each card.</p>
       </section>
     </main>
   );
