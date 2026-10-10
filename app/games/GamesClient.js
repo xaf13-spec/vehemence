@@ -2,51 +2,42 @@
 
 import { useMemo, useState } from "react";
 
-const collection = "https://github.com/mashukui/web-games";
-const live = "https://mashukui.github.io/web-games";
-const browserGames = "https://github.com/emjay045/browser-games";
-const browserLive = "https://emjay045.github.io/browser-games";
+const collection = "https://github.com/sausi-7/games";
+const live = "https://sausi-7.github.io/games/";
+const classicSource = "https://github.com/gabrielecirulli/2048";
 
 const games = [
-  { id: "2048", name: "2048", category: "Puzzle", description: "Merge the tiles and chase your best score.", source: "https://github.com/gabrielecirulli/2048", thumbnail: "https://cloud.githubusercontent.com/assets/1175750/8614312/280e5dc2-26f1-11e5-9f1f-5891c3ca8b26.png", playUrl: "/games/2048/index.html", local: true },
-  { id: "snake", name: "Snake", category: "Classic", description: "Eat, grow, and try not to run into yourself.", source: collection, playUrl: live + "/snake/" },
-  { id: "tetris", name: "Tetris", category: "Puzzle", description: "Fit the falling blocks and clear lines.", source: browserGames, playUrl: browserLive + "/tetris/" },
-  { id: "wordle", name: "Wordle", category: "Word", description: "Guess the hidden five-letter word.", source: browserGames, playUrl: browserLive + "/wordle/" },
-  { id: "minesweeper", name: "Minesweeper", category: "Puzzle", description: "Clear the board without hitting a mine.", source: collection, playUrl: live + "/minesweeper/" },
-  { id: "breakout", name: "Breakout", category: "Arcade", description: "Bounce the ball and break every brick.", source: collection, playUrl: live + "/breakout/" },
-  { id: "pong", name: "Pong", category: "Arcade", description: "A simple paddle duel against the computer.", source: browserGames, playUrl: browserLive + "/pong/" },
-  { id: "flappy-bird", name: "Flappy Bird", category: "Arcade", description: "Tap or click to fly through the pipes.", source: browserGames, playUrl: browserLive + "/flappy-bird/" },
-  { id: "dino-run", name: "Dino Run", category: "Arcade", description: "Jump over cacti and see how long you last.", source: collection, playUrl: live + "/dino-run/" },
-  { id: "tic-tac-toe", name: "Tic Tac Toe", category: "Classic", description: "Play against the computer or a friend.", source: collection, playUrl: live + "/tic-tac-toe/" },
-  { id: "connect-four", name: "Connect Four", category: "Classic", description: "Line up four discs before the computer does.", source: collection, playUrl: live + "/connect-four/" },
-  { id: "memory-match", name: "Memory Match", category: "Puzzle", description: "Flip cards and find all the matching pairs.", source: collection, playUrl: live + "/memory-match/" },
-  { id: "star-defender", name: "Star Defender", category: "Action", description: "Survive waves of enemies in a space shooter.", source: collection, playUrl: live + "/star-defender/" },
-  { id: "piano-tap", name: "Piano Tap", category: "Arcade", description: "Tap the right tiles before they pass you.", source: collection, playUrl: live + "/piano-tap/" },
-  { id: "cross-road", name: "Cross Road", category: "Arcade", description: "Dodge traffic and make it across safely.", source: collection, playUrl: live + "/cross-road/" },
-  { id: "slide-puzzle", name: "Slide Puzzle", category: "Puzzle", description: "Slide the tiles back into the right order.", source: collection, playUrl: live + "/slide-puzzle/" },
-  { id: "fruit-slice", name: "Fruit Slice", category: "Arcade", description: "Slice fruit and build up your combo.", source: collection, playUrl: live + "/fruit-slice/" },
-  { id: "bubble-shooter", name: "Bubble Shooter", category: "Puzzle", description: "Match bubbles and clear the board.", source: collection, playUrl: live + "/bubble-shooter/" },
-  { id: "sudoku", name: "Sudoku", category: "Puzzle", description: "Fill the grid so every row and box works.", source: collection, playUrl: live + "/sudoku/" },
-  { id: "merge-drop", name: "Merge Drop", category: "Puzzle", description: "Drop matching fruit and merge them together.", source: collection, playUrl: live + "/merge-drop/" },
-  { id: "water-sort", name: "Water Sort", category: "Puzzle", description: "Sort the colours into separate tubes.", source: collection, playUrl: live + "/water-sort/" },
-  { id: "slingshot", name: "Slingshot", category: "Arcade", description: "Aim your shot and try to hit the target.", source: collection, playUrl: live + "/slingshot/" },
-  { id: "helix-drop", name: "Helix Drop", category: "Arcade", description: "Guide the ball down through the tower.", source: collection, playUrl: live + "/helix-drop/" },
-  { id: "gem-match", name: "Gem Match", category: "Puzzle", description: "Match gems and chain together combos.", source: collection, playUrl: live + "/gem-match/" },
-  { id: "maze-muncher", name: "Maze Muncher", category: "Arcade", description: "Collect every dot and avoid the ghosts.", source: collection, playUrl: live + "/maze-muncher/" },
-  { id: "air-hockey", name: "Air Hockey", category: "Sports", description: "Play a quick air hockey match against AI.", source: collection, playUrl: live + "/air-hockey/" },
-  { id: "reversi", name: "Reversi", category: "Classic", description: "Flip your opponent's pieces and control the board.", source: collection, playUrl: live + "/reversi/" },
-  { id: "battleship", name: "Battleship", category: "Classic", description: "Find the hidden fleet before the computer finds yours.", source: collection, playUrl: live + "/battleship/" },
-  { id: "sokoban", name: "Sokoban", category: "Puzzle", description: "Push every crate onto a target without getting stuck.", source: collection, playUrl: live + "/sokoban/" },
-  { id: "lights-out", name: "Lights Out", category: "Puzzle", description: "Switch off every light with the fewest moves.", source: collection, playUrl: live + "/lights-out/" },
-  { id: "ant-flap", name: "Ant Flap", category: "Arcade", description: "Fly through the gaps and avoid the branches.", source: collection, playUrl: live + "/ant-flap/" },
-  { id: "ant-jump", name: "Ant Jump", category: "Arcade", description: "Bounce across platforms and keep climbing.", source: collection, playUrl: live + "/ant-jump/" },
-  { id: "block-drop", name: "Block Drop", category: "Puzzle", description: "Stack falling blocks and clear the board.", source: collection, playUrl: live + "/block-drop/" },
-  { id: "paddle-duel", name: "Paddle Duel", category: "Arcade", description: "Play a Pong-style match with three difficulty levels.", source: collection, playUrl: live + "/paddle-duel/" },
-  { id: "stack-tower", name: "Stack Tower", category: "Arcade", description: "Stack blocks as accurately as you can.", source: collection, playUrl: live + "/stack-tower/" },
-  { id: "whack-a-mole", name: "Whack-a-Mole", category: "Arcade", description: "Hit the moles, avoid the bombs, beat the timer.", source: collection, playUrl: live + "/whack-a-mole/" },
-  { id: "t-rex-runner", name: "T-Rex Runner", category: "Arcade", description: "Jump over obstacles and see how far you get.", source: "https://github.com/wayou/t-rex-runner", thumbnail: "https://raw.githubusercontent.com/wayou/t-rex-runner/master/assets/screenshot.gif", playUrl: "https://wayou.github.io/t-rex-runner/" },
+  { id: "2048", name: "2048", category: "Puzzle", description: "Merge the tiles and chase your best score.", source: classicSource, thumbnail: "https://cloud.githubusercontent.com/assets/1175750/8614312/280e5dc2-26f1-11e5-9f1f-5891c3ca8b26.png", playUrl: "/games/2048/index.html", local: true },
+  { id: "geometry-dash-style", name: "Clone Dash", category: "Arcade", description: "A Geometry Dash-style platformer with levels and an editor.", source: "https://github.com/royashbrook/clonedash", thumbnail: "", playUrl: "https://clonedash.royashbrook.com" },
+  { id: "tetris", name: "Tetris", category: "Puzzle", description: "Fit falling blocks and clear lines.", source: collection, playUrl: live + "games/puzzle/tetris/index.html" },
+  { id: "snake", name: "Snake", category: "Classic", description: "Eat, grow, and try not to hit yourself.", source: collection, playUrl: live + "games/arcade/snake/index.html" },
+  { id: "pacman", name: "Pac-Man", category: "Arcade", description: "Clear the maze and avoid the ghosts.", source: collection, playUrl: live + "games/arcade/pacman/index.html" },
+  { id: "flappy-bird", name: "Flappy Bird", category: "Arcade", description: "Tap to fly through the gaps.", source: collection, playUrl: live + "games/arcade/flappy/index.html" },
+  { id: "crossy-road", name: "Crossy Road", category: "Arcade", description: "Dodge traffic and get across safely.", source: collection, playUrl: live + "games/arcade/crossy-road/index.html" },
+  { id: "doodle-jump", name: "Doodle Jump", category: "Platformer", description: "Keep bouncing upward and avoid falling.", source: collection, playUrl: live + "games/platformer/doodle-jump/index.html" },
+  { id: "wordle", name: "Wordle", category: "Word", description: "Guess the hidden five-letter word.", source: collection, playUrl: live + "games/word-quiz/wordle/index.html" },
+  { id: "minesweeper", name: "Minesweeper", category: "Puzzle", description: "Clear the board without hitting a mine.", source: collection, playUrl: live + "games/puzzle/minesweeper/index.html" },
+  { id: "breakout", name: "Breakout", category: "Arcade", description: "Bounce the ball and break every brick.", source: collection, playUrl: live + "games/arcade/breakout/index.html" },
+  { id: "pong", name: "Pong", category: "Arcade", description: "A quick paddle game against the computer.", source: collection, playUrl: live + "games/arcade/pong/index.html" },
+  { id: "chess", name: "Chess", category: "Board", description: "Play a classic chess match against the computer.", source: collection, playUrl: live + "games/board/chess/index.html" },
+  { id: "tic-tac-toe", name: "Tic Tac Toe", category: "Board", description: "Get three in a row before your opponent.", source: collection, playUrl: live + "games/board/tic-tac-toe/index.html" },
+  { id: "connect-four", name: "Connect Four", category: "Board", description: "Line up four discs to win.", source: collection, playUrl: live + "games/board/connect-four/index.html" },
+  { id: "candy-crush", name: "Candy Crush-style Match", category: "Casual", description: "Match colorful pieces and clear the board.", source: collection, playUrl: live + "games/casual/candy-crush/index.html" },
+  { id: "bubble-shooter", name: "Bubble Shooter", category: "Puzzle", description: "Match bubbles and clear the screen.", source: collection, playUrl: live + "games/casual/bubble-shooter/index.html" },
+  { id: "basketball", name: "Basketball", category: "Sports", description: "Take shots and try to beat your score.", source: collection, playUrl: live + "games/sports/basketball/index.html" },
+  { id: "football", name: "Football", category: "Sports", description: "Play a quick football mini-game.", source: collection, playUrl: live + "games/sports/football/index.html" },
+  { id: "car-race", name: "Car Race", category: "Racing", description: "Dodge traffic and keep the race going.", source: collection, playUrl: live + "games/racing/car-race/index.html" },
+  { id: "two-cars", name: "Two Cars", category: "Racing", description: "Control two cars and dodge obstacles at once.", source: collection, playUrl: live + "games/racing/two-cars/index.html" },
+  { id: "road-fighter", name: "Road Fighter", category: "Racing", description: "Race down the road and avoid traffic.", source: collection, playUrl: live + "games/racing/road-fighter/index.html" },
+  { id: "space-waves", name: "Space Waves-style", category: "Arcade", description: "Guide your ship through a tight obstacle course.", source: collection, playUrl: live + "games/arcade/space-waves/index.html" },
+  { id: "space-fighter", name: "Space Fighter", category: "Shooter", description: "Take on waves of enemies in space.", source: collection, playUrl: live + "games/shooter/space-fighter/index.html" },
+  { id: "fruit-merge", name: "Fruit Merge", category: "Casual", description: "Drop matching fruit and merge them together.", source: collection, playUrl: live + "games/casual/fruit-merge/index.html" },
+  { id: "stack-tower", name: "Stack Tower 3D", category: "Arcade", description: "Stack blocks as high as you can.", source: collection, playUrl: live + "games/3d/stack-tower/index.html" },
+  { id: "parkour", name: "Parkour", category: "Platformer", description: "Jump across platforms and make it to the end.", source: collection, playUrl: live + "games/platformer/parkour/index.html" },
+  { id: "mario-like", name: "Mario-style Platformer", category: "Platformer", description: "Run and jump through a classic side-scrolling level.", source: collection, playUrl: live + "games/platformer/mario/index.html" },
+  { id: "sudoku", name: "Sudoku", category: "Puzzle", description: "Fill the grid with numbers using logic.", source: collection, playUrl: live + "games/puzzle/sudoku/index.html" },
+  { id: "memory-match", name: "Memory Match", category: "Puzzle", description: "Flip cards and find matching pairs.", source: collection, playUrl: live + "games/puzzle/memory-match/index.html" },
 ];
-
 const categories = ["All", ...new Set(games.map((game) => game.category))];
 
 export default function GamesClient() {
