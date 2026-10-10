@@ -11,6 +11,7 @@ const games = [
     source: "https://github.com/gabrielecirulli/2048",
     thumbnail: "https://cloud.githubusercontent.com/assets/1175750/8614312/280e5dc2-26f1-11e5-9f1f-5891c3ca8b26.png",
     license: "MIT",
+    playUrl: "/games/2048/index.html",
   },
   {
     id: "t-rex-runner",
@@ -92,7 +93,7 @@ export default function GamesClient() {
                 <span>{game.description}</span>
               </div>
               <div className="game-card-actions">
-                <button type="button" className="primary-button" disabled title="This game needs a verified, locally hosted build before it can launch here">Not hosted yet</button>
+                {game.playUrl ? <a className="primary-button" href={game.playUrl}>Play now ↗</a> : <button type="button" className="primary-button" disabled title="This game needs a verified, locally hosted build before it can launch here">Not hosted yet</button>}
                 <a href={game.source} target="_blank" rel="noreferrer" title="View original game project on GitHub">GitHub ↗</a>
               </div>
             </article>
