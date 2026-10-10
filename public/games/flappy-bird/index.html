@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flappy Bird | Browser Games</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐤</text></svg>">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a14;--panel:#171728;--line:#2a2a45;--text:#e8e8f5;--muted:#8b8ba8;--neon:#ff9d5c}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+h1{font-size:26px;letter-spacing:.15em;color:var(--neon);margin-bottom:10px;text-shadow:0 0 20px rgba(255,157,92,.4)}
+.scorebar{display:flex;gap:28px;font-family:"Consolas",monospace;font-size:16px;margin-bottom:14px;color:var(--muted)}
+.scorebar b{color:var(--text)}
+#board{background:var(--panel);border:2px solid var(--neon);border-radius:10px;box-shadow:0 0 40px -8px rgba(255,157,92,.3)}
+.controls{margin-top:18px;font-size:14px;color:var(--muted);text-align:center;line-height:1.7}
+.controls kbd{font-family:"Consolas",monospace;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--text);font-size:12px}
+#overlay{position:fixed;inset:0;background:rgba(10,10,20,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;backdrop-filter:blur(4px)}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(30px,6vw,48px);color:var(--neon);text-shadow:0 0 30px rgba(255,157,92,.5)}
+#overlay p{color:var(--muted);font-size:16px}
+#overlay button{font-family:"Consolas",monospace;font-size:16px;letter-spacing:.2em;padding:14px 34px;background:transparent;border:2px solid var(--neon);color:var(--neon);border-radius:8px;cursor:pointer;transition:.2s}
+#overlay button:hover{background:var(--neon);color:var(--bg);box-shadow:0 0 30px rgba(255,157,92,.5)}
+</style>
+</head>
+<body>
+<h1>FLAPPY BIRD</h1>
+<div class="scorebar"><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span></div>
+<canvas id="board" width="420" height="600"></canvas>
+<div class="controls">
+  <kbd>Space</kbd> or <kbd>Click</kbd> / <kbd>Tap</kbd> to flap
+</div>
+<div id="overlay">
+  <h2 id="ovTitle">GAME OVER</h2>
+  <p id="ovSub"></p>
+  <button id="restart">PLAY AGAIN</button>
+</div>
+<script>
+const cv=document.getElementById('board'),ctx=cv.getContext('2d');
+const W=cv.width,H=cv.height;
+const GROUND=520,PIPE_W=64,GAP=150,SPEED=150;
+const GRAV=950,FLAP=-330;
+const START='start',PLAY='play',OVER='over';
+let state,score,best,last,pipes,bird;
+
+function loadBest(){return parseInt(localStorage.getItem('flappy_best')||'0',10)}
+function saveBest(v){localStorage.setItem('flappy_best',v)}
+
+function init(){
+  state=START;score=0;pipes=[];
+  bird={x:140,y:240,vy:0,r:13};
+  best=loadBest();updateHud();
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('ovTitle').textContent='READY?';
+  document.getElementById('ovSub').innerHTML='Tab the board or press Space';
+  draw();
+}
+function updateHud(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('best').textContent=best;
+}
+function flap(){
+  if(state===OVER){init();state=PLAY;bird.vy=FLAP;last=performance.now();return}
+  if(state===START)state=PLAY;
+  bird.vy=FLAP;
+  last=performance.now();
+}
+function spawnPipe(){
+  // gap corridor fully on screen: top from 70 .. (GROUND - GAP - 70)
+  const maxTop=GROUND-GAP-70;
+  const top=70+Math.random()*(Math.max(30,maxTop-70));
+  pipes.push({x:W+20,top,scored:false});
+}
+function step(dt){
+  if(state!==PLAY)return;
+  pipes.forEach(p=>p.x-=SPEED*dt);
+  if(!pipes.length||pipes[pipes.length-1].x<W-230)spawnPipe();
+  pipes=pipes.filter(p=>p.x+PIPE_W>-30);
+  // physics
+  bird.vy+=GRAV*dt;
+  bird.y+=bird.vy*dt;
+  // floor and ceiling
+  if(bird.y>GROUND-bird.r){bird.y=GROUND-bird.r;return gameOver()}
+  if(bird.y<bird.r){bird.y=bird.r;bird.vy=Math.max(bird.vy,0)}
+  // score
+  for(const p of pipes){
+    if(!p.scored&&p.x+PIPE_W<bird.x-bird.r){p.scored=true;score++;updateHud()}
+  }
+  // collision with pipes
+  for(const p of pipes){
+    if(bird.x+bird.r>p.x&&bird.x-bird.r<p.x+PIPE_W){
+      if(bird.y-bird.r<p.top||bird.y+bird.r>p.top+GAP){
+        return gameOver();
+      }
+    }
+  }
+}
+function gameOver(){
+  state=OVER;
+  if(score>best){best=score;saveBest(best)}
+  document.getElementById('best').textContent=best;
+  document.getElementById('ovTitle').textContent='GAME OVER';
+  document.getElementById('ovSub').innerHTML='Score '+score+(best>0?' &middot; Best '+best:'');
+  document.getElementById('overlay').classList.add('show');
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#0d1424');g.addColorStop(0.7,'#16223a');g.addColorStop(1,'#0a0a14');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // stars
+  ctx.fillStyle='rgba(255,255,255,.12)';
+  for(let i=0;i<40;i++){ctx.fillRect((i*97+13)%W,(i*53+29)%(GROUND-40),2,2)}
+  // ground
+  ctx.fillStyle='#181830';ctx.fillRect(0,GROUND,W,H-GROUND);
+  // pipes
+  for(const p of pipes){
+    ctx.fillStyle='#2fbf6a';ctx.shadowColor='#2fbf6a';ctx.shadowBlur=6;
+    ctx.fillRect(p.x,0,PIPE_W,p.top);
+    ctx.fillRect(p.x,p.top+GAP,PIPE_W,H-GROUND-(p.top+GAP));
+    ctx.fillStyle='#1f9a52';
+    ctx.fillRect(p.x-3,p.top-20,PIPE_W+6,20);
+    ctx.fillRect(p.x-3,p.top+GAP,PIPE_W+6,20);
+  }
+  ctx.shadowBlur=0;
+  // bird
+  ctx.fillStyle='#ffd166';ctx.shadowColor='#ffd166';ctx.shadowBlur=14;
+  ctx.beginPath();ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#ff9d5c';
+  ctx.beginPath();ctx.arc(bird.x+bird.r-2,bird.y+3,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#0a0a14';ctx.beginPath();ctx.arc(bird.x+4,bird.y-3,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(bird.x+5,bird.y-4,1.4,0,Math.PI*2);ctx.fill();
+  if(state===START){
+    ctx.fillStyle='rgba(10,10,20,.5)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#e8e8f5';ctx.font='bold 24px Consolas';ctx.textAlign='center';
+    ctx.fillText('TAP OR PRESS SPACE',W/2,H/2);
+    ctx.font='15px Consolas';ctx.fillStyle='#8b8ba8';
+    ctx.fillText('to start flapping',W/2,H/2+34);
+  }
+}
+function loop(t){
+  const dt=Math.min((t-last)/1000,0.05);last=t;
+  step(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key===' '||e.key==='Spacebar'){e.preventDefault();if(!e.repeat)flap()}
+});
+cv.addEventListener('mousedown',e=>{e.preventDefault();flap()});
+cv.addEventListener('touchstart',e=>{e.preventDefault();flap()},{passive:false});
+document.getElementById('restart').addEventListener('click',()=>{init();state=PLAY});
+best=loadBest();init();last=performance.now();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
