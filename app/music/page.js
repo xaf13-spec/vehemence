@@ -1,6 +1,5 @@
-import "./music.css";
-import MusicClient from "./MusicClient";
+import { redirect } from "next/navigation";
 
-export default function MusicPage() {
-  return <MusicClient />;
+export default function RemovedSectionRedirect() {
+  redirect("/games");
 }
