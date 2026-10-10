@@ -113,3 +113,6 @@
 .games-player-note{margin:0;padding:9px 14px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
 .games-card-actions button.primary-button{font:inherit;cursor:pointer}
 @media(max-width:640px){.games-player-frame{min-height:320px;height:65vh}.games-player-header{align-items:flex-start}}
+
+.games-player-header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}.games-player-header-actions a{font-size:13px;color:var(--text);text-decoration:underline;text-underline-offset:3px}.games-player-header-actions button{white-space:nowrap}
+@media(max-width:640px){.games-player-header-actions{flex-wrap:wrap;justify-content:flex-end}}
