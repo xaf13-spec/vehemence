@@ -4,12 +4,14 @@ import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "");
 const supabase = createClient(
-process.env.SUPABASE_URL,
-process.env.SUPABASE_PUBLISHABLE_KEY
+  supabaseUrl,
+  process.env.SUPABASE_PUBLISHABLE_KEY
 );
 
 export async function login(formData) {
+try {
 const username = formData.get("username")?.toString().trim();
 const password = formData.get("password")?.toString();
 
@@ -62,4 +64,7 @@ maxAge: 30 * 24 * 60 * 60
 });
 
 return { success: true };
+} catch (error) {
+  console.error("Login failed:", error);
+  return { error: "Could not reach the database. Check the Supabase project URL and key in Vercel." };
 }
