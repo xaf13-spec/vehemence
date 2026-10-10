@@ -1,1 +1,5 @@
-export default function GamesPage() { return null; }
+import GamesClient from "./GamesClient";
+
+export default function GamesPage() {
+  return <GamesClient />;
+}
