@@ -36,7 +36,7 @@ export async function signup(formData) {
     if (error) {
       if (error.code === "23505") return { error: "That username is already taken." };
       console.error("Signup profile insert failed:", error);
-      return { error: "Could not create account in the database. Check that the profiles table has the expected columns." };
+      return { error: `Database error (${error.code || "unknown"}): ${error.message || "Unknown insert error"}${error.details ? ` — ${error.details}` : ""}${error.hint ? ` Hint: ${error.hint}` : ""}` };
     }
 
     const token = randomBytes(32).toString("hex");
