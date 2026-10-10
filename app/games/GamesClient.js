@@ -34,6 +34,7 @@ const games = [
   { id: "basketball", cover: "🏀", name: "Basketball", category: "Sports", description: "Take shots and try to beat your score.", source: collection, playUrl: live + "games/sports/basketball/index.html" },
   { id: "football", cover: "⚽", name: "Football", category: "Sports", description: "Play a quick football mini-game.", source: collection, playUrl: live + "games/sports/football/index.html" },
   { id: "car-race", cover: "🏎️", name: "Car Race", category: "Racing", description: "Dodge traffic and keep the race going.", source: collection, playUrl: live + "games/racing/car-race/index.html" },
+  { id: "moto-x3m", cover: "🏍️", name: "Moto X3M", category: "Racing", description: "Race a dirt bike through stunt tracks, ramps, and obstacle courses.", source: "https://games.famobi.com/moto-x3m", playUrl: "https://play.famobi.com/moto-x3m", externalOpenUrl: "https://play.famobi.com/moto-x3m" },
   { id: "two-cars", cover: "🚗", name: "Two Cars", category: "Racing", description: "Control two cars and dodge obstacles at once.", source: collection, playUrl: live + "games/racing/two-cars/index.html" },
   { id: "road-fighter", cover: "🏁", name: "Road Fighter", category: "Racing", description: "Race down the road and avoid traffic.", source: collection, playUrl: live + "games/racing/road-fighter/index.html" },
   { id: "space-waves", cover: "🌊", name: "Space Waves-style", category: "Arcade", description: "Guide your ship through a tight obstacle course.", source: collection, playUrl: live + "games/arcade/space-waves/index.html" },
