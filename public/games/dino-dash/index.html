@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dino Dash | Browser Games</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦖</text></svg>">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a14;--panel:#171728;--line:#2a2a45;--text:#e8e8f5;--muted:#8b8ba8;--neon:#a8ff5c}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+h1{font-size:26px;letter-spacing:.15em;color:var(--neon);margin-bottom:10px;text-shadow:0 0 20px rgba(168,255,92,.4)}
+.scorebar{display:flex;gap:28px;font-family:"Consolas",monospace;font-size:16px;margin-bottom:14px;color:var(--muted)}
+.scorebar b{color:var(--text)}
+#board{background:var(--panel);border:2px solid var(--neon);border-radius:10px;box-shadow:0 0 40px -8px rgba(168,255,92,.3)}
+.controls{margin-top:18px;font-size:14px;color:var(--muted);text-align:center;line-height:1.7}
+.controls kbd{font-family:"Consolas",monospace;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--text);font-size:12px}
+#overlay{position:fixed;inset:0;background:rgba(10,10,20,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;backdrop-filter:blur(4px)}
+#overlay.show{display:flex}
+#overlay h2{font-size:clamp(30px,6vw,48px);color:var(--neon);text-shadow:0 0 30px rgba(168,255,92,.5)}
+#overlay p{color:var(--muted);font-size:16px}
+#overlay button{font-family:"Consolas",monospace;font-size:16px;letter-spacing:.2em;padding:14px 34px;background:transparent;border:2px solid var(--neon);color:var(--neon);border-radius:8px;cursor:pointer;transition:.2s}
+#overlay button:hover{background:var(--neon);color:var(--bg);box-shadow:0 0 30px rgba(168,255,92,.5)}
+@media(max-width:600px){#board{width:100%;height:auto}}
+</style>
+</head>
+<body>
+<h1>DINO DASH</h1>
+<div class="scorebar"><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span></div>
+<canvas id="board" width="700" height="260"></canvas>
+<div class="controls">
+  <kbd>Space</kbd>/<kbd>↑</kbd> jump &middot; <kbd>↓</kbd> duck &middot; <kbd>P</kbd> pause &middot; <kbd>R</kbd> restart
+</div>
+<div id="overlay">
+  <h2 id="ovTitle">GAME OVER</h2>
+  <p id="ovSub"></p>
+  <button id="restart">PLAY AGAIN</button>
+</div>
+<script>
+const cv=document.getElementById('board'),ctx=cv.getContext('2d');
+const W=700,H=260;
+const GROUND_Y=H-46;                 // top of the ground strip = where dino feet rest
+const DINO_X=66,MIN_H=46,DUCK_H=30;  // dino sprite width 22, height MIN_H standing / DUCK_H ducking
+const GRAV=1750,JUMP_V=-500;
+const READY='ready',PLAY='play',GAMEOVER='gameover';
+let state,score,best,last,speed,obstacles,dino,duckT,groundScroll;
+
+function loadBest(){return parseInt(localStorage.getItem('dino_best')||'0',10)}
+function saveBest(v){localStorage.setItem('dino_best',v)}
+
+// dino.bottom = y of the dino's FEET. Grounded when bottom === GROUND_Y.
+// Sprite height depends on whether ducking (only allowed while grounded).
+function init(){
+  state=READY;score=0;speed=360;groundScroll=0;obstacles=[];duckT=0;
+  dino={bottom:GROUND_Y,vy:0,duck:false};
+  best=loadBest();updateHud();
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('ovTitle').textContent='READY';
+  document.getElementById('ovSub').innerHTML='Press Space to run &middot; Best '+best;
+  draw();
+}
+function start(){state=PLAY;score=0;speed=360;obstacles=[];duckT=0;dino={bottom:GROUND_Y,vy:0,duck:false}}
+function dispScore(){return Math.floor(score/10)}
+function updateHud(){
+  document.getElementById('score').textContent=dispScore();
+  document.getElementById('best').textContent=Math.max(best,dispScore());
+}
+function grounded(){return dino.bottom>=GROUND_Y-0.5}
+function height(){return (dino.duck&&grounded())?DUCK_H:MIN_H}
+function top(){return dino.bottom-height()}
+function jump(){
+  if(state===READY){start();return}
+  if(state!==PLAY)return;
+  if(grounded()){dino.vy=JUMP_V}
+  dino.duck=false;duckT=0;
+}
+function duck(){
+  if(state!==PLAY)return;
+  if(grounded()){dino.duck=true;duckT=0.3}
+}
+function spawn(){
+  const r=Math.random();
+  if(r<0.22){obstacles.push({type:'bird',x:W+50,y:GROUND_Y-124,w:40,h:28,scored:false})}
+  else if(r<0.62){obstacles.push({type:'tall',x:W+50,w:20,h:44,scored:false})}
+  else{obstacles.push({type:'short',x:W+50,w:15,h:30,scored:false})}
+}
+function step(dt){
+  if(state!==PLAY)return;
+  groundScroll=(groundScroll+speed*dt)%40;
+  score+=speed*dt;
+  speed=Math.min(740,380+score*0.05);
+  updateHud();
+  if(!obstacles.length||obstacles[obstacles.length-1].x<W-470)spawn();
+  obstacles.forEach(o=>o.x-=speed*dt);
+  obstacles=obstacles.filter(o=>o.x>-70);
+  if(duckT>0){duckT-=dt;if(duckT<=0)dino.duck=false}
+  // vertical physics on the feet: apply while airborne OR while an upward vy exists
+  if(!grounded()||dino.vy<0){
+    dino.vy+=GRAV*dt;
+    dino.bottom+=dino.vy*dt;
+    if(dino.bottom>=GROUND_Y){dino.bottom=GROUND_Y;dino.vy=0}
+  }
+  // dino hitbox follows the sprite (feet + current height)
+  const dH=height(),dTop=top();
+  const dx=DINO_X+5,dy=dTop+5,dw=22-10,dh=dH-8;
+  for(const o of obstacles){
+    const oy=(o.type==='bird')?o.y:GROUND_Y-o.h;
+    const oh=o.h;
+    if(dx<o.x+o.w&&dx+dw>o.x&&dy<oy+oh&&dy+dh>oy){gameOver();return}
+  }
+  draw();
+}
+function gameOver(){
+  state=GAMEOVER;
+  const s=dispScore();
+  if(s>best){best=s;saveBest(best)}
+  document.getElementById('best').textContent=best;
+  document.getElementById('ovTitle').textContent='GAME OVER';
+  document.getElementById('ovSub').innerHTML='Score '+s+(best>0?' &middot; Best '+best:'');
+  document.getElementById('overlay').classList.add('show');
+}
+function drawDino(){
+  const h=height(),t=top();
+  const standing=h===MIN_H;
+  ctx.fillStyle='#a8ff5c';ctx.shadowColor='#a8ff5c';ctx.shadowBlur=8;
+  // body
+  ctx.fillRect(DINO_X,t,22,h);
+  // head (forward, top; sits lower when ducking)
+  const headTop=standing?t-5:t+1;
+  ctx.fillRect(DINO_X+22,headTop,16,13);
+  // tail behind
+  ctx.fillRect(DINO_X-8,t+9,10,5);
+  // legs (only when grounded, walk-cycle via groundScroll)
+  if(grounded()){
+    const stepOff=Math.floor(groundScroll/12)%2;
+    const legH=standing?11:5;
+    ctx.fillRect(DINO_X+4,t+h-3,3,legH+(stepOff?1:3));
+    ctx.fillRect(DINO_X+13,t+h-3,3,legH+(stepOff?3:1));
+  }
+  // beak
+  ctx.fillStyle='#d8ffb0';ctx.fillRect(DINO_X+38,headTop+5,6,3);
+  // eye
+  ctx.fillStyle='#0a0a14';ctx.fillRect(DINO_X+33,headTop+3,4,4);
+  ctx.shadowBlur=0;
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0d1424';ctx.fillRect(0,0,W,GROUND_Y);
+  ctx.fillStyle='rgba(255,255,255,.10)';
+  for(let i=0;i<24;i++){ctx.fillRect((i*97+13)%W,(i*53+15)%(GROUND_Y-26),2,2)}
+  // ground
+  ctx.fillStyle='#181830';ctx.fillRect(0,GROUND_Y,W,H-GROUND_Y);
+  ctx.fillStyle='rgba(168,255,92,.25)';
+  for(let i=0;i<W+60;i+=40){ctx.fillRect(i-groundScroll,GROUND_Y,30,3)}
+  // obstacles
+  for(const o of obstacles){
+    ctx.fillStyle='#ff4d6d';ctx.shadowColor='#ff4d6d';ctx.shadowBlur=6;
+    const oy=(o.type==='bird')?o.y:GROUND_Y-o.h;
+    ctx.fillRect(o.x,oy,o.w,o.h);
+    if(o.type==='bird'){ctx.fillRect(o.x+o.w-6,o.y-10,8,10);ctx.fillStyle='#0a0a14';ctx.fillRect(o.x+7,oy+6,6,6)}
+    else if(o.type==='tall'){ctx.fillRect(o.x+3,GROUND_Y-o.h-12,6,12)}
+    ctx.shadowBlur=0;
+  }
+  drawDino();
+  ctx.fillStyle='#a8ff5c';ctx.font='bold 18px Consolas';ctx.textAlign='right';
+  ctx.fillText(dispScore(),W-16,28);
+  if(state===READY){
+    ctx.fillStyle='rgba(10,10,20,.5)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#e8e8f5';ctx.font='bold 22px Consolas';ctx.textAlign='center';
+    ctx.fillText('PRESS SPACE OR TAP TO RUN',W/2,H/2);
+  }
+}
+function loop(t){
+  const dt=Math.min((t-last)/1000,0.05);last=t;
+  step(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+document.addEventListener('keydown',e=>{
+  const k=e.key;
+  if(k===' '||k==='Spacebar'||k==='ArrowUp'){e.preventDefault();if(!e.repeat)jump()}
+  else if(k==='ArrowDown'){e.preventDefault();duck()}
+  else if(k==='p'||k==='P'){if(state===PLAY)state='paused';else if(state==='paused')state=PLAY}
+  else if(k==='r'||k==='R'){init();return}
+});
+document.addEventListener('keyup',e=>{if(e.key==='ArrowDown'&&!e.repeat){dino.duck=false;duckT=0}});
+cv.addEventListener('mousedown',()=>jump());
+cv.addEventListener('touchstart',e=>{e.preventDefault();jump()},{passive:false});
+document.getElementById('restart').addEventListener('click',()=>{init();start()});
+best=loadBest();init();last=performance.now();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
