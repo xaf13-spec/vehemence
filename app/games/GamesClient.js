@@ -16,9 +16,7 @@ const games = [
   { id: "crossy-road", name: "Crossy Road", category: "Arcade", description: "Dodge traffic and get across safely.", source: collection, playUrl: live + "games/arcade/crossy-road/index.html" },
   { id: "doodle-jump", name: "Doodle Jump", category: "Platformer", description: "Keep bouncing upward and avoid falling.", source: collection, playUrl: live + "games/platformer/doodle-jump/index.html" },
   { id: "wordle", name: "Wordle", category: "Word", description: "Guess the hidden five-letter word.", source: collection, playUrl: live + "games/word-quiz/wordle/index.html" },
-  { id: "minesweeper", name: "Minesweeper", category: "Puzzle", description: "Clear the board without hitting a mine.", source: collection, playUrl: live + "games/puzzle/minesweeper/index.html" },
-  { id: "breakout", name: "Breakout", category: "Arcade", description: "Bounce the ball and break every brick.", source: collection, playUrl: live + "games/arcade/breakout/index.html" },
-  { id: "pong", name: "Pong", category: "Arcade", description: "A quick paddle game against the computer.", source: collection, playUrl: live + "games/arcade/pong/index.html" },
+  { id: "breakout", name: "Breakout-style Breakoid", category: "Arcade", description: "Bounce the ball and clear the blocks.", source: collection, playUrl: live + "games/arcade/breakoid/index.html" },
   { id: "chess", name: "Chess", category: "Board", description: "Play a classic chess match against the computer.", source: collection, playUrl: live + "games/board/chess/index.html" },
   { id: "tic-tac-toe", name: "Tic Tac Toe", category: "Board", description: "Get three in a row before your opponent.", source: collection, playUrl: live + "games/board/tic-tac-toe/index.html" },
   { id: "connect-four", name: "Connect Four", category: "Board", description: "Line up four discs to win.", source: collection, playUrl: live + "games/board/connect-four/index.html" },
@@ -36,7 +34,7 @@ const games = [
   { id: "parkour", name: "Parkour", category: "Platformer", description: "Jump across platforms and make it to the end.", source: collection, playUrl: live + "games/platformer/parkour/index.html" },
   { id: "mario-like", name: "Mario-style Platformer", category: "Platformer", description: "Run and jump through a classic side-scrolling level.", source: collection, playUrl: live + "games/platformer/mario/index.html" },
   { id: "sudoku", name: "Sudoku", category: "Puzzle", description: "Fill the grid with numbers using logic.", source: collection, playUrl: live + "games/puzzle/sudoku/index.html" },
-  { id: "memory-match", name: "Memory Match", category: "Puzzle", description: "Flip cards and find matching pairs.", source: collection, playUrl: live + "games/puzzle/memory-match/index.html" },
+  { id: "memory-match", name: "Memory Cards", category: "Puzzle", description: "Flip cards and find matching pairs.", source: collection, playUrl: live + "games/puzzle/memory-cards/index.html" },
 ];
 const categories = ["All", ...new Set(games.map((game) => game.category))];
 
