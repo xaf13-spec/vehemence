@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { login } from "./actions";
 
 export default function Login() {
@@ -33,7 +34,7 @@ export default function Login() {
           {error && <p className="auth-error">{error}</p>}
           <button type="submit" className="primary-button" disabled={loading}>{loading ? "Logging in..." : "Log In"}</button>
         </form>
-        <p className="auth-footer">Don't have an account? <a href="/signup">Create one</a></p>
+        <p className="auth-footer">Don't have an account? <Link href="/signup">Create one</Link></p>
       </div>
     </main>
   );
