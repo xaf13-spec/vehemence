@@ -10,6 +10,7 @@ import "./navigation.css";
 import "./friends/friends.css";
 import "./soundboard/soundboard.css";
 import "./social-dashboard.css";
+import "./games/games.css";
 import ChatWidget from "./components/ChatWidget";
 import CallWidget from "./components/CallWidget";
 import BrowserCustomization from "./components/BrowserCustomization";
