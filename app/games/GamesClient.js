@@ -13,6 +13,7 @@ const thumbnailFor = (game) => {
 };
 
 const games = [
+  { id: "eaglercraft", name: "Eaglercraft", category: "Sandbox", description: "Minecraft in your browser — creative and survival gameplay.", source: "https://github.com/LAX1DUDE/eaglercraft", cover: "⛏️", thumbnail: "https://raw.githubusercontent.com/LAX1DUDE/eaglercraft/main/stable-download/icon.png", playUrl: "https://dev.eaglercraft.com/play?version=1.8.8", externalOpenUrl: "https://dev.eaglercraft.com/play?version=1.8.8" },
   { id: "2048", name: "2048", category: "Puzzle", description: "Merge the tiles and chase your best score.", source: classicSource, cover: "🔢", thumbnail: "https://cloud.githubusercontent.com/assets/1175750/8614312/280e5dc2-26f1-11e5-9f1f-5891c3ca8b26.png", playUrl: "/games/2048/index.html", local: true },
   { id: "tetris", cover: "🧱", name: "Block Drop", category: "Puzzle", description: "Stack falling blocks and clear lines.", source: "https://github.com/mashukui/web-games", playUrl: "/games/tetris/index.html" },
   { id: "snake", cover: "🐍", name: "Snake", category: "Classic", description: "Eat, grow, and try not to hit yourself.", source: "https://github.com/mashukui/web-games", playUrl: "/games/snake/index.html" },
@@ -79,8 +80,8 @@ export default function GamesClient() {
         {selectedGame && (
           <section className="games-player" aria-label={`Playing ${selectedGame.name}`}>
             <div className="games-player-header">
-              <div><h2>{selectedGame.name}</h2><p>Playing on Vehemence</p></div>
-              <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close game ✕</button>
+              <div><h2>{selectedGame.name}</h2><p>{selectedGame.externalOpenUrl ? "If it is blocked here, open the game directly." : "Playing on Vehemence"}</p></div>
+              <div className="games-player-header-actions">{selectedGame.externalOpenUrl && <a href={selectedGame.externalOpenUrl} target="_blank" rel="noreferrer">Open game ↗</a>}<button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close game ✕</button></div>
             </div>
             <iframe className="games-player-frame" src={selectedGame.playUrl} title={selectedGame.name} allow="fullscreen; autoplay; gamepad" allowFullScreen />
             <p className="games-player-note">If this game does not load here, its original host may block embedding; that game needs to be hosted directly on Vehemence.</p>
