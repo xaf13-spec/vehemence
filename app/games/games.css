@@ -80,3 +80,24 @@
 .game-card-art-image img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
 .game-card-art-image img[src$='.gif']{object-fit:cover}
 .game-card-actions .primary-button:disabled{opacity:.55;cursor:not-allowed;filter:saturate(.45)}
+
+
+/* Simple, casual Games page */
+.games-page:not(.games-page-tech) .games-header h1{font-size:32px;letter-spacing:-.035em;background:none;color:var(--text);-webkit-text-fill-color:currentColor}
+.games-page:not(.games-page-tech) .games-header h1 span{background:none;color:inherit}
+.games-page:not(.games-page-tech) .games-intro{margin-top:5px;max-width:none;font-size:14px;line-height:1.5}
+.games-page:not(.games-page-tech) .games-header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:24px}
+.games-page:not(.games-page-tech) .games-toolbar{margin-bottom:20px}
+.games-page:not(.games-page-tech) .games-search,.games-page:not(.games-page-tech) .games-toolbar select{background:var(--surface);box-shadow:none;border-color:var(--border)}
+.games-page:not(.games-page-tech) .games-grid{gap:16px}
+.games-page:not(.games-page-tech) .game-card{border-color:var(--border);border-radius:12px;background:var(--surface);box-shadow:none}
+.games-page:not(.games-page-tech) .game-card:hover{transform:translateY(-2px);border-color:var(--border-hover);box-shadow:none}
+.games-page:not(.games-page-tech) .game-card-art-image{height:145px;min-height:145px;background:var(--surface-hover);border-radius:0}
+.games-page:not(.games-page-tech) .game-card-copy{padding:13px 14px 12px}
+.games-page:not(.games-page-tech) .game-card-copy p{margin-bottom:5px;font-size:11px;letter-spacing:0;color:var(--muted)}
+.games-page:not(.games-page-tech) .game-card-copy h2{font-size:16px;letter-spacing:0}
+.games-page:not(.games-page-tech) .game-card-copy>span{font-size:13px;line-height:1.45}
+.games-page:not(.games-page-tech) .game-card-actions{padding:0 14px 14px}
+.games-page:not(.games-page-tech) .game-card-actions .primary-button{min-height:34px;border-radius:8px;box-shadow:none;background:var(--accent,var(--text));color:var(--background,#111);border:1px solid var(--border);font-weight:600}
+.games-page:not(.games-page-tech) .game-card-actions .primary-button:disabled{opacity:.45;cursor:not-allowed}
+.games-page:not(.games-page-tech) .game-card-actions>a:not(.primary-button){font-size:12px}
