@@ -28,7 +28,6 @@ const games = [
     category: "Arcade",
     description: "Eat food, grow longer, and beat your high score.",
     source: "https://github.com/kyroskoh/snake-game",
-    thumbnail: "https://raw.githubusercontent.com/kyroskoh/snake-game/main/screenshot.png",
     license: "MIT (as stated in repository README)",
   },
   {
@@ -46,7 +45,6 @@ const games = [
     category: "Casual",
     description: "Cast your line and catch fish in this browser game.",
     source: "https://github.com/MajesticWafer/tiny-fishing",
-    thumbnail: "https://raw.githubusercontent.com/MajesticWafer/tiny-fishing/master/thumbnail.png",
     license: "Needs further license verification before hosting",
   },
 ];
@@ -85,7 +83,7 @@ export default function GamesClient() {
           {filteredGames.map((game) => (
             <article className="game-card game-card-tech" key={game.id}>
               <div className="game-card-art game-card-art-image">
-                <img src={game.thumbnail} alt={game.name + " game thumbnail"} loading="lazy" onError={(event) => { event.currentTarget.style.display = "none"; }} />
+                {game.thumbnail && <img src={game.thumbnail} alt={game.name + " game thumbnail"} loading="lazy" onError={(event) => { event.currentTarget.style.display = "none"; }} />}
               </div>
               <div className="game-card-copy">
                 <p>{game.category}</p>
