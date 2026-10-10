@@ -11,14 +11,21 @@ export default function Signup() {
     event.preventDefault();
     setError("");
     setLoading(true);
-    const formData = new FormData(event.currentTarget);
-    const result = await signup(formData);
-    if (result?.error) {
-      setError(result.error);
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      const result = await signup(formData);
+      if (result?.error) {
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Signup request failed:", err);
+      setError("The signup request failed before the server returned a response. Check the Vercel deployment logs.");
       setLoading(false);
-      return;
     }
-    window.location.href = "/";
   }
 
   return (
