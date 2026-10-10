@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong | Browser Games</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏓</text></svg>">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a14;--panel:#171728;--line:#2a2a45;--text:#e8e8f5;--muted:#8b8ba8;--neon:#00e5ff}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+h1{font-size:26px;letter-spacing:.15em;color:var(--neon);margin-bottom:10px;text-shadow:0 0 20px rgba(0,229,255,.4)}
+#board{background:var(--panel);border:2px solid var(--neon);border-radius:10px;box-shadow:0 0 40px -8px rgba(0,229,255,.35)}
+.scores{display:flex;gap:48px;font-family:"Consolas",monospace;font-size:18px;margin-bottom:12px}
+.scores .p{color:var(--neon);letter-spacing:.1em}
+.scores b{font-size:26px;color:var(--text);margin-left:8px}
+.mode{margin-bottom:12px;display:flex;gap:10px;font-family:"Consolas",monospace;font-size:13px;align-items:center}
+.mode button{font-family:inherit;padding:6px 14px;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:6px;cursor:pointer;transition:.2s}
+.mode button.active{border-color:var(--neon);color:var(--neon);box-shadow:0 0 14px rgba(0,229,255,.3)}
+.controls{margin-top:16px;font-size:14px;color:var(--muted);text-align:center;line-height:1.7}
+.controls kbd{font-family:"Consolas",monospace;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--text);font-size:12px}
+#overlay{position:fixed;inset:0;background:rgba(10,10,20,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;backdrop-filter:blur(4px)}
+#overlay h2{font-size:clamp(30px,6vw,48px);color:var(--neon);text-shadow:0 0 30px rgba(0,229,255,.5)}
+#overlay p{color:var(--muted);font-size:16px}
+#overlay button{font-family:"Consolas",monospace;font-size:16px;letter-spacing:.2em;padding:14px 34px;background:transparent;border:2px solid var(--neon);color:var(--neon);border-radius:8px;cursor:pointer;transition:.2s}
+#overlay button:hover{background:var(--neon);color:var(--bg);box-shadow:0 0 30px rgba(0,229,255,.5)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<h1>PONG</h1>
+<div class="mode">
+  <span>Mode:</span>
+  <button data-mode="1p" class="active">1 Player (vs CPU)</button>
+  <button data-mode="2p">2 Players</button>
+</div>
+<div class="scores">
+  <span class="p">P1<b id="s1">0</b></span>
+  <span class="p">P2<b id="s2">0</b></span>
+</div>
+<canvas id="board" width="720" height="420"></canvas>
+<div class="controls">
+  <kbd>W</kbd>/<kbd>↑</kbd> <kbd>S</kbd>/<kbd>↓</kbd> left paddle &middot; <kbd>↑</kbd>/<kbd>↓</kbd> right paddle (2P) &middot; <kbd>Space</kbd> serve/pause &middot; first to 7
+</div>
+
+<div id="overlay" class="hidden">
+  <h2>GAME OVER</h2>
+  <p id="winMsg">Player 1 wins 7:0</p>
+  <button id="restart">PLAY AGAIN</button>
+</div>
+
+<script>
+const cv=document.getElementById('board'),ctx=cv.getContext('2d');
+const W=cv.width,H=cv.height,PW=12,PH=70,BASE_SPEED=320;
+let p1,p2,bx,by,bvx,bvy,paused,s1,s2,mode,gameOver,lastFrame;
+let keys={};
+
+function init(){
+  p1={y:H/2-PH/2};p2={y:H/2-PH/2};
+  s1=0;s2=0;gameOver=false;paused=true;
+  document.getElementById('overlay').classList.add('hidden');
+  updateScores();centerBall(Math.random()<0.5?1:-1);draw();
+}
+function centerBall(dir){
+  bx=W/2;by=H/2;
+  const ang=(Math.random()*0.9-0.45);
+  bvx=dir*Math.cos(ang)*BASE_SPEED;
+  bvy=Math.sin(ang)*BASE_SPEED;
+}
+function updateScores(){
+  document.getElementById('s1').textContent=s1;
+  document.getElementById('s2').textContent=s2;
+}
+function draw(){
+  ctx.fillStyle='#0f0f1e';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,229,255,.12)';ctx.setLineDash([6,10]);ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#e8e8f5';
+  ctx.fillRect(14,p1.y,PW,PH);ctx.fillRect(W-14-PW,p2.y,PW,PH);
+  ctx.fillStyle='#00e5ff';ctx.shadowColor='#00e5ff';ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(bx,by,6,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  if(paused&&!gameOver){
+    ctx.fillStyle='rgba(10,10,20,.6)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#e8e8f5';ctx.font='bold 24px Consolas';ctx.textAlign='center';
+    ctx.fillText('SPACE TO SERVE / PAUSE',W/2,H/2);
+  }
+}
+function pointFor(who){
+  if(who===1)s1++;else s2++;
+  updateScores();
+  if(s1>=7||s2>=7){
+    gameOver=true;paused=true;
+    const name=who===1?'Player 1':'Player 2';
+    document.getElementById('winMsg').textContent=name+' wins '+Math.max(s1,s2)+':'+Math.min(s1,s2);
+    document.getElementById('overlay').classList.remove('hidden');
+  }else{
+    centerBall(who===1?1:-1);
+  }
+}
+function step(dt){
+  if(paused||gameOver)return;
+  // paddles: P1 = W/S only. P2 = arrows only in 2P mode.
+  const p1Spd=420,setPaddle=(p,kUp,kDn)=>{if(keys[kUp])p.y-=p1Spd*dt;if(keys[kDn])p.y+=p1Spd*dt;p.y=Math.max(0,Math.min(H-PH,p.y));};
+  setPaddle(p1,'w','s');
+  if(mode==='2p'){
+    setPaddle(p2,'ArrowUp','ArrowDown');
+  }else{
+    const target=by-PH/2;
+    const cpu=230;
+    if(p2.y<target-4)p2.y=Math.min(p2.y+cpu*dt,target);
+    else if(p2.y>target+4)p2.y=Math.max(p2.y-cpu*dt,target);
+    p2.y=Math.max(0,Math.min(H-PH,p2.y));
+  }
+  // ball
+  bx+=bvx*dt;by+=bvy*dt;
+  if(by<8){by=8;bvy=Math.abs(bvy)}
+  if(by>H-8){by=H-8;bvy=-Math.abs(bvy)}
+  // paddle collisions
+  if(bvx<0&&bx-PW/2<14+PW&&bx>14&&by>p1.y-6&&by<p1.y+PH+6){
+    bvx=Math.abs(bvx)*1.06;
+    bvy+=((by-(p1.y+PH/2))/PH)*160;
+    bx=14+PW+PW/2;
+  }
+  if(bvx>0&&bx+PW/2>W-14-PW&&bx<W-14&&by>p2.y-6&&by<p2.y+PH+6){
+    bvx=-Math.abs(bvx)*1.06;
+    bvy+=((by-(p2.y+PH/2))/PH)*160;
+    bx=W-14-PW-PW/2;
+  }
+  // cap spin
+  bvy=Math.max(-380,Math.min(380,bvy));
+  // out
+  if(bx<-20)pointFor(2);
+  if(bx>W+20)pointFor(1);
+  draw();
+}
+function loop(t){
+  const dt=Math.min((t-lastFrame)/1000,0.05);lastFrame=t;
+  step(dt);
+  requestAnimationFrame(loop);
+}
+document.addEventListener('keydown',e=>{
+  const k=e.key.length===1?e.key.toLowerCase():e.key;
+  if(k===' '||k==='Spacebar'){e.preventDefault();if(gameOver){init();return}if(bx===W/2&&by===H/2)centerBall(Math.random()<0.5?1:-1);paused=!paused;draw();return}
+  keys[k]=true;
+  if(k==='arrowup'||k==='arrowdown'||k==='w'||k==='s')e.preventDefault();
+});
+document.addEventListener('keyup',e=>{
+  const k=e.key.length===1?e.key.toLowerCase():e.key;
+  keys[k]=false;
+});
+document.querySelectorAll('.mode button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.mode button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    mode=b.dataset.mode;
+    init();
+  });
+});
+document.getElementById('restart').addEventListener('click',init);
+mode='1p';init();lastFrame=performance.now();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
