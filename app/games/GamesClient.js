@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import "./games.css";
 
 const games = [
   { id: "eaglercraft", name: "Eaglercraft", category: "Sandbox", description: "Minecraft in your browser.", icon: "⛏️", url: "https://g.deev.is/eaglercraft/", source: "https://github.com/lDEVinux/eaglercraft", featured: true },
