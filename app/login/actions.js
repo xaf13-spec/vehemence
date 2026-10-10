@@ -5,13 +5,12 @@ import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "");
-const supabase = createClient(
-  supabaseUrl,
-  process.env.SUPABASE_PUBLISHABLE_KEY
-);
+const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 export async function login(formData) {
 try {
+if (!supabase) return { error: "Database connection is not configured. Check SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in Vercel." };
 const username = formData.get("username")?.toString().trim();
 const password = formData.get("password")?.toString();
 
