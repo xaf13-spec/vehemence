@@ -101,3 +101,15 @@
 .games-page:not(.games-page-tech) .game-card-actions .primary-button{min-height:34px;border-radius:8px;box-shadow:none;background:var(--accent,var(--text));color:var(--background,#111);border:1px solid var(--border);font-weight:600}
 .games-page:not(.games-page-tech) .game-card-actions .primary-button:disabled{opacity:.45;cursor:not-allowed}
 .games-page:not(.games-page-tech) .game-card-actions>a:not(.primary-button){font-size:12px}
+
+
+/* In-page game player */
+.games-player{margin:0 0 26px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface)}
+.games-player-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.games-player-header h2{margin:0;font-size:20px;font-weight:650}
+.games-player-header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.games-player-header button{border:1px solid var(--border);border-radius:9px;background:var(--surface-solid);color:var(--text);padding:9px 12px;cursor:pointer}
+.games-player-frame{display:block;width:100%;height:min(72vh,760px);min-height:440px;border:0;background:#fff}
+.games-player-note{margin:0;padding:9px 14px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+.games-card-actions button.primary-button{font:inherit;cursor:pointer}
+@media(max-width:640px){.games-player-frame{min-height:320px;height:65vh}.games-player-header{align-items:flex-start}}
