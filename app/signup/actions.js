@@ -4,12 +4,14 @@ import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "");
 const supabase = createClient(
-process.env.SUPABASE_URL,
-process.env.SUPABASE_PUBLISHABLE_KEY
+  supabaseUrl,
+  process.env.SUPABASE_PUBLISHABLE_KEY
 );
 
 export async function signup(formData) {
+try {
 const username = formData.get("username")?.toString().trim();
 const password = formData.get("password")?.toString();
 const confirmPassword = formData.get("confirmPassword")?.toString();
@@ -49,7 +51,7 @@ if (error.code === "23505") {
 return { error: "That username is already taken." };
 }
 
-return { error: error.message };
+return { error: error.message || "Could not reach the database. Check the Supabase project URL and key in Vercel." };
 
 }
 
@@ -80,4 +82,7 @@ maxAge: 30 * 24 * 60 * 60
 });
 
 return { success: true };
+} catch (error) {
+  console.error("Signup failed:", error);
+  return { error: "Could not reach the database. In Vercel, check that SUPABASE_URL is the project URL (not ending in /rest/v1) and SUPABASE_PUBLISHABLE_KEY is correct." };
 }
