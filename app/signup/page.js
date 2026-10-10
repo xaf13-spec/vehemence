@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signup } from "./actions";
 
 export default function Signup() {
@@ -41,7 +42,7 @@ export default function Signup() {
           {error && <p className="auth-error">{error}</p>}
           <button type="submit" className="primary-button" disabled={loading}>{loading ? "Creating..." : "Create Account"}</button>
         </form>
-        <p className="auth-footer">Already have an account? <a href="/login">Log in</a></p>
+        <p className="auth-footer">Already have an account? <Link href="/login">Log in</Link></p>
       </div>
     </main>
   );
