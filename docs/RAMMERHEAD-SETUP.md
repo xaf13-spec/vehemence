@@ -5,7 +5,7 @@ The Browser tab is a custom Vehemence interface. It requires a separately hosted
 ## Configure the service
 
 1. Deploy your own instance of the MIT-licensed upstream project: https://github.com/binary-person/rammerhead
-2. Use the upstream project's configuration guidance to set a strong server password and appropriate session retention settings. Do not expose an unprotected public proxy.
+2. Use the upstream project's configuration guidance to set a strong server password and appropriate session retention settings. Do not expose an unprotected public proxy. This integration creates sessions through Vehemence's server routes, so the request IP differs from the browser's IP; with upstream `restrictSessionToIP: true`, sessions may fail when opened. If you choose to set `restrictSessionToIP: false` in your own instance, understand that session IDs become bearer secrets: keep them private, use HTTPS and a strong server password, and never share a session URL.
 3. Add a server-side environment variable to the Vehemence deployment:
    - Name: `RAMMERHEAD_URL`
    - Value: the HTTPS origin of your own Rammerhead service, without a path (for example, `https://browser-service.example.com`)
