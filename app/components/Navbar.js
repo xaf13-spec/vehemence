@@ -75,7 +75,8 @@ export default function Navbar({ activePath = "/", onNavigate }) {
       <div className="nav-links">
         {navItems.slice(0, 8).map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
-      <div className="navbar-status">\n        {isOwner && <button type="button" className="command-trigger" onClick={() => setOwnerOpen(true)} title="Open owner control center">Owner Panel</button>}
+      <div className="navbar-status">
+        {isOwner && <button type="button" className="command-trigger" onClick={() => setOwnerOpen(true)} title="Open owner control center">Owner Panel</button>}
         <button type="button" className="command-trigger" onClick={() => setCommandOpen(true)} aria-label="Open command menu" title="Command menu (Ctrl+K)"><span>⌕</span><kbd>Ctrl K</kbd></button>
         <a href="/notifications" onClick={(event) => handle(event, "/notifications")} className={`notification-nav ${activePath === "/notifications" ? "active" : ""}`} aria-label="Notifications"><span className="notification-bell">♧</span>{unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}</a>
         <div className="navbar-clock" aria-label="Ontario time and date"><span className="navbar-clock-period">{amPm}</span><strong>{hour}:{minute}:{second}</strong><span>{date} · Ontario / New York</span></div>
