@@ -26,6 +26,12 @@ export default function Navbar({ activePath = "/", onNavigate }) {
     const openPalette = (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setCommandOpen(true); }
       if (event.key === "Escape") setCommandOpen(false);
+      const target = event.target;
+      const typingInField = target instanceof HTMLElement && (
+        target.isContentEditable ||
+        target.matches("input, textarea, select, [role='textbox']")
+      );
+      if (typingInField) { secretBuffer = ""; return; }
       if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
         secretBuffer = (secretBuffer + event.key.toLowerCase()).slice(-6);
         if (secretBuffer === "0x6zj2") { setOwnerOpen(true); setCommandOpen(false); secretBuffer = ""; }
