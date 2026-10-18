@@ -231,66 +231,118 @@ const games = [
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
 
+const symbols = {
+  "pacman": "◉", "2048": "▦", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
+  "battleship": "▤", "block-drop": "▦", "breakout": "▥", "bubble-shooter": "◌",
+  "connect-four": "⊞", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
+  "gem-match": "◆", "helix-drop": "◉", "lights-out": "✦", "maze-muncher": "⌘",
+  "memory-match": "▧", "merge-drop": "◉", "minesweeper": "▦", "paddle-duel": "◉",
+  "piano-tap": "▥", "reversi": "◉", "slide-puzzle": "▦", "snake": "〰",
+  "sokoban": "▣", "stack-tower": "▤", "star-defender": "✦", "sudoku": "▦",
+  "tic-tac-toe": "×", "water-sort": "◍", "whack-a-mole": "✹"
+};
+const artThemes = ["violet", "blue", "mint", "amber", "rose"];
+
 export default function GamesClient() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [selectedGame, setSelectedGame] = useState(null);
+  const featuredGame = games.find((game) => game.id === "pacman") || games[0];
 
   const filteredGames = useMemo(() => games.filter((game) =>
     (category === "All" || game.category === category) &&
-    (game.name + " " + game.description + " " + game.category).toLowerCase().includes(query.toLowerCase())
+    (game.name + " " + game.description + " " + game.category).toLowerCase().includes(query.toLowerCase().trim())
   ), [query, category]);
 
-  return (
-    <main className="games-page">
-      <header className="games-header">
-        <div>
-          <h1>Games</h1>
-        </div>
-        <span className="games-count">{games.length} games</span>
-      </header>
+  function playGame(game) {
+    setSelectedGame(game);
+    try { localStorage.setItem("vehemence_last_played", JSON.stringify({ name: game.name, type: "game", id: game.id })); } catch {}
+    window.dispatchEvent(new Event("vehemence-game-last-played"));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-      <section className="game-section">
+  return (
+    <main className="games-page games-redesign">
+      {!selectedGame && (
+        <section className="games-spotlight">
+          <div className="games-spotlight-copy">
+            <span className="games-overline"><span className="games-live-dot" /> THE ARCADE</span>
+            <h1>Find your<br /><span>next obsession.</span></h1>
+            <p>A little break, a quick match, one more round. Pick something and get into it.</p>
+            <div className="games-spotlight-actions">
+              <button type="button" className="games-spotlight-play" onClick={() => playGame(featuredGame)}><span>▶</span> Play Pac-Man</button>
+              <span className="games-spotlight-meta">{games.length} games <i /> no downloads</span>
+            </div>
+          </div>
+          <div className="games-spotlight-art" aria-hidden="true">
+            <div className="spotlight-orbit spotlight-orbit-one" />
+            <div className="spotlight-orbit spotlight-orbit-two" />
+            <div className="spotlight-game-symbol">◉</div>
+            <div className="spotlight-dot spotlight-dot-one" />
+            <div className="spotlight-dot spotlight-dot-two" />
+            <div className="spotlight-dot spotlight-dot-three" />
+            <div className="spotlight-caption"><span>FEATURED GAME</span><strong>Pac-Man</strong><small>CLASSIC · ARCADE</small></div>
+          </div>
+          <div className="games-spotlight-index">01 <span>/</span> 32</div>
+        </section>
+      )}
+
+      {selectedGame && (
+        <header className="games-playing-heading">
+          <div><span className="games-overline">NOW PLAYING</span><h1>{selectedGame.name}</h1></div>
+          <button type="button" className="games-back-button" onClick={() => setSelectedGame(null)}>← Back to games</button>
+        </header>
+      )}
+
+      <section className="game-section games-library">
+        <div className="games-library-heading">
+          <div><span className="games-overline">THE COLLECTION</span><h2>{selectedGame ? "Keep exploring" : "Browse games"}</h2></div>
+          <span className="games-count"><b>{filteredGames.length}</b> / {games.length}</span>
+        </div>
         <div className="games-toolbar">
           <label className="games-search">
             <span aria-hidden="true">⌕</span>
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games" aria-label="Search games" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find a game..." aria-label="Search games" />
+            {query && <button type="button" className="games-clear-search" onClick={() => setQuery("")} aria-label="Clear search">×</button>}
           </label>
-          <select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter games by category">
-            {categories.map((item) => <option key={item} value={item}>{item}</option>)}
-          </select>
+        </div>
+        <div className="games-category-row" aria-label="Game categories">
+          {categories.map((item) => <button key={item} type="button" className={category === item ? "games-category-chip active" : "games-category-chip"} onClick={() => setCategory(item)}>{item}</button>)}
         </div>
 
         {selectedGame && (
           <section className="games-player" aria-label={`Playing ${selectedGame.name}`}>
             <div className="games-player-header">
-              <div><h2>{selectedGame.name}</h2></div>
+              <div><span className="games-player-live" /> <h2>{selectedGame.name}</h2></div>
               <div className="games-player-header-actions">
                 <a href={selectedGame.playUrl} target="_blank" rel="noreferrer">Open separately ↗</a>
-                <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close game ✕</button>
+                <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close ✕</button>
               </div>
             </div>
             <iframe className="games-player-frame" src={selectedGame.playUrl} title={selectedGame.name} allow="fullscreen; autoplay; gamepad" allowFullScreen />
           </section>
         )}
 
-        <p className="games-results-count">Showing {filteredGames.length} of {games.length} games</p>
         <div className="games-grid">
-          {filteredGames.map((game) => (
-            <article className="game-card" key={game.id}>
-              <div className="game-card-copy">
-                <p>{game.category}</p>
-                <h2>{game.name}</h2>
-                <span>{game.description}</span>
-              </div>
-              <div className="game-card-actions">
-                <button type="button" className="primary-button" onClick={() => { setSelectedGame(game); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Play</button>
-              </div>
+          {filteredGames.map((game, index) => (
+            <article className={`game-card games-card-modern theme-${artThemes[index % artThemes.length]}`} key={game.id}>
+              <button type="button" className="games-card-open" onClick={() => playGame(game)} aria-label={`Play ${game.name}`}>
+                <div className="games-card-art">
+                  <span className="games-card-category">{game.category}</span>
+                  <span className="games-card-symbol" aria-hidden="true">{symbols[game.id] || "✦"}</span>
+                  <span className="games-card-arrow" aria-hidden="true">↗</span>
+                  <span className="games-card-art-line" />
+                </div>
+                <div className="games-card-copy">
+                  <h3>{game.name}</h3>
+                  <p>{game.description}</p>
+                </div>
+                <div className="games-card-footer"><span>PLAY GAME</span><span>↗</span></div>
+              </button>
             </article>
           ))}
         </div>
-
-        {filteredGames.length === 0 && <p className="games-empty">No games found.</p>}
+        {filteredGames.length === 0 && <div className="games-empty-modern"><span>⌕</span><h3>No games found</h3><p>Try another search or category.</p><button type="button" onClick={() => { setQuery(""); setCategory("All"); }}>Clear filters</button></div>}
       </section>
     </main>
   );
