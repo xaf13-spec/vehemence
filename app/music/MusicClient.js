@@ -99,7 +99,6 @@ export default function MusicClient() {
         <div>
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Music</h1>
-          <p>Play your playlists and music without leaving Vehemence.</p>
         </div>
       </section>
 
