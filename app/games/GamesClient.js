@@ -2,26 +2,263 @@
 
 import { useMemo, useState } from "react";
 
-const thumbnailFor = (game) => {
-  const palette = { Puzzle: ["#243b72", "#0f172a"], Classic: ["#166534", "#052e16"], Arcade: ["#7c2d12", "#431407"], Platformer: ["#075985", "#082f49"], Word: ["#365314", "#1a2e05"], Board: ["#475569", "#0f172a"], Casual: ["#9d174d", "#500724"], Racing: ["#9a3412", "#431407"] };
-  const [a, b] = palette[game.category] || ["#334155", "#0f172a"];
-  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></linearGradient></defs><rect width="640" height="300" fill="url(#g)"/><circle cx="320" cy="150" r="180" fill="#fff" opacity=".06"/><text x="320" y="150" font-size="112" text-anchor="middle" dominant-baseline="middle">' + (game.cover || "🎮") + '</text><text x="24" y="270" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#fff" opacity=".8">VEHEMENCE ARCADE</text></svg>';
-  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-};
-
 const games = [
-  { id: "pacman", name: "Pac-Man", category: "Arcade", description: "Clear the maze, collect dots, and avoid the ghosts. Hosted directly on Vehemence.", source: "https://github.com/leereilly/games", cover: "🟡", playUrl: "/games/pacman/index.html" },
-  { id: "2048", name: "2048", category: "Puzzle", description: "Merge matching number tiles and chase your best score.", source: "https://github.com/gabrielecirulli/2048", cover: "🔢", playUrl: "/games/2048/index.html" },
-  { id: "snake", name: "Snake", category: "Classic", description: "Eat, grow, and avoid running into yourself.", source: "https://github.com/mashukui/web-games", cover: "🐍", playUrl: "/games/snake/index.html" },
-  { id: "breakout", name: "Breakout", category: "Arcade", description: "Bounce the ball and break through the bricks.", source: "https://github.com/mashukui/web-games", cover: "🧱", playUrl: "/games/breakout/index.html" },
-  { id: "minesweeper", name: "Minesweeper", category: "Puzzle", description: "Use logic to clear the grid without selecting a mine.", source: "https://github.com/mashukui/web-games", cover: "🚩", playUrl: "/games/minesweeper/index.html" },
-  { id: "chess", name: "Tic-Tac-Toe", category: "Board", description: "Get three in a row before your opponent.", source: "https://github.com/mashukui/web-games", cover: "❌", playUrl: "/games/tic-tac-toe/index.html" },
-  { id: "connect-four", name: "Connect Four", category: "Board", description: "Line up four discs to win.", source: "https://github.com/mashukui/web-games", cover: "🔴", playUrl: "/games/connect-four/index.html" },
-  { id: "tetris", name: "Tetris", category: "Puzzle", description: "Stack falling blocks and clear complete lines.", source: "https://github.com/mashukui/web-games", cover: "🧩", playUrl: "/games/tetris/index.html" },
-  { id: "cross-road", name: "Crossy Road-style", category: "Arcade", description: "Hop across roads and avoid traffic in this locally hosted arcade game.", source: "https://github.com/mashukui/web-games", cover: "🐔", playUrl: "/games/cross-road/index.html" },
-  { id: "dino-dash", name: "Dino Dash", category: "Arcade", description: "Jump over obstacles and see how long you can last.", source: "https://github.com/mashukui/web-games", cover: "🦖", playUrl: "/games/dino-dash/index.html" },
-  { id: "flappy-bird", name: "Flappy Bird", category: "Arcade", description: "Tap or press space to fly through the gaps.", source: "https://github.com/mashukui/web-games", cover: "🐤", playUrl: "/games/flappy-bird/index.html" },
-  { id: "pong", name: "Pong", category: "Arcade", description: "Keep the ball in play and outscore your opponent.", source: "https://github.com/mashukui/web-games", cover: "🏓", playUrl: "/games/pong/index.html" },
+  {
+    "id": "pacman",
+    "name": "Pac-Man",
+    "category": "Arcade",
+    "description": "Clear the maze, collect dots, and avoid the ghosts.",
+    "playUrl": "/games/pacman/index.html",
+    "source": null
+  },
+  {
+    "id": "2048",
+    "name": "2048",
+    "category": "Puzzle",
+    "description": "Merge number tiles to reach 2048.",
+    "playUrl": "/games/2048/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/2048"
+  },
+  {
+    "id": "air-hockey",
+    "name": "Air Hockey",
+    "category": "Sports",
+    "description": "Play a quick air-hockey match against the computer.",
+    "playUrl": "/games/air-hockey/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/air-hockey"
+  },
+  {
+    "id": "ant-flap",
+    "name": "Ant Flap",
+    "category": "Arcade",
+    "description": "Keep the ant flying through the gaps.",
+    "playUrl": "/games/ant-flap/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/ant-flap"
+  },
+  {
+    "id": "ant-jump",
+    "name": "Ant Jump",
+    "category": "Arcade",
+    "description": "Jump across obstacles and keep moving.",
+    "playUrl": "/games/ant-jump/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/ant-jump"
+  },
+  {
+    "id": "battleship",
+    "name": "Battleship",
+    "category": "Board",
+    "description": "Place your fleet and try to find the opponent's ships.",
+    "playUrl": "/games/battleship/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/battleship"
+  },
+  {
+    "id": "block-drop",
+    "name": "Block Drop",
+    "category": "Puzzle",
+    "description": "Fit falling blocks together and clear lines.",
+    "playUrl": "/games/block-drop/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/block-drop"
+  },
+  {
+    "id": "breakout",
+    "name": "Breakout",
+    "category": "Arcade",
+    "description": "Bounce the ball and clear the bricks.",
+    "playUrl": "/games/breakout/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/breakout"
+  },
+  {
+    "id": "bubble-shooter",
+    "name": "Bubble Shooter",
+    "category": "Puzzle",
+    "description": "Match bubbles to clear the board.",
+    "playUrl": "/games/bubble-shooter/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/bubble-shooter"
+  },
+  {
+    "id": "connect-four",
+    "name": "Connect Four",
+    "category": "Board",
+    "description": "Connect four discs before your opponent.",
+    "playUrl": "/games/connect-four/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/connect-four"
+  },
+  {
+    "id": "cross-road",
+    "name": "Cross Road",
+    "category": "Arcade",
+    "description": "Navigate across busy lanes without getting hit.",
+    "playUrl": "/games/cross-road/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/cross-road"
+  },
+  {
+    "id": "dino-run",
+    "name": "Dino Run",
+    "category": "Arcade",
+    "description": "Jump over obstacles and survive as long as possible.",
+    "playUrl": "/games/dino-run/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/dino-run"
+  },
+  {
+    "id": "fruit-slice",
+    "name": "Fruit Slice",
+    "category": "Arcade",
+    "description": "Slice the flying fruit and avoid mistakes.",
+    "playUrl": "/games/fruit-slice/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/fruit-slice"
+  },
+  {
+    "id": "gem-match",
+    "name": "Gem Match",
+    "category": "Puzzle",
+    "description": "Match gems to make combos and clear the board.",
+    "playUrl": "/games/gem-match/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/gem-match"
+  },
+  {
+    "id": "helix-drop",
+    "name": "Helix Drop",
+    "category": "Arcade",
+    "description": "Guide the ball down through the rotating tower.",
+    "playUrl": "/games/helix-drop/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/helix-drop"
+  },
+  {
+    "id": "lights-out",
+    "name": "Lights Out",
+    "category": "Puzzle",
+    "description": "Turn off every light by solving the tile puzzle.",
+    "playUrl": "/games/lights-out/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/lights-out"
+  },
+  {
+    "id": "maze-muncher",
+    "name": "Maze Muncher",
+    "category": "Arcade",
+    "description": "Find your way through the maze and collect items.",
+    "playUrl": "/games/maze-muncher/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/maze-muncher"
+  },
+  {
+    "id": "memory-match",
+    "name": "Memory Match",
+    "category": "Puzzle",
+    "description": "Flip cards and find matching pairs.",
+    "playUrl": "/games/memory-match/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/memory-match"
+  },
+  {
+    "id": "merge-drop",
+    "name": "Merge Drop",
+    "category": "Puzzle",
+    "description": "Drop and combine matching pieces to build bigger values.",
+    "playUrl": "/games/merge-drop/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/merge-drop"
+  },
+  {
+    "id": "minesweeper",
+    "name": "Minesweeper",
+    "category": "Puzzle",
+    "description": "Clear the grid using clues to avoid hidden mines.",
+    "playUrl": "/games/minesweeper/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/minesweeper"
+  },
+  {
+    "id": "paddle-duel",
+    "name": "Paddle Duel",
+    "category": "Arcade",
+    "description": "Keep the ball in play and outscore the other paddle.",
+    "playUrl": "/games/paddle-duel/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/paddle-duel"
+  },
+  {
+    "id": "piano-tap",
+    "name": "Piano Tap",
+    "category": "Casual",
+    "description": "Tap the notes in time and keep your streak going.",
+    "playUrl": "/games/piano-tap/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/piano-tap"
+  },
+  {
+    "id": "reversi",
+    "name": "Reversi",
+    "category": "Board",
+    "description": "Flip discs and finish with more of your color on the board.",
+    "playUrl": "/games/reversi/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/reversi"
+  },
+  {
+    "id": "slide-puzzle",
+    "name": "Slide Puzzle",
+    "category": "Puzzle",
+    "description": "Slide tiles into the correct order.",
+    "playUrl": "/games/slide-puzzle/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/slide-puzzle"
+  },
+  {
+    "id": "snake",
+    "name": "Snake",
+    "category": "Classic",
+    "description": "Eat the dots, grow longer, and avoid crashing.",
+    "playUrl": "/games/snake/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/snake"
+  },
+  {
+    "id": "sokoban",
+    "name": "Sokoban",
+    "category": "Puzzle",
+    "description": "Push crates onto the target spaces.",
+    "playUrl": "/games/sokoban/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/sokoban"
+  },
+  {
+    "id": "stack-tower",
+    "name": "Stack Tower",
+    "category": "Arcade",
+    "description": "Stack moving platforms as high as you can.",
+    "playUrl": "/games/stack-tower/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/stack-tower"
+  },
+  {
+    "id": "star-defender",
+    "name": "Star Defender",
+    "category": "Arcade",
+    "description": "Defend against waves of incoming space enemies.",
+    "playUrl": "/games/star-defender/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/star-defender"
+  },
+  {
+    "id": "sudoku",
+    "name": "Sudoku",
+    "category": "Puzzle",
+    "description": "Fill the grid with numbers using logic.",
+    "playUrl": "/games/sudoku/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/sudoku"
+  },
+  {
+    "id": "tic-tac-toe",
+    "name": "Tic-Tac-Toe",
+    "category": "Board",
+    "description": "Get three marks in a row to win.",
+    "playUrl": "/games/tic-tac-toe/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/tic-tac-toe"
+  },
+  {
+    "id": "water-sort",
+    "name": "Water Sort",
+    "category": "Puzzle",
+    "description": "Sort the colored liquid into matching tubes.",
+    "playUrl": "/games/water-sort/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/water-sort"
+  },
+  {
+    "id": "whack-a-mole",
+    "name": "Whack-a-Mole",
+    "category": "Arcade",
+    "description": "Hit the targets before time runs out.",
+    "playUrl": "/games/whack-a-mole/index.html",
+    "source": "https://github.com/mashukui/web-games/tree/main/whack-a-mole"
+  }
 ];
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
@@ -41,8 +278,9 @@ export default function GamesClient() {
       <header className="games-header">
         <div>
           <h1>Games</h1>
-          <p className="games-intro">Open-source browser games, hosted on Vehemence.</p>
+          <p className="games-intro">Locally hosted browser games. No external game websites.</p>
         </div>
+        <span className="games-count">{games.length} games</span>
       </header>
 
       <section className="game-section">
@@ -59,19 +297,20 @@ export default function GamesClient() {
         {selectedGame && (
           <section className="games-player" aria-label={`Playing ${selectedGame.name}`}>
             <div className="games-player-header">
-              <div><h2>{selectedGame.name}</h2><p>Running from Vehemence's own game files</p></div>
-              <div className="games-player-header-actions"><a href={selectedGame.playUrl} target="_blank" rel="noreferrer">Open separately ↗</a><button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close game ✕</button></div>
+              <div><h2>{selectedGame.name}</h2><p>Running from Vehemence's own files</p></div>
+              <div className="games-player-header-actions">
+                <a href={selectedGame.playUrl} target="_blank" rel="noreferrer">Open separately ↗</a>
+                <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close game ✕</button>
+              </div>
             </div>
             <iframe className="games-player-frame" src={selectedGame.playUrl} title={selectedGame.name} allow="fullscreen; autoplay; gamepad" allowFullScreen />
           </section>
         )}
-        <p className="games-results-count">{filteredGames.length} games</p>
+
+        <p className="games-results-count">Showing {filteredGames.length} of {games.length} games</p>
         <div className="games-grid">
           {filteredGames.map((game) => (
             <article className="game-card" key={game.id}>
-              <div className="game-card-art game-card-art-image">
-                <img src={thumbnailFor(game)} alt={game.name + " thumbnail"} loading="lazy" />
-              </div>
               <div className="game-card-copy">
                 <p>{game.category}</p>
                 <h2>{game.name}</h2>
@@ -79,14 +318,14 @@ export default function GamesClient() {
               </div>
               <div className="game-card-actions">
                 <button type="button" className="primary-button" onClick={() => { setSelectedGame(game); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Play</button>
-                <a href={game.source} target="_blank" rel="noreferrer">Code source ↗</a>
+                {game.source && <a href={game.source} target="_blank" rel="noreferrer">Source code ↗</a>}
               </div>
             </article>
           ))}
         </div>
 
         {filteredGames.length === 0 && <p className="games-empty">No games found.</p>}
-        <p className="games-footnote">Games launch inside this page using files hosted on Vehemence. Source links credit the open-source projects used as references.</p>
+        <p className="games-footnote">Game code is stored in Vehemence's public/games directory. The imported single-file collection is MIT-licensed; its license is included with the game files.</p>
       </section>
     </main>
   );
