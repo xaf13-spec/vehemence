@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { deleteListing } from "../marketplace/actions";
 import "./owner-panel.css";
 
 const tabs = [
@@ -34,9 +35,22 @@ export default function OwnerPanel({ onClose }) {
     setConfirm(true);
   }
 
-  function runAction() {
+  async function runAction() {
     setConfirm(false);
-    setStatus("The panel UI is ready, but moderation actions need their server-side database functions connected before they can change real accounts or listings.");
+    setStatus("");
+    if (action === "delete-listing") {
+      setStatus("Deleting listing…");
+      const result = await deleteListing(listingId.trim());
+      if (result?.error) {
+        setStatus(result.error);
+      } else if (result?.success || result?.listing || result?.data) {
+        setStatus("Listing deletion request completed.");
+      } else {
+        setStatus("The server did not confirm deletion. Check the listing ID and database permissions.");
+      }
+      return;
+    }
+    setStatus("Ban and mute still need moderation RPCs in Supabase before they can safely change accounts.");
   }
 
   return (
