@@ -532,6 +532,35 @@ const games = [
     category: "Geography",
     description: "Explore a location and guess where you are.",
     playUrl: "https://www.geoguessr.com/"
+  },
+
+  {
+    id: "chess",
+    name: "Chess",
+    category: "Board",
+    description: "Play a classic strategy match.",
+    playUrl: "https://www.chess.com/play/computer"
+  },
+  {
+    id: "hill-climb-2",
+    name: "Hill Climb Racing 2",
+    category: "Racing",
+    description: "Race across bumpy tracks and upgrade your vehicle.",
+    playUrl: "https://poki.com/en/g/hill-climb-racing-2"
+  },
+  {
+    id: "moto-x3m-winter",
+    name: "Moto X3M Winter",
+    category: "Racing",
+    description: "Race through snowy stunt courses.",
+    playUrl: "https://poki.com/en/g/moto-x3m-winter"
+  },
+  {
+    id: "moto-x3m-spooky",
+    name: "Moto X3M Spooky Land",
+    category: "Racing",
+    description: "Ride through spooky themed obstacle tracks.",
+    playUrl: "https://poki.com/en/g/moto-x3m-spooky-land"
   }
 ];
 
