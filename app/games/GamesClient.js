@@ -226,6 +226,312 @@ const games = [
     "category": "Arcade",
     "description": "Hit the targets before time runs out.",
     "playUrl": "/games/whack-a-mole/index.html",
+  },
+
+  {
+    id: "hextris-open",
+    name: "Hextris",
+    category: "Puzzle",
+    description: "Stack falling blocks around a rotating hexagon.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/hextris/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/hextris"
+  },
+  {
+    id: "open-breakout",
+    name: "HTML5 Breakout",
+    category: "Arcade",
+    description: "Break every brick with a bouncing ball.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/html5-breakout/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/html5-breakout"
+  },
+  {
+    id: "open-snake",
+    name: "Classic Snake",
+    category: "Classic",
+    description: "Grow longer while avoiding your own tail.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/html5-snake/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/html5-snake"
+  },
+  {
+    id: "relaxed-snake",
+    name: "Relaxed Snake",
+    category: "Classic",
+    description: "A snake game with wraparound edges.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/react-simple-snake/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/react-simple-snake"
+  },
+  {
+    id: "space-invaders-open",
+    name: "HTML5 Space Invaders",
+    category: "Arcade",
+    description: "Defend the planet from incoming alien waves.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/html5-space-invaders/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/html5-space-invaders"
+  },
+  {
+    id: "netris",
+    name: "Netris",
+    category: "Puzzle",
+    description: "A classic falling-block puzzle game.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/netris/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/netris"
+  },
+  {
+    id: "netrok",
+    name: "Netrok",
+    category: "Arcade",
+    description: "An arcade brick-breaking game with multiple levels.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/netrok/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/netrok"
+  },
+  {
+    id: "njam",
+    name: "Njam",
+    category: "Arcade",
+    description: "Navigate mazes, collect dots, and dodge enemies.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/njam/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/njam"
+  },
+  {
+    id: "naval-battle-open",
+    name: "Naval Battle",
+    category: "Board",
+    description: "Place ships and outsmart the computer fleet.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/naval-battle/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/naval-battle"
+  },
+  {
+    id: "klondike",
+    name: "Klondike Solitaire",
+    category: "Board",
+    description: "Sort the deck into four completed suits.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/klondike/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/klondike"
+  },
+  {
+    id: "briscola",
+    name: "Briscola",
+    category: "Board",
+    description: "A traditional trick-taking card game.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/briscola/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/briscola"
+  },
+  {
+    id: "for-science",
+    name: "For Science!",
+    category: "Puzzle",
+    description: "A tactical match-three duel against an opponent.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/for-science/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/for-science"
+  },
+  {
+    id: "donkey-bolonkey",
+    name: "Donkey Bolonkey",
+    category: "Puzzle",
+    description: "Pop and match colored bubbles across the levels.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/donkey-bolonkey/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/donkey-bolonkey"
+  },
+  {
+    id: "psypong3d",
+    name: "Psy Pong 3D",
+    category: "Sports",
+    description: "A fast 3D pong game with unusual physics.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/psypong3d/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/psypong3d"
+  },
+  {
+    id: "wok-open",
+    name: "Wok",
+    category: "Arcade",
+    description: "Catch falling balls and build combo scores.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/wok/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/wok"
+  },
+  {
+    id: "yanoid",
+    name: "Yanoid",
+    category: "Arcade",
+    description: "A brick-breaker with a sequence of challenging maps.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/yanoid/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/yanoid"
+  },
+  {
+    id: "terramancers",
+    name: "Terramancers",
+    category: "Strategy",
+    description: "Capture tiles in a turn-based Reversi-style strategy game.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/terramancers/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/terramancers"
+  },
+  {
+    id: "don-ceferino",
+    name: "Don Ceferino",
+    category: "Arcade",
+    description: "Pop bouncing targets through a set of levels.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/don-ceferino/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/don-ceferino"
+  },
+  {
+    id: "glparchis",
+    name: "glParchis",
+    category: "Board",
+    description: "Race your pieces around a classic board.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/glparchis/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/glparchis"
+  },
+  {
+    id: "game-of-goose",
+    name: "Game of the Goose",
+    category: "Board",
+    description: "A local multiplayer race around a winding board.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/game-of-the-goose/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/game-of-the-goose"
+  },
+  {
+    id: "bubble-train",
+    name: "Bubble Train",
+    category: "Puzzle",
+    description: "Match and clear colored bubbles through many levels.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/bubble-train/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/bubble-train"
+  },
+  {
+    id: "nova-pinball",
+    name: "Nova Pinball",
+    category: "Arcade",
+    description: "Keep the ball alive across a sci-fi pinball table.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/nova-pinball/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/nova-pinball"
+  },
+  {
+    id: "mechanical-night-pinball",
+    name: "Mechanical Night Pinball",
+    category: "Arcade",
+    description: "A physics-based pinball table with multiple objectives.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/mechanical-night-pinball/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/mechanical-night-pinball"
+  },
+  {
+    id: "comet-pinball",
+    name: "Comet Pinball",
+    category: "Arcade",
+    description: "Keep the ball in play and chase a high score.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/comet-pinball/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/comet-pinball"
+  },
+  {
+    id: "disk-field",
+    name: "Disk Field",
+    category: "Puzzle",
+    description: "Rotate a vector field to guide a disk to its goal.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/disk-field/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/disk-field"
+  },
+  {
+    id: "highmoon",
+    name: "HighMoon",
+    category: "Arcade",
+    description: "A space-artillery duel against a friend or the computer.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/highmoon/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/highmoon"
+  },
+  {
+    id: "asteroids-infinity",
+    name: "Asteroids Infinity",
+    category: "Arcade",
+    description: "Fly through an asteroid field in a classic arcade shooter.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/asteroids-infinity/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/asteroids-infinity"
+  },
+  {
+    id: "the-lost-path",
+    name: "The Lost Path",
+    category: "Puzzle",
+    description: "Solve a maze before the countdown runs out.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/the-lost-path/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/the-lost-path"
+  },
+  {
+    id: "54321",
+    name: "54321 Puzzle Collection",
+    category: "Puzzle",
+    description: "Five unusual puzzle games built around different dimensions.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/54321/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/54321"
+  },
+  {
+    id: "grugnetto-go",
+    name: "Grugnetto Go!",
+    category: "Arcade",
+    description: "A small platform game with a classic arcade feel.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/grugnetto-go/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/grugnetto-go"
+  },
+  {
+    id: "strider-open",
+    name: "Strider",
+    category: "Arcade",
+    description: "Climb through a sci-fi world and dodge enemies.",
+    playUrl: "https://linkingtechnologies.github.io/libre-arcade/strider/public/index.html",
+    sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/strider"
+  },
+  {
+    id: "eaglercraft",
+    name: "Eaglercraft",
+    category: "Sandbox",
+    description: "Minecraft-inspired browser sandbox. Embedded hosting may be limited by the source site.",
+    playUrl: "https://eaglercraft.com/",
+    sourceUrl: "https://github.com/a50411278apeter40-svg/eaglercraft-x"
+  },
+  {
+    id: "retro-bowl",
+    name: "Retro Bowl",
+    category: "Sports",
+    description: "Retro-style American football.",
+    playUrl: "https://retrobowl.me/"
+  },
+  {
+    id: "cookie-clicker",
+    name: "Cookie Clicker",
+    category: "Clicker",
+    description: "Bake cookies, buy upgrades, and build a huge cookie empire.",
+    playUrl: "https://orteil.dashnet.org/cookieclicker/"
+  },
+  {
+    id: "tiny-fishing",
+    name: "Tiny Fishing",
+    category: "Casual",
+    description: "Cast a line and collect fish as you progress.",
+    playUrl: "https://poki.com/en/g/tiny-fishing"
+  },
+  {
+    id: "moto-x3m",
+    name: "Moto X3M",
+    category: "Racing",
+    description: "Race through stunt tracks and try to beat the clock.",
+    playUrl: "https://poki.com/en/g/moto-x3m"
+  },
+  {
+    id: "moto-x3m-pool",
+    name: "Moto X3M Pool Party",
+    category: "Racing",
+    description: "Ride through water-themed stunt tracks.",
+    playUrl: "https://poki.com/en/g/moto-x3m-pool-party"
+  },
+  {
+    id: "hill-climb",
+    name: "Hill Climb Racing",
+    category: "Racing",
+    description: "Drive across uneven terrain while managing your fuel.",
+    playUrl: "https://poki.com/en/g/hill-climb-racing-lite"
+  },
+  {
+    id: "geoguessr",
+    name: "GeoGuessr",
+    category: "Geography",
+    description: "Explore a location and guess where you are.",
+    playUrl: "https://www.geoguessr.com/"
   }
 ];
 
@@ -283,7 +589,7 @@ export default function GamesClient() {
             <div className="spotlight-dot spotlight-dot-three" />
             <div className="spotlight-caption"><span>FEATURED GAME</span><strong>Pac-Man</strong><small>CLASSIC · ARCADE</small></div>
           </div>
-          <div className="games-spotlight-index">01 <span>/</span> 32</div>
+          <div className="games-spotlight-index">01 <span>/</span> {String(games.length).padStart(2, "0")}</div>
         </section>
       )}
 
@@ -315,7 +621,7 @@ export default function GamesClient() {
             <div className="games-player-header">
               <div><span className="games-player-live" /> <h2>{selectedGame.name}</h2></div>
               <div className="games-player-header-actions">
-                <a href={selectedGame.playUrl} target="_blank" rel="noreferrer">Open separately ↗</a>
+                <a href={selectedGame.playUrl} target="_blank" rel="noreferrer">Open separately ↗</a>{selectedGame.sourceUrl && <a href={selectedGame.sourceUrl} target="_blank" rel="noreferrer">Source &amp; license ↗</a>}
                 <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close ✕</button>
               </div>
             </div>
