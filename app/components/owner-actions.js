@@ -58,7 +58,10 @@ export async function ownerDeleteListing(id) {
     .select("id")
     .maybeSingle();
 
-  if (error) return { error: "Could not delete listing. Check the listings table permissions and server logs." };
+  if (error) {
+    console.error("Owner listing deletion failed:", { code: error.code, message: error.message, details: error.details, hint: error.hint });
+    return { error: `Could not delete listing: ${error.message || "Unknown database error"}${error.code ? ` (code ${error.code})` : ""}` };
+  }
   if (!data) return { error: "Listing not found. Refresh the list and select it again." };
   return { success: true };
 }
