@@ -1482,7 +1482,7 @@ export default function GamesClient() {
             <div className="games-player-header">
               <div><span className="games-player-live" /> <h2>{selectedGame.name}</h2></div>
               <div className="games-player-header-actions">
-                <a href={selectedGame.playUrl} target="_blank" rel="noreferrer">Open separately ↗</a>{selectedGame.sourceUrl && <a href={selectedGame.sourceUrl} target="_blank" rel="noreferrer">Source &amp; license ↗</a>}
+                {selectedGame.sourceUrl && <a href={selectedGame.sourceUrl} target="_blank" rel="noreferrer">Source &amp; license ↗</a>}
                 <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close ✕</button>
               </div>
             </div>
