@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteListing, getListings } from "../marketplace/actions";
+import { getListings } from "../marketplace/actions";
+import { ownerDeleteListing } from "./owner-actions";
 import "./owner-panel.css";
 
 const tabs = [
@@ -58,7 +59,7 @@ export default function OwnerPanel({ onClose }) {
     setStatus("");
     if (action === "delete-listing") {
       setStatus("Deleting listing…");
-      const result = await deleteListing(listingId.trim());
+      const result = await ownerDeleteListing(listingId.trim());
       if (result?.error) {
         setStatus(result.error);
       } else if (result?.success || result?.listing || result?.data) {
