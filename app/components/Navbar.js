@@ -12,6 +12,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   const [now, setNow] = useState(null);
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
+  const [commandIndex, setCommandIndex] = useState(0);
   const commandInput = useRef(null);
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   useEffect(() => {
     if (commandOpen) {
       setCommandQuery("");
+      setCommandIndex(0);
       requestAnimationFrame(() => commandInput.current?.focus());
     }
   }, [commandOpen]);
@@ -49,6 +51,8 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   const date = now ? new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(now) : "Loading date...";
   const handle = (event, path) => { event.preventDefault(); onNavigate?.(path); setCommandOpen(false); };
   const filteredCommands = useMemo(() => commandItems.filter((item) => `${item.label} ${item.detail} ${item.path}`.toLowerCase().includes(commandQuery.trim().toLowerCase())), [commandQuery]);
+  useEffect(() => { setCommandIndex(0); }, [commandQuery]);
+  const runCommand = (item) => { if (!item) return; onNavigate?.(item.path); setCommandOpen(false); };
 
   return <>
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
@@ -64,10 +68,10 @@ export default function Navbar({ activePath = "/", onNavigate }) {
     </nav>
     {commandOpen && <div className="command-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setCommandOpen(false); }}>
       <section className="command-panel" role="dialog" aria-modal="true" aria-label="Vehemence command menu">
-        <div className="command-search-row"><span aria-hidden="true">⌕</span><input ref={commandInput} value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && filteredCommands[0]) { onNavigate?.(filteredCommands[0].path); setCommandOpen(false); } }} placeholder="Search pages and actions..." aria-label="Search commands" /><kbd>ESC</kbd></div>
+        <div className="command-search-row"><span aria-hidden="true">⌕</span><input ref={commandInput} value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "ArrowDown") { event.preventDefault(); setCommandIndex((index) => Math.min(index + 1, Math.max(0, filteredCommands.length - 1))); } else if (event.key === "ArrowUp") { event.preventDefault(); setCommandIndex((index) => Math.max(0, index - 1)); } else if (event.key === "Enter") { event.preventDefault(); runCommand(filteredCommands[commandIndex]); } }} placeholder="Search pages and actions..." aria-label="Search commands" /><kbd>ESC</kbd></div>
         <div className="command-section-label">{commandQuery ? "MATCHING DESTINATIONS" : "QUICK NAVIGATION"}</div>
         <div className="command-results">
-          {filteredCommands.map((item) => <button type="button" className={`command-result ${activePath === item.path ? "is-current" : ""}`} key={item.id} onClick={() => { onNavigate?.(item.path); setCommandOpen(false); }}><span className="command-result-icon">{item.icon}</span><span className="command-result-copy"><strong>{item.label}</strong><small>{item.detail}</small></span>{activePath === item.path ? <span className="command-current">CURRENT</span> : <span className="command-enter">↵</span>}</button>)}
+          {filteredCommands.map((item) => <button type="button" className={`command-result ${activePath === item.path ? "is-current" : ""} ${filteredCommands[commandIndex]?.id === item.id ? "is-selected" : ""}`} key={item.id} onMouseEnter={() => setCommandIndex(filteredCommands.findIndex((candidate) => candidate.id === item.id))} onClick={() => runCommand(item)}><span className="command-result-icon">{item.icon}</span><span className="command-result-copy"><strong>{item.label}</strong><small>{item.detail}</small></span>{activePath === item.path ? <span className="command-current">CURRENT</span> : <span className="command-enter">↵</span>}</button>)}
           {filteredCommands.length === 0 && <div className="command-empty"><strong>No matching destination</strong><span>Try “games”, “friends”, or “settings”.</span></div>}
         </div>
         <footer className="command-footer"><span><kbd>↵</kbd> Open destination</span><span><kbd>ESC</kbd> Close menu</span><span className="command-brand">VEHEMENCE / COMMAND</span></footer>
