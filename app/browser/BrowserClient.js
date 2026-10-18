@@ -7,7 +7,6 @@ export default function BrowserClient() {
         <div className="browser-heading-copy">
           <p className="eyebrow">VEHEMENCE</p>
           <h1>Browser</h1>
-          <p>Browse from inside Vehemence.</p>
         </div>
       </header>
       <section className="browser-window browser-iframe-window">
