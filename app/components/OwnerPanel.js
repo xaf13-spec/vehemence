@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteListing } from "../marketplace/actions";
+import { deleteListing, getListings } from "../marketplace/actions";
 import "./owner-panel.css";
 
 const tabs = [
@@ -15,6 +15,8 @@ export default function OwnerPanel({ onClose }) {
   const [tab, setTab] = useState("overview");
   const [username, setUsername] = useState("");
   const [listingId, setListingId] = useState("");
+  const [listings, setListings] = useState([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
   const [titleUser, setTitleUser] = useState("");
   const [status, setStatus] = useState("");
   const [action, setAction] = useState("");
@@ -26,6 +28,22 @@ export default function OwnerPanel({ onClose }) {
     document.body.style.overflow = "hidden";
     return () => { window.removeEventListener("keydown", keydown); document.body.style.overflow = ""; };
   }, [onClose]);
+
+  useEffect(() => {
+    if (tab !== "listings") return;
+    let cancelled = false;
+    setListingsLoading(true);
+    getListings().then((result) => {
+      if (cancelled) return;
+      if (result?.error) setStatus(result.error);
+      else setListings(Array.isArray(result?.listings) ? result.listings : []);
+    }).catch(() => {
+      if (!cancelled) setStatus("Could not load marketplace listings.");
+    }).finally(() => {
+      if (!cancelled) setListingsLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [tab]);
 
   function queueAction(kind) {
     setStatus("");
@@ -70,7 +88,7 @@ export default function OwnerPanel({ onClose }) {
             <div className="owner-note"><span>i</span><p>This panel is opened by your secret key sequence. The moderation controls need secure server-side database actions connected to work on everyone’s accounts.</p></div>
           </div>}
           {tab === "users" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">COMMUNITY / MODERATION</span><h2>User controls</h2><p>Choose an account and select the moderation action.</p><label>Username<input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter exact username" autoComplete="off" /></label><div className="owner-action-grid"><button type="button" onClick={() => queueAction("ban")}><span className="owner-action-icon danger">⊘</span><strong>Ban user</strong><small>Restrict account access</small></button><button type="button" onClick={() => queueAction("mute")}><span className="owner-action-icon">◌</span><strong>Mute user</strong><small>Restrict chat privileges</small></button></div></section></div>}
-          {tab === "listings" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">MARKETPLACE / MODERATION</span><h2>Remove a listing</h2><p>Enter the listing ID of the item you want to remove.</p><label>Listing ID<input value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="Paste listing ID" autoComplete="off" /></label><button className="owner-danger-button" type="button" onClick={() => queueAction("delete-listing")}>Delete listing <span>↗</span></button></section></div>}
+          {tab === "listings" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">MARKETPLACE / MODERATION</span><h2>Remove a listing</h2><p>Choose a listing below. Its ID will fill in automatically.</p><label>Listing ID<input value={listingId} onChange={(e) => setListingId(e.target.value)} placeholder="Select a listing below or paste ID" autoComplete="off" /></label><button className="owner-danger-button" type="button" onClick={() => queueAction("delete-listing")}>Delete listing <span>↗</span></button><div className="owner-listing-picker"><div className="owner-listing-picker-head"><strong>Marketplace listings</strong><button type="button" onClick={() => { setListingsLoading(true); getListings().then((result) => { if (result?.error) setStatus(result.error); else setListings(Array.isArray(result?.listings) ? result.listings : []); }).catch(() => setStatus("Could not load marketplace listings.")).finally(() => setListingsLoading(false)); }}>Refresh</button></div>{listingsLoading ? <p>Loading listings…</p> : listings.length === 0 ? <p>No listings returned. Make sure you're logged in and the marketplace is available.</p> : listings.map((item, index) => { const id = item.id ?? item.listing_id ?? item.listingId; const name = item.name ?? item.title ?? item.listing_name ?? "Untitled listing"; return <div className="owner-listing-row" key={String(id ?? index)}><span><strong>{String(name)}</strong><small>ID: {id == null ? "Unavailable" : String(id)}</small></span><button type="button" disabled={id == null} onClick={() => { setListingId(String(id)); setStatus(""); }}>Select</button></div>; })}</div></section></div>}
           {tab === "identity" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">COMMUNITY / BADGES</span><h2>Owner title</h2><p>Set the username that should display the Owner title.</p><label>Username<input value={titleUser} onChange={(e) => setTitleUser(e.target.value)} placeholder="Enter owner username" autoComplete="off" /></label><div className="owner-title-preview"><span className="owner-preview-avatar">V</span><span><strong>{titleUser.trim() || "Username"}</strong><small>Profile title preview</small></span><b>✦ OWNER</b></div><button className="owner-primary-button" type="button" onClick={() => setStatus("The Owner badge needs a persistent profile field and server-side update action before it can be assigned.")}>Assign Owner title <span>↗</span></button></section></div>}
           {status && <div className="owner-status" role="status">{status}</div>}
           {confirm && <div className="owner-confirm-backdrop"><section className="owner-confirm"><span className="owner-kicker">CONFIRM MODERATION</span><h2>{action === "ban" ? "Ban this user?" : action === "mute" ? "Mute this user?" : "Delete this listing?"}</h2><p>{action === "delete-listing" ? listingId : username} · This action will need a connected moderation backend to execute.</p><div><button type="button" className="owner-secondary-button" onClick={() => setConfirm(false)}>Cancel</button><button type="button" className="owner-danger-button" onClick={runAction}>Confirm action</button></div></section></div>}
