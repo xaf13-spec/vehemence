@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import OwnerPanel from "./OwnerPanel";
+import { isOwnerAccount } from "./owner-actions";
 
 const defaultNotifications = [{ id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }];
 const navItems = [["/", "Home"], ["/games", "Games"], ["/browser", "Browser"], ["/soundboard", "Soundboard"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
@@ -15,6 +16,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [ownerOpen, setOwnerOpen] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const commandInput = useRef(null);
 
   useEffect(() => {
@@ -22,20 +24,11 @@ export default function Navbar({ activePath = "/", onNavigate }) {
     const updateNotifications = () => { try { const items = JSON.parse(localStorage.getItem("vehemence_notifications") || "[]"); setUnread(items.filter((item) => !item.read).length); } catch { setUnread(0); } };
     const updateNav = () => setNavMode(localStorage.getItem("vehemence_nav_mode") || "top");
     const updateClock = () => setNow(new Date());
-    let secretBuffer = "";
+
     const openPalette = (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setCommandOpen(true); }
       if (event.key === "Escape") setCommandOpen(false);
-      const target = event.target;
-      const typingInField = target instanceof HTMLElement && (
-        target.isContentEditable ||
-        target.matches("input, textarea, select, [role='textbox']")
-      );
-      if (typingInField) { secretBuffer = ""; return; }
-      if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
-        secretBuffer = (secretBuffer + event.key.toLowerCase()).slice(-6);
-        if (secretBuffer === "0x6zj2") { setOwnerOpen(true); setCommandOpen(false); secretBuffer = ""; }
-      }
+
     };
     updateNotifications(); updateNav(); updateClock();
     window.addEventListener("storage", updateNotifications);
@@ -47,6 +40,15 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   }, []);
 
   useEffect(() => { document.documentElement.setAttribute("data-nav-mode", navMode); }, [navMode]);
+  useEffect(() => {
+    let cancelled = false;
+    isOwnerAccount().then((result) => {
+      if (!cancelled) setIsOwner(Boolean(result?.isOwner));
+    }).catch(() => {
+      if (!cancelled) setIsOwner(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
   useEffect(() => {
     if (commandOpen) {
       setCommandQuery("");
@@ -73,7 +75,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
       <div className="nav-links">
         {navItems.slice(0, 8).map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
-      <div className="navbar-status">
+      <div className="navbar-status">\n        {isOwner && <button type="button" className="command-trigger" onClick={() => setOwnerOpen(true)} title="Open owner control center">Owner Panel</button>}
         <button type="button" className="command-trigger" onClick={() => setCommandOpen(true)} aria-label="Open command menu" title="Command menu (Ctrl+K)"><span>⌕</span><kbd>Ctrl K</kbd></button>
         <a href="/notifications" onClick={(event) => handle(event, "/notifications")} className={`notification-nav ${activePath === "/notifications" ? "active" : ""}`} aria-label="Notifications"><span className="notification-bell">♧</span>{unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}</a>
         <div className="navbar-clock" aria-label="Ontario time and date"><span className="navbar-clock-period">{amPm}</span><strong>{hour}:{minute}:{second}</strong><span>{date} · Ontario / New York</span></div>
