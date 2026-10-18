@@ -384,7 +384,8 @@ button:focus-visible, a:focus-visible { outline:2px solid rgba(210,205,255,.7); 
 .command-section-label { padding: 17px 18px 9px; color: #737581; font-size: 9px; font-weight: 800; letter-spacing: .15em; }
 .command-results { padding: 0 8px 9px; max-height: min(48vh, 390px); overflow-y: auto; }
 .command-result { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 10px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #e9e9ee; text-align: left; cursor: pointer; }
-.command-result:hover, .command-result:focus-visible, .command-result.is-current { border-color: rgba(255,255,255,.07); background: rgba(255,255,255,.045); }
+.command-result:hover, .command-result:focus-visible, .command-result.is-current, .command-result.is-selected { border-color: rgba(255,255,255,.09); background: rgba(255,255,255,.06); }
+.command-result.is-selected .command-result-icon { border-color: rgba(196,191,240,.22); background: rgba(196,191,240,.08); color: #eeebff; }
 .command-result-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px; border: 1px solid rgba(255,255,255,.07); border-radius: 9px; background: rgba(255,255,255,.035); color: #c4bff0; font-size: 17px; }
 .command-result-copy { display: flex; flex: 1; flex-direction: column; gap: 3px; }
 .command-result-copy strong { font-size: 12px; font-weight: 700; }
