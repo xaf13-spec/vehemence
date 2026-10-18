@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import OwnerPanel from "./OwnerPanel";
 
 const defaultNotifications = [{ id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }];
 const navItems = [["/", "Home"], ["/games", "Games"], ["/browser", "Browser"], ["/soundboard", "Soundboard"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
@@ -13,6 +14,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
+  const [ownerOpen, setOwnerOpen] = useState(false);
   const commandInput = useRef(null);
 
   useEffect(() => {
@@ -20,9 +22,14 @@ export default function Navbar({ activePath = "/", onNavigate }) {
     const updateNotifications = () => { try { const items = JSON.parse(localStorage.getItem("vehemence_notifications") || "[]"); setUnread(items.filter((item) => !item.read).length); } catch { setUnread(0); } };
     const updateNav = () => setNavMode(localStorage.getItem("vehemence_nav_mode") || "top");
     const updateClock = () => setNow(new Date());
+    let secretBuffer = "";
     const openPalette = (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setCommandOpen(true); }
       if (event.key === "Escape") setCommandOpen(false);
+      if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        secretBuffer = (secretBuffer + event.key.toLowerCase()).slice(-6);
+        if (secretBuffer === "0x6zj2") { setOwnerOpen(true); setCommandOpen(false); secretBuffer = ""; }
+      }
     };
     updateNotifications(); updateNav(); updateClock();
     window.addEventListener("storage", updateNotifications);
@@ -66,6 +73,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
         <div className="navbar-clock" aria-label="Ontario time and date"><span className="navbar-clock-period">{amPm}</span><strong>{hour}:{minute}:{second}</strong><span>{date} · Ontario / New York</span></div>
       </div>
     </nav>
+    {ownerOpen && <OwnerPanel onClose={() => setOwnerOpen(false)} />}
     {commandOpen && <div className="command-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setCommandOpen(false); }}>
       <section className="command-panel" role="dialog" aria-modal="true" aria-label="Vehemence command menu">
         <div className="command-search-row"><span aria-hidden="true">⌕</span><input ref={commandInput} value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "ArrowDown") { event.preventDefault(); setCommandIndex((index) => Math.min(index + 1, Math.max(0, filteredCommands.length - 1))); } else if (event.key === "ArrowUp") { event.preventDefault(); setCommandIndex((index) => Math.max(0, index - 1)); } else if (event.key === "Enter") { event.preventDefault(); runCommand(filteredCommands[commandIndex]); } }} placeholder="Search pages and actions..." aria-label="Search commands" /><kbd>ESC</kbd></div>
