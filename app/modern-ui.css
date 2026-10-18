@@ -351,3 +351,54 @@ button:focus-visible, a:focus-visible { outline:2px solid rgba(210,205,255,.7); 
 @media(prefers-reduced-motion:reduce) {
   main:not(.games-page):not(.social-home-page) { animation:none; }
 }
+
+
+/* Vehemence command layer — fast keyboard-first navigation */
+.navbar-status { gap: 12px; }
+.command-trigger {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px;
+  border: 1px solid var(--modern-line); border-radius: 9px; background: rgba(255,255,255,.025);
+  color: #a2a3ae; cursor: pointer; transition: border-color .18s, background .18s, color .18s;
+}
+.command-trigger:hover { color: #f4f4f6; border-color: var(--modern-line-strong); background: rgba(255,255,255,.055); }
+.command-trigger>span { font-size: 20px; line-height: 1; }
+.command-trigger kbd, .command-search-row kbd, .command-footer kbd {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 21px; padding: 0 5px;
+  border: 1px solid rgba(255,255,255,.1); border-radius: 5px; background: rgba(255,255,255,.035);
+  color: #8d8f9a; font: 600 9px/1 inherit; letter-spacing: .02em;
+}
+.command-overlay {
+  position: fixed; z-index: 9999; inset: 0; display: flex; justify-content: center; align-items: flex-start;
+  padding: min(17vh, 150px) 20px 24px; background: rgba(3,4,7,.72); backdrop-filter: blur(12px);
+  animation: command-fade-in .14s ease-out;
+}
+.command-panel {
+  width: min(100%, 570px); overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 17px;
+  background: #101116; box-shadow: 0 32px 100px rgba(0,0,0,.55), 0 1px rgba(255,255,255,.04) inset;
+  animation: command-rise-in .18s cubic-bezier(.2,.75,.25,1);
+}
+.command-search-row { display: flex; align-items: center; gap: 12px; padding: 17px 18px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.command-search-row>span { color: #b5b2d9; font-size: 24px; }
+.command-search-row input { flex: 1; min-width: 0; border: 0 !important; outline: 0 !important; background: transparent !important; box-shadow: none !important; color: #f4f4f6; font-size: 14px; }
+.command-search-row input::placeholder { color: #696b77; }
+.command-section-label { padding: 17px 18px 9px; color: #737581; font-size: 9px; font-weight: 800; letter-spacing: .15em; }
+.command-results { padding: 0 8px 9px; max-height: min(48vh, 390px); overflow-y: auto; }
+.command-result { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 10px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #e9e9ee; text-align: left; cursor: pointer; }
+.command-result:hover, .command-result:focus-visible, .command-result.is-current { border-color: rgba(255,255,255,.07); background: rgba(255,255,255,.045); }
+.command-result-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px; border: 1px solid rgba(255,255,255,.07); border-radius: 9px; background: rgba(255,255,255,.035); color: #c4bff0; font-size: 17px; }
+.command-result-copy { display: flex; flex: 1; flex-direction: column; gap: 3px; }
+.command-result-copy strong { font-size: 12px; font-weight: 700; }
+.command-result-copy small { color: #777985; font-size: 10px; }
+.command-current { color: #8c89b5; font-size: 8px; font-weight: 800; letter-spacing: .1em; }
+.command-enter { color: #686a75; font-size: 13px; }
+.command-empty { display: flex; flex-direction: column; gap: 6px; padding: 28px 16px 32px; text-align: center; }
+.command-empty strong { color: #e8e8ee; font-size: 12px; }
+.command-empty span { color: #777985; font-size: 11px; }
+.command-footer { display: flex; align-items: center; gap: 16px; padding: 12px 17px; border-top: 1px solid rgba(255,255,255,.065); color: #767884; font-size: 9px; }
+.command-footer>span { display: inline-flex; align-items: center; gap: 6px; }
+.command-footer .command-brand { margin-left: auto; color: #555762; font-size: 8px; font-weight: 800; letter-spacing: .12em; }
+@keyframes command-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes command-rise-in { from { opacity: 0; transform: translateY(-7px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (max-width: 1100px) { .command-trigger kbd { display: none; }.command-trigger { padding: 0 9px; } }
+@media (max-width: 800px) { .navbar-status { gap: 7px; }.command-trigger { min-height: 33px; }.command-footer { flex-wrap: wrap; gap: 9px 14px; }.command-footer .command-brand { display: none; } }
+@media (prefers-reduced-motion: reduce) { .command-overlay, .command-panel { animation: none; } }
