@@ -40,6 +40,8 @@ export default function BackgroundEffects() {
   return <div className={`ambient-background theme-${settings.theme} ${custom ? "ambient-custom" : ""} ${settings.enabled ? "effects-enabled" : "effects-muted"}`} style={imageStyle} aria-hidden="true">
     {!custom && settings.enabled && <>
       <div className="ambient-glow" />
+      <div className="ambient-sun" />
+      <div className="ambient-stars" />
       <div className="ambient-horizon" />
       <div className="ambient-wave ambient-wave-one" />
       <div className="ambient-wave ambient-wave-two" />
