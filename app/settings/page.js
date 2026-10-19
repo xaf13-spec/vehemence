@@ -92,7 +92,9 @@ export default function Settings() {
     setBackgroundError("");
     setBackgroundMessage("");
     const value = backgroundUrl.trim();
-    if (!/^https?:\\/\\//i.test(value)) {
+    let parsedUrl;
+    try { parsedUrl = new URL(value); } catch { parsedUrl = null; }
+    if (!parsedUrl || !["http:", "https:"].includes(parsedUrl.protocol)) {
       setBackgroundError("Paste a direct image URL beginning with http:// or https://.");
       return;
     }
