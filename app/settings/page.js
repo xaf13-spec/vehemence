@@ -64,7 +64,7 @@ export default function Settings() {
 
   useEffect(() => {
     const get = (k, f) => localStorage.getItem(k) ?? f;
-    const loaded = { theme: get("vehemence_theme", "Midnight"), font: get("vehemence_font", "Arial"), uiScale: get("vehemence_ui_scale", "Normal"), compact: get("vehemence_compact", "false") === "true", animations: get("vehemence_animations", "true") === "true", blur: get("vehemence_blur", "true") === "true", backgroundEffects: get("vehemence_background", "true") === "true" };
+    const loaded = { theme: get("vehemence_theme", "Midnight"), font: get("vehemence_font", "Arial"), uiScale: get("vehemence_ui_scale", "Normal"), compact: get("vehemence_compact", "false") === "true", animations: get("vehemence_animations", "true") === "true", blur: get("vehemence_blur", "true") === "true", backgroundEffects: get("vehemence_background", "true") === "true", transparentButtons: get("vehemence_transparent_buttons", "false") === "true" };
     setTheme(loaded.theme); setFont(loaded.font); setUiScale(loaded.uiScale); setCompact(loaded.compact); setAnimations(loaded.animations); setBlur(loaded.blur); setBackgroundEffects(loaded.backgroundEffects); setVolume(Number(get("vehemence_volume", "80"))); setAutoFullscreen(get("vehemence_auto_fullscreen", "false") === "true"); setRememberLastGame(get("vehemence_remember_game", "true") === "true"); setFriendNotifications(get("vehemence_notify_friends", "true") === "true"); setSiteNotifications(get("vehemence_notify_site", "true") === "true"); setAchievementNotifications(get("vehemence_notify_achievements", "true") === "true");
     setNavMode(get("vehemence_nav_mode", "top"));
     setBackgroundMode(get("vehemence_background_mode", "theme") === "custom" ? "Custom Image" : "Theme");
