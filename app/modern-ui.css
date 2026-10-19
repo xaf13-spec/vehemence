@@ -596,3 +596,38 @@ img { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+
+/* Keep the animated scene visible behind app content */
+html[data-theme] body {
+  background: transparent !important;
+  position: relative;
+}
+html[data-theme] {
+  background: var(--theme-bg, #08090c);
+}
+html[data-transparent-buttons="true"] .primary-button,
+html[data-transparent-buttons="true"] .secondary-button {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: 0 1px 10px rgba(0,0,0,.18);
+}
+html[data-transparent-buttons="true"] .primary-button {
+  color: var(--theme-accent, #fff) !important;
+}
+html[data-transparent-buttons="true"] .secondary-button {
+  color: var(--text, #f4f4f6) !important;
+}
+html[data-transparent-buttons="true"] .primary-button:hover,
+html[data-transparent-buttons="true"] .secondary-button:hover {
+  background: var(--theme-accent-soft, rgba(255,255,255,.08)) !important;
+  border-color: color-mix(in srgb, var(--theme-accent, #fff) 22%, transparent) !important;
+  box-shadow: none !important;
+}
+html[data-transparent-buttons="true"] .settings-select-button,
+html[data-transparent-buttons="true"] .settings-select-menu,
+html[data-transparent-buttons="true"] .settings-background-file,
+html[data-transparent-buttons="true"] .settings-background-url-controls input {
+  background: var(--theme-surface, rgba(15,15,21,.96)) !important;
+}
