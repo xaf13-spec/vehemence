@@ -55,12 +55,18 @@ export default function Settings() {
   const [showUsername, setShowUsername] = useState(false), [showPassword, setShowPassword] = useState(false), [usernameError, setUsernameError] = useState(""), [usernameSuccess, setUsernameSuccess] = useState(""), [usernameLoading, setUsernameLoading] = useState(false), [passwordError, setPasswordError] = useState(""), [passwordSuccess, setPasswordSuccess] = useState(""), [passwordLoading, setPasswordLoading] = useState(false);
   const [theme, setTheme] = useState("Midnight"), [font, setFont] = useState("Arial"), [uiScale, setUiScale] = useState("Normal"), [compact, setCompact] = useState(false), [animations, setAnimations] = useState(true), [blur, setBlur] = useState(true), [backgroundEffects, setBackgroundEffects] = useState(true), [volume, setVolume] = useState(80), [autoFullscreen, setAutoFullscreen] = useState(false), [rememberLastGame, setRememberLastGame] = useState(true), [friendNotifications, setFriendNotifications] = useState(true), [siteNotifications, setSiteNotifications] = useState(true), [achievementNotifications, setAchievementNotifications] = useState(true), [deleteConfirm, setDeleteConfirm] = useState(false), [deleteLoading, setDeleteLoading] = useState(false), [deleteError, setDeleteError] = useState(""), [accountMessage, setAccountMessage] = useState("");
   const [navMode, setNavMode] = useState("top");
+  const [backgroundMode, setBackgroundMode] = useState("Theme");
+  const [backgroundUrl, setBackgroundUrl] = useState("");
+  const [backgroundError, setBackgroundError] = useState("");
+  const [backgroundMessage, setBackgroundMessage] = useState("");
 
   useEffect(() => {
     const get = (k, f) => localStorage.getItem(k) ?? f;
     const loaded = { theme: get("vehemence_theme", "Midnight"), font: get("vehemence_font", "Arial"), uiScale: get("vehemence_ui_scale", "Normal"), compact: get("vehemence_compact", "false") === "true", animations: get("vehemence_animations", "true") === "true", blur: get("vehemence_blur", "true") === "true", backgroundEffects: get("vehemence_background", "true") === "true" };
     setTheme(loaded.theme); setFont(loaded.font); setUiScale(loaded.uiScale); setCompact(loaded.compact); setAnimations(loaded.animations); setBlur(loaded.blur); setBackgroundEffects(loaded.backgroundEffects); setVolume(Number(get("vehemence_volume", "80"))); setAutoFullscreen(get("vehemence_auto_fullscreen", "false") === "true"); setRememberLastGame(get("vehemence_remember_game", "true") === "true"); setFriendNotifications(get("vehemence_notify_friends", "true") === "true"); setSiteNotifications(get("vehemence_notify_site", "true") === "true"); setAchievementNotifications(get("vehemence_notify_achievements", "true") === "true");
     setNavMode(get("vehemence_nav_mode", "top"));
+    setBackgroundMode(get("vehemence_background_mode", "theme") === "custom" ? "Custom Image" : "Theme");
+    setBackgroundUrl(get("vehemence_custom_background_url", ""));
     applyAppearance(loaded);
     document.documentElement.setAttribute("data-nav-mode", get("vehemence_nav_mode", "top"));
   }, []);
@@ -75,6 +81,69 @@ export default function Settings() {
   function handleFontChange(v) { changeAppearance("vehemence_font", "font", v, setFont); }
   function handleScaleChange(v) { changeAppearance("vehemence_ui_scale", "uiScale", v, setUiScale); }
   function handleToggle(k, v, setter) { changeAppearance(`vehemence_${k === "backgroundEffects" ? "background" : k}`, k, v, setter); }
+  function chooseBackgroundMode(value) {
+    const mode = value === "Custom Image" ? "custom" : "theme";
+    setBackgroundMode(value);
+    save("vehemence_background_mode", mode, true);
+    setBackgroundError("");
+    setBackgroundMessage(mode === "theme" ? "Theme background restored." : "");
+  }
+  function applyBackgroundUrl() {
+    setBackgroundError("");
+    setBackgroundMessage("");
+    const value = backgroundUrl.trim();
+    if (!/^https?:\\/\\//i.test(value)) {
+      setBackgroundError("Paste a direct image URL beginning with http:// or https://.");
+      return;
+    }
+    save("vehemence_custom_background_url", value);
+    save("vehemence_custom_background", value);
+    save("vehemence_background_mode", "custom", true);
+    setBackgroundMode("Custom Image");
+    setBackgroundMessage("Custom background applied.");
+  }
+  function handleBackgroundFile(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setBackgroundError("");
+    setBackgroundMessage("");
+    if (!file.type.startsWith("image/")) {
+      setBackgroundError("Choose an image file such as PNG, JPG, GIF, or WebP.");
+      event.target.value = "";
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setBackgroundError("That image is over 2 MB. Choose a smaller image so it can be saved safely in your browser.");
+      event.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const dataUrl = String(reader.result || "");
+        save("vehemence_custom_background", dataUrl);
+        save("vehemence_custom_background_url", "");
+        save("vehemence_background_mode", "custom", true);
+        setBackgroundUrl("");
+        setBackgroundMode("Custom Image");
+        setBackgroundMessage("Uploaded background applied and saved on this browser.");
+      } catch {
+        setBackgroundError("This image could not be saved. Try a smaller file.");
+      }
+    };
+    reader.onerror = () => setBackgroundError("Could not read that image file. Try another image.");
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  }
+  function clearCustomBackground() {
+    localStorage.removeItem("vehemence_custom_background");
+    localStorage.removeItem("vehemence_custom_background_url");
+    save("vehemence_background_mode", "theme", true);
+    setBackgroundUrl("");
+    setBackgroundMode("Theme");
+    setBackgroundError("");
+    setBackgroundMessage("Theme background restored.");
+  }
   function toggleNavMode() {
     const next = navMode === "top" ? "side" : "top";
     setNavMode(next);
@@ -97,7 +166,19 @@ export default function Settings() {
 
   return <main className="settings-page"><div className="settings-container"><div className="settings-header"><p className="eyebrow">VEHEMENCE</p><h1>Settings</h1></div>
     <section className="settings-section"><div className="settings-section-header"><h2>Account</h2><p>Manage your account information.</p></div><div className="settings-card"><SettingRow title="Username" description="Change your username once every 24 hours."><button className="secondary-button" onClick={() => { setShowUsername(!showUsername); setUsernameError(""); setUsernameSuccess(""); }}>{showUsername ? "Cancel" : "Change Username"}</button></SettingRow>{showUsername && <form className="settings-form" onSubmit={handleUsernameChange}><label>New Username<input name="username" type="text" placeholder="Enter your new username" minLength={3} maxLength={20} required /></label>{usernameError && <p className="auth-error">{usernameError}</p>}{usernameSuccess && <p className="settings-success">{usernameSuccess}</p>}<button type="submit" className="primary-button" disabled={usernameLoading}>{usernameLoading ? "Changing..." : "Save Username"}</button></form>}<SettingRow title="Password" description="Change your password whenever you want."><button className="secondary-button" onClick={() => { setShowPassword(!showPassword); setPasswordError(""); setPasswordSuccess(""); }}>{showPassword ? "Cancel" : "Change Password"}</button></SettingRow>{showPassword && <form className="settings-form" onSubmit={handlePasswordChange}><label>Current Password<input name="currentPassword" type="password" required /></label><label>New Password<input name="newPassword" type="password" minLength={8} required /></label><label>Confirm New Password<input name="confirmPassword" type="password" minLength={8} required /></label>{passwordError && <p className="auth-error">{passwordError}</p>}{passwordSuccess && <p className="settings-success">{passwordSuccess}</p>}<button type="submit" className="primary-button" disabled={passwordLoading}>{passwordLoading ? "Changing..." : "Save Password"}</button></form>}<SettingRow title="Active Sessions" description="Your current signed-in session."><span className="settings-status">This device · Active</span></SettingRow><SettingRow title="Sign Out Everywhere" description="End all active sessions for this account."><button className="secondary-button" onClick={handleLogoutEverywhere}>Sign Out Everywhere</button></SettingRow></div></section>
-    <section className="settings-section"><div className="settings-section-header"><h2>Appearance</h2><p>Control the look and feel of Vehemence.</p></div><div className="settings-card"><SettingRow title="Theme" description="Choose the look and colors of the site."><CustomSelect value={theme} options={themes} onChange={handleThemeChange} /></SettingRow><SettingRow title="Font" description="Choose the font used throughout Vehemence."><CustomSelect value={font} options={fonts} onChange={handleFontChange} /></SettingRow><SettingRow title="UI Scale" description="Adjust the overall size of interface elements."><CustomSelect value={uiScale} options={["Small", "Normal", "Large"]} onChange={handleScaleChange} /></SettingRow><SettingRow title={navMode === "top" ? "Top Navigation Bar" : "Side Navigation Bar"} description={navMode === "top" ? "Switch between the top navigation and a standing side navigation bar." : "Your navigation is standing on the side. Click to switch it back to the top."}><button className="secondary-button" onClick={toggleNavMode}>{navMode === "top" ? "Use Side Navigation Bar" : "Use Top Navigation Bar"}</button></SettingRow><SettingRow title="Compact Mode" description="Reduce spacing to fit more content on screen."><Toggle checked={compact} onChange={v => handleToggle("compact", v, setCompact)} /></SettingRow><SettingRow title="Animations" description="Enable interface motion and transitions."><Toggle checked={animations} onChange={v => handleToggle("animations", v, setAnimations)} /></SettingRow><SettingRow title="Blur Effects" description="Use glass and backdrop blur effects throughout the site."><Toggle checked={blur} onChange={v => handleToggle("blur", v, setBlur)} /></SettingRow><SettingRow title="Background Effects" description="Show the subtle background lighting effects."><Toggle checked={backgroundEffects} onChange={v => handleToggle("backgroundEffects", v, setBackgroundEffects)} /></SettingRow></div></section>
+    <section className="settings-section"><div className="settings-section-header"><h2>Appearance</h2><p>Control the look and feel of Vehemence.</p></div><div className="settings-card"><SettingRow title="Theme" description="Choose the look and colors of the site."><CustomSelect value={theme} options={themes} onChange={handleThemeChange} /></SettingRow><SettingRow title="Font" description="Choose the font used throughout Vehemence."><CustomSelect value={font} options={fonts} onChange={handleFontChange} /></SettingRow><SettingRow title="UI Scale" description="Adjust the overall size of interface elements."><CustomSelect value={uiScale} options={["Small", "Normal", "Large"]} onChange={handleScaleChange} /></SettingRow><SettingRow title={navMode === "top" ? "Top Navigation Bar" : "Side Navigation Bar"} description={navMode === "top" ? "Switch between the top navigation and a standing side navigation bar." : "Your navigation is standing on the side. Click to switch it back to the top."}><button className="secondary-button" onClick={toggleNavMode}>{navMode === "top" ? "Use Side Navigation Bar" : "Use Top Navigation Bar"}</button></SettingRow><SettingRow title="Compact Mode" description="Reduce spacing to fit more content on screen."><Toggle checked={compact} onChange={v => handleToggle("compact", v, setCompact)} /></SettingRow><SettingRow title="Animations" description="Enable interface motion and transitions."><Toggle checked={animations} onChange={v => handleToggle("animations", v, setAnimations)} /></SettingRow><SettingRow title="Blur Effects" description="Use glass and backdrop blur effects throughout the site."><Toggle checked={blur} onChange={v => handleToggle("blur", v, setBlur)} /></SettingRow><SettingRow title="Background Effects" description="Show the subtle background lighting effects."><Toggle checked={backgroundEffects} onChange={v => handleToggle("backgroundEffects", v, setBackgroundEffects)} /></SettingRow>
+      <div className="settings-background-editor">
+        <div className="settings-background-editor-heading"><h3>Background style</h3><p>Ocean and Sunset themes get their own animated atmosphere. Or use your own image.</p></div>
+        <div className="settings-background-mode"><span>Background type</span><CustomSelect value={backgroundMode} options={["Theme", "Custom Image"]} onChange={chooseBackgroundMode} /></div>
+        <div className="settings-background-custom">
+          <label className="settings-background-file">Choose image from your PC<input type="file" accept="image/*" onChange={handleBackgroundFile} /></label>
+          <div className="settings-background-url"><label htmlFor="custom-background-url">Or paste an image URL</label><div className="settings-background-url-controls"><input id="custom-background-url" type="url" placeholder="https://example.com/background.jpg" value={backgroundUrl} onChange={e => setBackgroundUrl(e.target.value)} /><button type="button" className="secondary-button" onClick={applyBackgroundUrl}>Apply URL</button></div></div>
+          <p className="settings-background-hint">Use a direct image link. Uploaded images are saved in this browser and limited to 2 MB.</p>
+          {backgroundError && <p className="auth-error">{backgroundError}</p>}
+          {backgroundMessage && <p className="settings-success">{backgroundMessage}</p>}
+          <button type="button" className="secondary-button" onClick={clearCustomBackground}>Reset to Theme Background</button>
+        </div>
+      </div></div></section>
     <section className="settings-section"><div className="settings-section-header"><h2>Games</h2><p>Set your default game behavior.</p></div><div className="settings-card"><SettingRow title="Default Game Volume" description="Set the starting volume for games that support audio."><div className="settings-range-wrap"><input className="settings-range" type="range" min="0" max="100" value={volume} onChange={e => update("vehemence_volume", e.target.value, setVolume)} /><span>{volume}%</span></div></SettingRow><SettingRow title="Auto Fullscreen" description="Enter fullscreen automatically when a game supports it."><Toggle checked={autoFullscreen} onChange={v => update("vehemence_auto_fullscreen", v, setAutoFullscreen)} /></SettingRow><SettingRow title="Remember Last Game" description="Keep track of the last game you opened for quick access."><Toggle checked={rememberLastGame} onChange={v => update("vehemence_remember_game", v, setRememberLastGame)} /></SettingRow></div></section>
     <section className="settings-section"><div className="settings-section-header"><h2>Notifications</h2><p>Choose which updates appear in your notification center.</p></div><div className="settings-card"><SettingRow title="Friend Requests" description="Get notified when someone sends you a friend request."><Toggle checked={friendNotifications} onChange={v => update("vehemence_notify_friends", v, setFriendNotifications)} /></SettingRow><SettingRow title="Site Announcements" description="Get important announcements from Vehemence."><Toggle checked={siteNotifications} onChange={v => update("vehemence_notify_site", v, setSiteNotifications)} /></SettingRow><SettingRow title="Achievements" description="Get notified when you unlock an achievement."><Toggle checked={achievementNotifications} onChange={v => update("vehemence_notify_achievements", v, setAchievementNotifications)} /></SettingRow></div></section>
     <section className="settings-section"><div className="settings-section-header"><h2>Danger Zone</h2><p>Actions that affect your account.</p></div><div className="settings-card danger-card"><SettingRow title="Sign Out" description="Sign out of your Vehemence account on this device."><button className="secondary-button danger-button" onClick={handleLogout}>Sign Out</button></SettingRow><SettingRow title="Delete Account" description="Permanently delete your Vehemence account and its data."><button className="secondary-button danger-button" onClick={() => { setDeleteError(""); setDeleteConfirm(true); }}>Delete Account</button></SettingRow></div>{deleteConfirm && <div className="settings-delete-warning"><strong>Delete your account?</strong><p>This permanently removes your Vehemence account and signed-in sessions. This cannot be undone.</p>{deleteError && <p className="auth-error">{deleteError}</p>}<div className="settings-delete-actions"><button className="secondary-button" onClick={() => setDeleteConfirm(false)} disabled={deleteLoading}>Cancel</button><button className="secondary-button danger-button" onClick={handleDeleteAccount} disabled={deleteLoading}>{deleteLoading ? "Deleting..." : "Yes, Delete Account"}</button></div></div>}{accountMessage && <p className="settings-note">{accountMessage}</p>}</section>
