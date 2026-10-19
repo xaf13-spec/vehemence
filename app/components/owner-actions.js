@@ -56,7 +56,7 @@ export async function ownerDeleteAccount(username) {
   const { data: target, error: lookupError } = await supabase
     .from("profiles")
     .select("id, username")
-    .ilike("username", targetUsername)
+    .eq("username", targetUsername)
     .limit(2);
 
   if (lookupError) {
