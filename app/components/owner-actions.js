@@ -43,6 +43,17 @@ export async function isOwnerAccount() {
   return { isOwner: !owner.error };
 }
 
+export async function ownerListAccounts() {
+  const owner = await getVerifiedOwner();
+  if (owner.error) return { error: owner.error };
+  const { data, error } = await supabase.from("profiles").select("id, username, created_at").order("created_at", { ascending: false }).limit(500);
+  if (error) {
+    console.error("Owner account list failed:", { code: error.code, message: error.message });
+    return { error: "Could not load accounts. Check the profiles table permissions and try again." };
+  }
+  return { accounts: (data || []).map((account) => ({ id: account.id, username: account.username, created_at: account.created_at || null })), truncated: (data || []).length === 500 };
+}
+
 export async function ownerDeleteAccount(username) {
   const owner = await getVerifiedOwner();
   if (owner.error) return { error: owner.error };
