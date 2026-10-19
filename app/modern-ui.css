@@ -631,3 +631,37 @@ html[data-transparent-buttons="true"] .settings-background-file,
 html[data-transparent-buttons="true"] .settings-background-url-controls input {
   background: var(--theme-surface, rgba(15,15,21,.96)) !important;
 }
+
+
+/* Transparent surfaces mode: remove the large filled panels, not just button fills. */
+html[data-transparent-buttons="true"] .settings-card,
+html[data-transparent-buttons="true"] .settings-section,
+html[data-transparent-buttons="true"] .settings-form,
+html[data-transparent-buttons="true"] .settings-background-editor,
+html[data-transparent-buttons="true"] .settings-row,
+html[data-transparent-buttons="true"] .settings-background-mode {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-transparent-buttons="true"] .settings-card,
+html[data-transparent-buttons="true"] .settings-section {
+  border-color: transparent !important;
+}
+html[data-transparent-buttons="true"] .settings-row {
+  border-bottom-color: rgba(255,255,255,.07);
+}
+html[data-transparent-buttons="true"] .settings-select-button {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html[data-transparent-buttons="true"] .settings-select-button:hover,
+html[data-transparent-buttons="true"] .settings-select-button[aria-expanded="true"] {
+  background: rgba(255,255,255,.07) !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+html[data-transparent-buttons="true"] .settings-background-file,
+html[data-transparent-buttons="true"] .settings-background-url-controls input {
+  background: rgba(10,10,16,.48) !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
