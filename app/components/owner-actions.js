@@ -43,6 +43,54 @@ export async function isOwnerAccount() {
   return { isOwner: !owner.error };
 }
 
+export async function ownerDeleteAccount(username) {
+  const owner = await getVerifiedOwner();
+  if (owner.error) return { error: owner.error };
+
+  const targetUsername = String(username || "").trim();
+  if (!targetUsername) return { error: "Enter the exact username first." };
+  if (targetUsername.toLowerCase() === process.env.VEHEMENCE_OWNER_USERNAME?.trim().toLowerCase()) {
+    return { error: "The owner account cannot be deleted from the owner panel." };
+  }
+
+  const { data: target, error: lookupError } = await supabase
+    .from("profiles")
+    .select("id, username")
+    .ilike("username", targetUsername)
+    .limit(2);
+
+  if (lookupError) {
+    console.error("Owner account lookup failed:", { code: lookupError.code, message: lookupError.message });
+    return { error: "Could not find that account due to a database error." };
+  }
+  if (!target || target.length === 0) return { error: "Account not found. Check the username and try again." };
+  if (target.length > 1) return { error: "More than one matching username was found. Use the exact username." };
+
+  const account = target[0];
+  if (account.id === owner.ownerId) return { error: "You cannot delete your own owner account." };
+
+  // Invalidate all sessions first so the account cannot continue using an existing login.
+  const { error: sessionsError } = await supabase.from("sessions").delete().eq("user_id", account.id);
+  if (sessionsError) {
+    console.error("Owner account session revocation failed:", { code: sessionsError.code, message: sessionsError.message });
+    return { error: "Could not revoke the account's sessions. No account was deleted." };
+  }
+
+  const { data: deleted, error: deleteError } = await supabase
+    .from("profiles")
+    .delete()
+    .eq("id", account.id)
+    .select("id")
+    .maybeSingle();
+
+  if (deleteError) {
+    console.error("Owner account deletion failed:", { code: deleteError.code, message: deleteError.message, details: deleteError.details });
+    return { error: `Could not delete account: ${deleteError.message || "Unknown database error"}${deleteError.code ? ` (code ${deleteError.code})` : ""}. Its sessions were revoked.` };
+  }
+  if (!deleted) return { error: "Account was not deleted. Refresh and try again." };
+  return { success: true, username: account.username };
+}
+
 export async function ownerDeleteListing(id) {
   const owner = await getVerifiedOwner();
   if (owner.error) return { error: owner.error };
