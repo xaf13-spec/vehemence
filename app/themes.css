@@ -193,3 +193,91 @@ html[data-animations="false"] .ambient-wave { animation: none !important; }
   .ambient-glow { filter: blur(65px); }
   .ambient-wave { width: 210%; left: -55%; }
 }
+
+
+/* Richer atmospheric theme scenes */
+.ambient-background {
+  background:
+    radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--theme-accent, #fff) 12%, transparent), transparent 42%),
+    radial-gradient(ellipse at 8% 78%, rgba(45,88,136,.12), transparent 36%),
+    var(--theme-bg, #07070a);
+}
+.ambient-sun {
+  position:absolute;
+  width:clamp(130px, 19vw, 270px);
+  aspect-ratio:1;
+  right:clamp(8%, 15vw, 22%);
+  top:clamp(12%, 19vh, 24%);
+  border-radius:50%;
+  opacity:0;
+  background:radial-gradient(circle at 35% 30%, #fff2c8 0, #ffd19b 15%, #ff9a7b 42%, rgba(255,112,116,.4) 66%, transparent 72%);
+  filter:blur(.4px);
+  box-shadow:0 0 70px rgba(255,142,103,.18),0 0 180px rgba(255,112,116,.1);
+}
+.theme-sunset .ambient-sun { opacity:.88; }
+.theme-sunset .ambient-glow {
+  width:min(58vw, 720px);
+  height:min(52vw, 620px);
+  top:2%;
+  left:74%;
+  background:rgba(255,116,82,.12);
+  filter:blur(105px);
+}
+.theme-sunset .ambient-background,
+.ambient-background.theme-sunset {
+  background:
+    linear-gradient(180deg, rgba(24,14,38,.03) 0%, rgba(102,47,67,.16) 47%, rgba(255,134,86,.08) 67%, transparent 80%),
+    radial-gradient(ellipse at 77% 34%, rgba(255,140,94,.16), transparent 30%),
+    var(--theme-bg, #0b0912);
+}
+.theme-ocean, .theme-aquatic {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(38,143,189,.14), transparent 48%),
+    linear-gradient(180deg, transparent 0%, rgba(10,70,100,.05) 54%, rgba(4,30,48,.3) 100%),
+    var(--theme-bg, #061018);
+}
+.theme-ocean .ambient-glow, .theme-aquatic .ambient-glow {
+  top:-30%;
+  width:90vw;
+  height:60vw;
+  background:rgba(23,141,194,.12);
+  filter:blur(110px);
+}
+.theme-ocean .ambient-horizon, .theme-aquatic .ambient-horizon {
+  bottom:-8%;
+  height:49%;
+  border-radius:50% 50% 0 0 / 10% 10% 0 0;
+  background:
+    repeating-linear-gradient(174deg, transparent 0 25px, rgba(126,216,244,.055) 26px 27px, transparent 28px 56px),
+    linear-gradient(180deg, rgba(33,142,182,.08), rgba(5,47,72,.52));
+  filter:blur(.3px);
+}
+.theme-ocean .ambient-wave, .theme-aquatic .ambient-wave {
+  height:36%;
+  border-radius:50% 50% 0 0 / 12% 12% 0 0;
+  background:
+    repeating-linear-gradient(177deg, transparent 0 19px, rgba(143,225,246,.075) 20px 21px, transparent 22px 46px),
+    linear-gradient(180deg, rgba(53,171,208,.13), rgba(3,40,64,.44));
+  box-shadow:0 -14px 55px rgba(28,139,183,.05);
+}
+.theme-ocean .ambient-wave-two, .theme-aquatic .ambient-wave-two {
+  background:
+    repeating-linear-gradient(183deg, transparent 0 23px, rgba(89,190,226,.065) 24px 25px, transparent 26px 51px),
+    linear-gradient(180deg, rgba(14,102,146,.22), rgba(2,25,42,.66));
+}
+.ambient-stars {
+  position:absolute;
+  inset:0;
+  opacity:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.7) 0 1px,transparent 1.7px),radial-gradient(circle,rgba(255,255,255,.35) 0 1px,transparent 1.8px);
+  background-size:137px 137px, 211px 211px;
+  background-position:12px 22px, 66px 91px;
+  mask-image:linear-gradient(180deg,black,transparent 75%);
+}
+.theme-midnight .ambient-stars, .theme-frost .ambient-stars, .theme-lavender .ambient-stars { opacity:.24; }
+.theme-sunset .ambient-stars { opacity:.1; }
+.ambient-background.effects-muted .ambient-sun,
+.ambient-background.effects-muted .ambient-stars { display:none; }
+@media(max-width:700px) {
+  .ambient-sun { right:8%; top:15%; width:clamp(105px,30vw,170px); }
+}
