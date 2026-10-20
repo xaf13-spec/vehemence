@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getListings } from "../marketplace/actions";
-import { ownerDeleteAccount, ownerDeleteListing, ownerListAccounts } from "./owner-actions";
+import { ownerDeleteAccount, ownerDeleteListing, ownerListAccounts, ownerResetAccountPassword } from "./owner-actions";
 import "./owner-panel.css";
 
 const tabs = [
@@ -29,6 +29,8 @@ export default function OwnerPanel({ onClose }) {
   const [action, setAction] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [passwordToCheck, setPasswordToCheck] = useState("");
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
 
   useEffect(() => {
     const keydown = (event) => { if (event.key === "Escape") onClose(); };
@@ -74,6 +76,10 @@ export default function OwnerPanel({ onClose }) {
     setStatus("");
     if (kind === "delete-listing" && !listingId.trim()) return setStatus("Enter the listing ID first.");
     if (kind !== "delete-listing" && !username.trim()) return setStatus("Enter a username first.");
+    if (kind === "reset-password") {
+      if (resetPassword.length < 8 || resetPassword.length > 128) return setStatus("New passwords must be between 8 and 128 characters.");
+      if (resetPassword !== resetPasswordConfirm) return setStatus("The new passwords do not match.");
+    }
     setAction(kind);
     setConfirm(true);
   }
@@ -91,6 +97,17 @@ export default function OwnerPanel({ onClose }) {
       } else {
         setStatus("The server did not confirm deletion. Check the listing ID and database permissions.");
       }
+      return;
+    }
+    if (action === "reset-password") {
+      setStatus("Resetting password…");
+      const result = await ownerResetAccountPassword(username, resetPassword);
+      if (result?.error) setStatus(result.error);
+      else if (result?.success) {
+        setStatus(result.warning || `Password reset for "${result.username}". Their existing sessions were revoked.`);
+        setResetPassword("");
+        setResetPasswordConfirm("");
+      } else setStatus("The server did not confirm the password reset.");
       return;
     }
     if (action === "delete-account") {
@@ -122,7 +139,7 @@ export default function OwnerPanel({ onClose }) {
             <div className="owner-stat-grid"><article><span>01 / COMMUNITY</span><strong>User controls</strong><p>Manage access and chat privileges.</p><button onClick={() => setTab("users")} type="button">Open controls <span>↗</span></button></article><article><span>02 / MARKETPLACE</span><strong>Listing tools</strong><p>Review and remove marketplace content.</p><button onClick={() => setTab("listings")} type="button">Manage listings <span>↗</span></button></article><article><span>03 / IDENTITY</span><strong>Owner title</strong><p>Manage the visible owner badge.</p><button onClick={() => setTab("identity")} type="button">Edit title <span>↗</span></button></article></div>
             <div className="owner-note"><span>i</span><p>Owner access is assigned automatically to the configured owner account. Owner-only actions are verified on the server before they run.</p></div>
           </div>}
-          {tab === "users" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">COMMUNITY / MODERATION</span><h2>User controls</h2><p>Choose an account and select the moderation action.</p><label>Username<input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter exact username" autoComplete="off" /></label><div className="owner-action-grid"><button type="button" onClick={() => queueAction("ban")}><span className="owner-action-icon danger">⊘</span><strong>Ban user</strong><small>Restrict account access</small></button><button type="button" onClick={() => queueAction("mute")}><span className="owner-action-icon">◌</span><strong>Mute user</strong><small>Restrict chat privileges</small></button><button type="button" onClick={() => queueAction("delete-account")}><span className="owner-action-icon danger">×</span><strong>Delete account</strong><small>Permanently remove account</small></button></div></section></div>}
+          {tab === "users" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">COMMUNITY / MODERATION</span><h2>User controls</h2><p>Choose an account to manage, or reset their password if they are locked out.</p><label>Username<input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter exact username" autoComplete="off" /></label><label>New password (reset account)<input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="At least 8 characters" autoComplete="new-password" /></label><label>Confirm new password<input type="password" value={resetPasswordConfirm} onChange={(e) => setResetPasswordConfirm(e.target.value)} placeholder="Re-enter new password" autoComplete="new-password" /></label><div className="owner-action-grid"><button type="button" onClick={() => queueAction("reset-password")}><span className="owner-action-icon">↻</span><strong>Reset password</strong><small>Set a new login password</small></button><button type="button" onClick={() => queueAction("ban")}><span className="owner-action-icon danger">⊘</span><strong>Ban user</strong><small>Restrict account access</small></button><button type="button" onClick={() => queueAction("mute")}><span className="owner-action-icon">◌</span><strong>Mute user</strong><small>Restrict chat privileges</small></button><button type="button" onClick={() => queueAction("delete-account")}><span className="owner-action-icon danger">×</span><strong>Delete account</strong><small>Permanently remove account</small></button></div></section></div>}
           {tab === "users" && <div className="owner-content"><section className="owner-form-card owner-account-card">
             <div className="owner-account-picker">
               <button className="owner-account-picker-toggle" type="button" aria-expanded={accountsOpen} onClick={() => { const next = !accountsOpen; setAccountsOpen(next); if (next && accounts.length === 0) loadAccounts(); }}>
@@ -143,7 +160,7 @@ export default function OwnerPanel({ onClose }) {
           {tab === "identity" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">COMMUNITY / BADGES</span><h2>Owner title</h2><p>Set the username that should display the Owner title.</p><label>Username<input value={titleUser} onChange={(e) => setTitleUser(e.target.value)} placeholder="Enter owner username" autoComplete="off" /></label><div className="owner-title-preview"><span className="owner-preview-avatar">V</span><span><strong>{titleUser.trim() || "Username"}</strong><small>Profile title preview</small></span><b>✦ OWNER</b></div><button className="owner-primary-button" type="button" onClick={() => setStatus("The Owner badge needs a persistent profile field and server-side update action before it can be assigned.")}>Assign Owner title <span>↗</span></button></section></div>}
           {tab === "password-checker" && <div className="owner-content"><section className="owner-form-card"><span className="owner-kicker">ACCOUNT SECURITY</span><h2>Password strength checker</h2><p>Check a password’s strength locally. Passwords stored for accounts are protected as hashes, so this tool cannot reveal or inspect other users’ existing passwords.</p><label>Enter a password to check<input type="password" value={passwordToCheck} onChange={(event) => setPasswordToCheck(event.target.value)} autoComplete="off" placeholder="Type a password to evaluate" /></label>{passwordToCheck && (() => { const checks = [{ label: "At least 12 characters", pass: passwordToCheck.length >= 12 }, { label: "Uppercase and lowercase letters", pass: /[a-z]/.test(passwordToCheck) && /[A-Z]/.test(passwordToCheck) }, { label: "Contains a number", pass: /\d/.test(passwordToCheck) }, { label: "Contains a symbol", pass: /[^A-Za-z0-9]/.test(passwordToCheck) }, { label: "Not a common password", pass: !/^(password|password123|12345678|qwerty|letmein|admin|iloveyou)$/i.test(passwordToCheck) }]; const score = checks.filter((check) => check.pass).length; return <div className="owner-password-results"><div className="owner-password-meter"><span style={{ width: `${score * 20}%` }} /></div><strong>{score <= 2 ? "Weak" : score <= 3 ? "Fair" : score <= 4 ? "Good" : "Strong"}</strong><ul>{checks.map((check) => <li key={check.label} className={check.pass ? "passed" : ""}><span>{check.pass ? "✓" : "○"}</span>{check.label}</li>)}</ul><p>This check runs in this panel only. The entered password is not sent to the server or saved.</p></div>; })()}</section></div>}
           {status && <div className="owner-status" role="status">{status}</div>}
-          {confirm && <div className="owner-confirm-backdrop"><section className="owner-confirm"><span className="owner-kicker">{action === "delete-account" ? "PERMANENT ACCOUNT DELETION" : "CONFIRM MODERATION"}</span><h2>{action === "ban" ? "Ban this user?" : action === "mute" ? "Mute this user?" : action === "delete-account" ? "Permanently delete this account?" : "Delete this listing?"}</h2><p>{action === "delete-listing" ? listingId : username}{action === "delete-account" ? " · This permanently removes the profile and related records configured to cascade. Existing sessions will be revoked." : " · This action will need a connected moderation backend to execute."}</p><div><button type="button" className="owner-secondary-button" onClick={() => setConfirm(false)}>Cancel</button><button type="button" className="owner-danger-button" onClick={runAction}>Confirm action</button></div></section></div>}
+          {confirm && <div className="owner-confirm-backdrop"><section className="owner-confirm"><span className="owner-kicker">{action === "delete-account" ? "PERMANENT ACCOUNT DELETION" : action === "reset-password" ? "ACCOUNT PASSWORD RESET" : "CONFIRM MODERATION"}</span><h2>{action === "ban" ? "Ban this user?" : action === "mute" ? "Mute this user?" : action === "delete-account" ? "Permanently delete this account?" : action === "reset-password" ? "Reset this account password?" : "Delete this listing?"}</h2><p>{action === "delete-listing" ? listingId : username}{action === "delete-account" ? " · This permanently removes the profile and related records configured to cascade. Existing sessions will be revoked." : action === "reset-password" ? " · The password will be replaced and their existing sessions will be revoked, requiring them to log in again." : " · This action will need a connected moderation backend to execute."}</p><div><button type="button" className="owner-secondary-button" onClick={() => setConfirm(false)}>Cancel</button><button type="button" className="owner-danger-button" onClick={runAction}>Confirm action</button></div></section></div>}
           <footer className="owner-footer"><span><i /> PRIVATE WORKSPACE</span><span>VEHEMENCE OWNER TOOLS</span></footer>
         </main>
       </section>
