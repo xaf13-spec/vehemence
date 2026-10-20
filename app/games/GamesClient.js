@@ -1417,14 +1417,18 @@ export default function GamesClient() {
   const featuredGame = games.find((game) => game.id === "pacman") || games[0];
 
   useEffect(() => {
-    try {
-      const requested = JSON.parse(localStorage.getItem("vehemence_featured_pick") || "null");
-      if (requested) {
+    function openRequestedGame() {
+      try {
+        const requested = JSON.parse(localStorage.getItem("vehemence_featured_pick") || "null");
+        if (!requested) return;
         localStorage.removeItem("vehemence_featured_pick");
         const match = games.find((game) => game.id === requested.id || game.name === requested.name);
         if (match) setSelectedGame(match);
-      }
-    } catch {}
+      } catch {}
+    }
+    openRequestedGame();
+    window.addEventListener("vehemence-open-game", openRequestedGame);
+    return () => window.removeEventListener("vehemence-open-game", openRequestedGame);
   }, []);
 
   const filteredGames = useMemo(() => games.filter((game) =>
