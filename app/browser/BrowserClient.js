@@ -131,7 +131,6 @@ export default function BrowserClient() {
         <div className="browser-heading-copy">
           <p className="eyebrow">VEHEMENCE / WORKSPACE</p>
           <h1>Browser</h1>
-          <p>Your web session, right inside Vehemence.</p>
         </div>
         <button
           type="button"
