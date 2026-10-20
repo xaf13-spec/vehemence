@@ -28,6 +28,21 @@ export async function POST(request) {
     if (!response.ok || !sessionId || /error|unauthorized|forbidden/i.test(sessionId)) {
       return Response.json({ error: "The browser server rejected the session request. Check its password and server logs." }, { status: 502 });
     }
+    // Configure URL handling once per session instead of repeating this
+    // request on every navigation.
+    const editUrl = new URL("/editsession", base);
+    editUrl.searchParams.set("id", sessionId);
+    editUrl.searchParams.set("enableShuffling", "0");
+    if (password) editUrl.searchParams.set("pwd", password);
+    const editResponse = await fetch(editUrl, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(12000),
+    });
+    const editResult = (await editResponse.text()).trim();
+    if (!editResponse.ok || editResult !== "Success") {
+      return Response.json({ error: "The browser server created a session but couldn't prepare it. Please try a new session." }, { status: 502 });
+    }
+
     return Response.json({ sessionId });
   } catch {
     return Response.json({ error: "Could not reach the configured Rammerhead server." }, { status: 502 });
