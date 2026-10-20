@@ -34,7 +34,7 @@ export default function Signup() {
       <div className="auth-card">
         <p className="eyebrow">VEHEMENCE</p>
         <h1>Create Account</h1>
-        <p className="auth-description">Create your Vehemence account and join the community.</p>
+        
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>Username<input name="username" type="text" placeholder="Choose a username" required /></label>
           <label>Password<input name="password" type="password" placeholder="Create a password" required /></label>
