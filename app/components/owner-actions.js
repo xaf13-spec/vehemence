@@ -1,9 +1,10 @@
 "use server";
 
+import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "");
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\\/rest\\/v1\\/?$/, "");
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = supabaseUrl && supabaseKey
   ? createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false, autoRefreshToken: false } })
@@ -54,6 +55,52 @@ export async function ownerListAccounts() {
   return { accounts: (data || []).map((account) => ({ id: account.id, username: account.username, created_at: account.created_at || null })), truncated: (data || []).length === 500 };
 }
 
+export async function ownerResetAccountPassword(username, newPassword) {
+  const owner = await getVerifiedOwner();
+  if (owner.error) return { error: owner.error };
+
+  const targetUsername = String(username || "").trim();
+  const password = String(newPassword || "");
+  if (!targetUsername) return { error: "Select an account first." };
+  if (password.length < 8 || password.length > 128) return { error: "New passwords must be between 8 and 128 characters." };
+  if (targetUsername.toLowerCase() === process.env.VEHEMENCE_OWNER_USERNAME?.trim().toLowerCase()) {
+    return { error: "Resetting the owner account here is disabled to protect owner access." };
+  }
+
+  const { data: target, error: lookupError } = await supabase
+    .from("profiles")
+    .select("id, username")
+    .eq("username", targetUsername)
+    .limit(2);
+  if (lookupError) {
+    console.error("Owner password reset lookup failed:", { code: lookupError.code, message: lookupError.message });
+    return { error: "Could not look up that account. Try again." };
+  }
+  if (!target || target.length === 0) return { error: "Account not found. Refresh the account list and try again." };
+  if (target.length > 1) return { error: "More than one matching username was found. Select the exact account." };
+  const account = target[0];
+  if (account.id === owner.ownerId) return { error: "You cannot reset your own owner account here." };
+
+  const passwordHash = createHash("sha256").update(password).digest("hex");
+  const { data: updated, error: updateError } = await supabase
+    .from("profiles")
+    .update({ password_hash: passwordHash })
+    .eq("id", account.id)
+    .select("id")
+    .maybeSingle();
+  if (updateError || !updated) {
+    console.error("Owner password reset failed:", { code: updateError?.code, message: updateError?.message });
+    return { error: "Could not reset that password. No success was reported." };
+  }
+
+  const { error: sessionsError } = await supabase.from("sessions").delete().eq("user_id", account.id);
+  if (sessionsError) {
+    console.error("Owner password reset session revocation failed:", { code: sessionsError.code, message: sessionsError.message });
+    return { success: true, username: account.username, warning: "Password changed, but existing sessions could not all be revoked. Ask the user to log out and back in." };
+  }
+  return { success: true, username: account.username };
+}
+
 export async function ownerDeleteAccount(username) {
   const owner = await getVerifiedOwner();
   if (owner.error) return { error: owner.error };
@@ -80,7 +127,6 @@ export async function ownerDeleteAccount(username) {
   const account = target[0];
   if (account.id === owner.ownerId) return { error: "You cannot delete your own owner account." };
 
-  // Invalidate all sessions first so the account cannot continue using an existing login.
   const { error: sessionsError } = await supabase.from("sessions").delete().eq("user_id", account.id);
   if (sessionsError) {
     console.error("Owner account session revocation failed:", { code: sessionsError.code, message: sessionsError.message });
