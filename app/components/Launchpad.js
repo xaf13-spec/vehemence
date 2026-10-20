@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createPartyRoom, listPartyRooms, joinPartyRoom, closePartyRoom, challengeUser, listChallenges, respondToChallenge } from "./platform-actions";
 
 const featured = [
   { id: "pacman", name: "Pac-Man", category: "Arcade", note: "Classic maze chase", icon: "◉" },
@@ -34,6 +35,15 @@ export default function Launchpad({ user, onNavigate }) {
   const [notice, setNotice] = useState("");
   const [dailyGame, setDailyGame] = useState(featured[0]);
   const [customTheme, setCustomTheme] = useState("Midnight");
+  const [rooms, setRooms] = useState([]);
+  const [challenges, setChallenges] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [roomCodeInput, setRoomCodeInput] = useState("");
+  const [challengeUsername, setChallengeUsername] = useState("");
+  const [challengeGameId, setChallengeGameId] = useState("pacman");
+  const [platformMessage, setPlatformMessage] = useState("");
+  const [platformError, setPlatformError] = useState("");
+  const [platformBusy, setPlatformBusy] = useState(false);
 
   const sync = () => {
     const entries = readJson("vehemence_game_history", []);
@@ -56,15 +66,62 @@ export default function Launchpad({ user, onNavigate }) {
     setDailyGame(featured[seed]);
   };
 
+  async function refreshPlatform() {
+    if (!user) return;
+    const [roomResult, challengeResult] = await Promise.all([listPartyRooms(), listChallenges()]);
+    if (roomResult?.rooms) setRooms(roomResult.rooms);
+    if (roomResult?.userId) setUserId(roomResult.userId);
+    if (challengeResult?.challenges) setChallenges(challengeResult.challenges);
+    if (challengeResult?.userId) setUserId(challengeResult.userId);
+  }
+
+  async function handleCreateRoom() {
+    setPlatformBusy(true); setPlatformError(""); setPlatformMessage("");
+    const result = await createPartyRoom(dailyGame.id, dailyGame.name);
+    if (result?.error) setPlatformError(result.error);
+    else { setPlatformMessage(`Room created. Share code ${result.room.code} with your friends.`); await refreshPlatform(); }
+    setPlatformBusy(false);
+  }
+  async function handleJoinRoom(event) {
+    event.preventDefault(); setPlatformBusy(true); setPlatformError(""); setPlatformMessage("");
+    const result = await joinPartyRoom(roomCodeInput);
+    if (result?.error) setPlatformError(result.error);
+    else { setPlatformMessage(`Joined room for ${result.room.game_name}.`); setRoomCodeInput(""); await refreshPlatform(); }
+    setPlatformBusy(false);
+  }
+  async function handleChallenge(event) {
+    event.preventDefault(); setPlatformBusy(true); setPlatformError(""); setPlatformMessage("");
+    const game = featured.find((item) => item.id === challengeGameId) || featured[0];
+    const result = await challengeUser(challengeUsername, game.id, game.name);
+    if (result?.error) setPlatformError(result.error);
+    else { setPlatformMessage(`Challenge sent to ${result.username}.`); setChallengeUsername(""); await refreshPlatform(); }
+    setPlatformBusy(false);
+  }
+  async function handleChallengeResponse(id, accept) {
+    setPlatformBusy(true); setPlatformError(""); setPlatformMessage("");
+    const result = await respondToChallenge(id, accept);
+    if (result?.error) setPlatformError(result.error);
+    else { setPlatformMessage(accept ? "Challenge accepted." : "Challenge declined."); await refreshPlatform(); }
+    setPlatformBusy(false);
+  }
+  async function handleCloseRoom(id) {
+    setPlatformBusy(true); setPlatformError(""); setPlatformMessage("");
+    const result = await closePartyRoom(id);
+    if (result?.error) setPlatformError(result.error);
+    else { setPlatformMessage("Party room closed."); await refreshPlatform(); }
+    setPlatformBusy(false);
+  }
+
   useEffect(() => {
     sync();
+    if (user) refreshPlatform().catch(() => {});
     window.addEventListener("storage", sync);
     window.addEventListener("vehemence-game-last-played", sync);
     return () => {
       window.removeEventListener("storage", sync);
       window.removeEventListener("vehemence-game-last-played", sync);
     };
-  }, []);
+  }, [user?.id]);
 
   const level = levelFor(xp);
   const levelProgress = (xp % 250) / 250 * 100;
@@ -167,6 +224,26 @@ export default function Launchpad({ user, onNavigate }) {
           {widgets.achievements && <section className="launchpad-side-panel"><div className="launchpad-section-heading"><div><p className="eyebrow">MILESTONES</p><h2>Achievements</h2></div><span className="launchpad-achievement-count">{achievements.filter((item) => item.unlocked).length}/{achievements.length}</span></div><div className="launchpad-achievement-list">{achievements.map((item) => <div className={item.unlocked ? "launchpad-achievement is-unlocked" : "launchpad-achievement"} key={item.id}><span>{item.unlocked ? "✦" : "◇"}</span><div><strong>{item.title}</strong><small>{item.detail}</small></div><i>{item.unlocked ? "UNLOCKED" : "LOCKED"}</i></div>)}</div></section>}
 
           {widgets.themes && <section className="launchpad-side-panel"><div className="launchpad-section-heading"><div><p className="eyebrow">MAKE IT YOURS</p><h2>Theme workshop</h2></div><span className="launchpad-theme-icon">◒</span></div><p className="launchpad-theme-description">Try a new atmosphere without digging through settings.</p><div className="launchpad-theme-grid">{themePacks.map((pack) => <button type="button" key={pack.id} className={customTheme.toLowerCase() === pack.theme.toLowerCase() ? "launchpad-theme-swatch is-active" : "launchpad-theme-swatch"} onClick={() => applyTheme(pack)}><span style={{ "--pack-color": pack.color }} /><b>{pack.name}</b>{customTheme.toLowerCase() === pack.theme.toLowerCase() && <i>✓</i>}</button>)}</div><button type="button" className="launchpad-open-settings" onClick={() => onNavigate("/settings")}>More appearance settings <span>↗</span></button></section>}
+
+          <section className="launchpad-side-panel launchpad-party-panel">
+            <div className="launchpad-section-heading"><div><p className="eyebrow">PLAY TOGETHER</p><h2>Party rooms</h2></div><span className="launchpad-theme-icon">⌘</span></div>
+            {user ? <>
+              <p className="launchpad-theme-description">Create a room for today's featured game and share the invite code. Rooms expire after 12 hours.</p>
+              <button type="button" className="launchpad-room-create" disabled={platformBusy} onClick={handleCreateRoom}>{platformBusy ? "Working…" : `Create room · ${dailyGame.name}`} <span>↗</span></button>
+              <form className="launchpad-room-join" onSubmit={handleJoinRoom}><input value={roomCodeInput} onChange={(event) => setRoomCodeInput(event.target.value.toUpperCase().replace(/[^A-F0-9]/g, "").slice(0,8))} placeholder="Enter 8-character code" aria-label="Party room code" maxLength={8} /><button type="submit" disabled={platformBusy || roomCodeInput.length !== 8}>Join</button></form>
+              {rooms.length > 0 && <div className="launchpad-room-list">{rooms.slice(0,5).map((room) => <article key={room.id}><span className="launchpad-room-game">◉</span><div><strong>{room.game_name}</strong><small>By {room.owner?.username || "player"} · {room.members?.length || 1} joined</small><b>CODE {room.code}</b></div><button type="button" title="Copy room code" onClick={() => { try { navigator.clipboard.writeText(room.code); setPlatformMessage("Room code copied."); } catch { setPlatformMessage(`Room code: ${room.code}`); } }}>Copy</button>{room.owner_id === userId && <button type="button" title="Close room" disabled={platformBusy} onClick={() => handleCloseRoom(room.id)}>×</button>}</article>)}</div>}
+            </> : <p className="launchpad-theme-description">Sign in to create a room and share a game code with friends.</p>}
+          </section>
+
+          <section className="launchpad-side-panel launchpad-challenge-panel">
+            <div className="launchpad-section-heading"><div><p className="eyebrow">FRIENDLY COMPETITION</p><h2>Rivalries</h2></div><span className="launchpad-quest-mark">⚔</span></div>
+            {user ? <>
+              <form className="launchpad-challenge-form" onSubmit={handleChallenge}><input value={challengeUsername} onChange={(event) => setChallengeUsername(event.target.value)} placeholder="Friend's exact username" aria-label="Challenge username" maxLength={20} /><select value={challengeGameId} onChange={(event) => setChallengeGameId(event.target.value)} aria-label="Challenge game">{featured.map((game) => <option key={game.id} value={game.id}>{game.name}</option>)}</select><button type="submit" disabled={platformBusy || !challengeUsername.trim()}>Send challenge</button></form>
+              {challenges.length > 0 ? <div className="launchpad-challenge-list">{challenges.slice(0,5).map((challenge) => { const incoming = challenge.challenged_id === userId; const otherName = incoming ? challenge.challenger?.username : challenge.challenged?.username; return <article key={challenge.id}><div><strong>{challenge.game_name}</strong><small>{incoming ? "From" : "To"} {otherName || "player"}</small><span className={`challenge-status status-${challenge.status}`}>{challenge.status}</span></div>{incoming && challenge.status === "pending" && <div className="launchpad-challenge-actions"><button type="button" disabled={platformBusy} onClick={() => handleChallengeResponse(challenge.id, true)}>Accept</button><button type="button" disabled={platformBusy} onClick={() => handleChallengeResponse(challenge.id, false)}>Decline</button></div>}</article>; })}</div> : <p className="launchpad-theme-description">Challenge another player to a friendly game. Scores stay self-reported until a game supports verified score tracking.</p>}
+            </> : <p className="launchpad-theme-description">Sign in to challenge another player and manage your rivalries.</p>}
+          </section>
+          {platformError && <p className="launchpad-platform-message is-error">{platformError}</p>}
+          {platformMessage && <p className="launchpad-platform-message">{platformMessage}</p>}
 
           <section className="launchpad-side-panel launchpad-event-panel"><span className="launchpad-event-icon">✧</span><p className="eyebrow">VEHEMENCE DROPS</p><h2>Something new, every day.</h2><p>Check today's featured game, finish a quest, and keep building your profile milestones.</p><button type="button" onClick={() => openGame(dailyGame)}>Today's drop <span>↗</span></button></section>
         </aside>
