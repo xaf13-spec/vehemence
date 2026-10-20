@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const HOME_URL = "https://www.google.com/";
+const HOME_URL = "https://duckduckgo.com/";
 
 function normalizeAddress(value) {
   const input = value.trim();
@@ -21,7 +21,7 @@ function normalizeAddress(value) {
     return "https://" + input;
   }
 
-  return "https://www.google.com/search?q=" + encodeURIComponent(input);
+  return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
 }
 
 export default function BrowserClient() {
