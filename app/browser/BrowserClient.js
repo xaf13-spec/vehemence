@@ -62,10 +62,10 @@ export default function BrowserClient() {
     }
     setAddress(targetUrl);
     setFrameUrl(data.targetUrl);
-    setTabs((current) => current.map((tab) => tab.id === activeTabRef.current ? { ...tab, url: targetUrl, title: (() => { try { return new URL(targetUrl).hostname.replace(/^www\\./, ""); } catch { return "New tab"; } })() } : tab));
+    setTabs((current) => current.map((tab) => tab.id === activeTabRef.current ? { ...tab, url: targetUrl, title: (() => { try { return new URL(targetUrl).hostname.replace(/^www\./, ""); } catch { return "New tab"; } })() } : tab));
     try {
       const prior = JSON.parse(localStorage.getItem("vehemence_browser_history") || "[]");
-      const next = [{ url: targetUrl, title: (() => { try { return new URL(targetUrl).hostname.replace(/^www\\./, ""); } catch { return targetUrl; } })(), visitedAt: new Date().toISOString() }, ...(Array.isArray(prior) ? prior : []).filter((item) => item.url !== targetUrl)].slice(0, 40);
+      const next = [{ url: targetUrl, title: (() => { try { return new URL(targetUrl).hostname.replace(/^www\./, ""); } catch { return targetUrl; } })(), visitedAt: new Date().toISOString() }, ...(Array.isArray(prior) ? prior : []).filter((item) => item.url !== targetUrl)].slice(0, 40);
       localStorage.setItem("vehemence_browser_history", JSON.stringify(next));
       setHistoryItems(next);
     } catch {}
@@ -180,7 +180,7 @@ export default function BrowserClient() {
             <button type="submit" disabled={status !== "ready"}>Go</button>
           </form>
           <div className="browser-extra-actions">
-            <button type="button" onClick={() => { if (!address.trim()) return; const item = { url: address, title: (() => { try { return new URL(address).hostname.replace(/^www\\./, ""); } catch { return address; } })() }; const next = [item, ...bookmarks.filter((saved) => saved.url !== item.url)].slice(0, 30); setBookmarks(next); localStorage.setItem("vehemence_browser_bookmarks", JSON.stringify(next)); setShowBookmarks(true); setShowHistory(false); }} title="Bookmark this page" aria-label="Bookmark this page">☆</button>
+            <button type="button" onClick={() => { if (!address.trim()) return; const item = { url: address, title: (() => { try { return new URL(address).hostname.replace(/^www\./, ""); } catch { return address; } })() }; const next = [item, ...bookmarks.filter((saved) => saved.url !== item.url)].slice(0, 30); setBookmarks(next); localStorage.setItem("vehemence_browser_bookmarks", JSON.stringify(next)); setShowBookmarks(true); setShowHistory(false); }} title="Bookmark this page" aria-label="Bookmark this page">☆</button>
             <button type="button" onClick={() => { setShowBookmarks((value) => !value); setShowHistory(false); }} title="Bookmarks">Bookmarks</button>
             <button type="button" onClick={() => { setShowHistory((value) => !value); setShowBookmarks(false); }} title="Browsing history">History</button>
           </div>
