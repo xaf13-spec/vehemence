@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const games = [
   {
@@ -1415,6 +1415,17 @@ export default function GamesClient() {
   const [category, setCategory] = useState("All");
   const [selectedGame, setSelectedGame] = useState(null);
   const featuredGame = games.find((game) => game.id === "pacman") || games[0];
+
+  useEffect(() => {
+    try {
+      const requested = JSON.parse(localStorage.getItem("vehemence_featured_pick") || "null");
+      if (requested) {
+        localStorage.removeItem("vehemence_featured_pick");
+        const match = games.find((game) => game.id === requested.id || game.name === requested.name);
+        if (match) setSelectedGame(match);
+      }
+    } catch {}
+  }, []);
 
   const filteredGames = useMemo(() => games.filter((game) =>
     (category === "All" || game.category === category) &&
