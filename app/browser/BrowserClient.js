@@ -53,7 +53,7 @@ export default function BrowserClient() {
       }
 
       const start = normalizeAddress(HOME_URL);
-      const target = baseUrl || serverUrl;
+      const target = baseUrl;
       if (!target) throw new Error("The browser server URL is missing.");
 
       setSessionId(data.sessionId);
@@ -66,7 +66,7 @@ export default function BrowserClient() {
     } finally {
       setBusy(false);
     }
-  }, [serverUrl]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
