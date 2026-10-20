@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./launchpad.css";
 import "./themes.css";
 import "./fonts.css";
 import "./profile.css";
