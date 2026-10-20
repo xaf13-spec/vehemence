@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const HOME_URL = "https://html.duckduckgo.com/html/";
 
@@ -33,6 +33,21 @@ export default function BrowserClient() {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [tabs, setTabs] = useState([{ id: "tab-1", title: "New tab", url: HOME_URL }]);
+  const [activeTabId, setActiveTabId] = useState("tab-1");
+  const activeTabRef = useRef("tab-1");
+  const [bookmarks, setBookmarks] = useState([]);
+  const [historyItems, setHistoryItems] = useState([]);
+  const [showBookmarks, setShowBookmarks] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => { activeTabRef.current = activeTabId; }, [activeTabId]);
+  useEffect(() => {
+    try {
+      setBookmarks(JSON.parse(localStorage.getItem("vehemence_browser_bookmarks") || "[]"));
+      setHistoryItems(JSON.parse(localStorage.getItem("vehemence_browser_history") || "[]"));
+    } catch { setBookmarks([]); setHistoryItems([]); }
+  }, []);
 
   const openPage = useCallback(async (id, targetUrl) => {
     const response = await fetch("/api/browser/open", {
@@ -47,6 +62,13 @@ export default function BrowserClient() {
     }
     setAddress(targetUrl);
     setFrameUrl(data.targetUrl);
+    setTabs((current) => current.map((tab) => tab.id === activeTabRef.current ? { ...tab, url: targetUrl, title: (() => { try { return new URL(targetUrl).hostname.replace(/^www\\./, ""); } catch { return "New tab"; } })() } : tab));
+    try {
+      const prior = JSON.parse(localStorage.getItem("vehemence_browser_history") || "[]");
+      const next = [{ url: targetUrl, title: (() => { try { return new URL(targetUrl).hostname.replace(/^www\\./, ""); } catch { return targetUrl; } })(), visitedAt: new Date().toISOString() }, ...(Array.isArray(prior) ? prior : []).filter((item) => item.url !== targetUrl)].slice(0, 40);
+      localStorage.setItem("vehemence_browser_history", JSON.stringify(next));
+      setHistoryItems(next);
+    } catch {}
     setStatus("ready");
   }, []);
 
@@ -157,8 +179,18 @@ export default function BrowserClient() {
             />
             <button type="submit" disabled={status !== "ready"}>Go</button>
           </form>
+          <div className="browser-extra-actions">
+            <button type="button" onClick={() => { if (!address.trim()) return; const item = { url: address, title: (() => { try { return new URL(address).hostname.replace(/^www\\./, ""); } catch { return address; } })() }; const next = [item, ...bookmarks.filter((saved) => saved.url !== item.url)].slice(0, 30); setBookmarks(next); localStorage.setItem("vehemence_browser_bookmarks", JSON.stringify(next)); setShowBookmarks(true); setShowHistory(false); }} title="Bookmark this page" aria-label="Bookmark this page">☆</button>
+            <button type="button" onClick={() => { setShowBookmarks((value) => !value); setShowHistory(false); }} title="Bookmarks">Bookmarks</button>
+            <button type="button" onClick={() => { setShowHistory((value) => !value); setShowBookmarks(false); }} title="Browsing history">History</button>
+          </div>
           <span className="browser-session-status"><i /> {status === "ready" ? "Session active" : busy ? "Connecting" : "Offline"}</span>
         </div>
+        <div className="browser-tabbar" role="tablist" aria-label="Browser tabs">
+          {tabs.map((tab) => <button type="button" role="tab" aria-selected={tab.id === activeTabId} className={tab.id === activeTabId ? "browser-tab is-active" : "browser-tab"} key={tab.id} onClick={() => { if (tab.id === activeTabId) return; activeTabRef.current = tab.id; setActiveTabId(tab.id); setAddress(tab.url); setMessage(""); setBusy(true); openPage(sessionId, tab.url).catch((error) => { setStatus("error"); setMessage(error.message || "Could not switch tabs."); }).finally(() => setBusy(false)); }}><span>{tab.title || "New tab"}</span>{tabs.length > 1 && <i role="button" tabIndex={0} aria-label={`Close ${tab.title} tab`} onClick={(event) => { event.stopPropagation(); const next = tabs.filter((item) => item.id !== tab.id); if (tab.id === activeTabId) { const fallback = next[Math.max(0, tabs.findIndex((item) => item.id === tab.id) - 1)] || next[0]; activeTabRef.current = fallback.id; setActiveTabId(fallback.id); setTabs(next); setAddress(fallback.url); setBusy(true); openPage(sessionId, fallback.url).catch((error) => { setStatus("error"); setMessage(error.message || "Could not switch tabs."); }).finally(() => setBusy(false)); } else setTabs(next); }} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>×</i>}</button>)}
+          <button type="button" className="browser-add-tab" aria-label="New tab" title="New tab" onClick={() => { const id = `tab-${Date.now()}`; const next = [...tabs, { id, title: "New tab", url: HOME_URL }]; activeTabRef.current = id; setActiveTabId(id); setTabs(next); setAddress(HOME_URL); setShowBookmarks(false); setShowHistory(false); setBusy(true); openPage(sessionId, HOME_URL).catch((error) => { setStatus("error"); setMessage(error.message || "Could not open a new tab."); }).finally(() => setBusy(false)); }}>+</button>
+        </div>
+        {(showBookmarks || showHistory) && <div className="browser-library-panel"><div><strong>{showBookmarks ? "Bookmarks" : "Recent history"}</strong><button type="button" onClick={() => { setShowBookmarks(false); setShowHistory(false); }}>Close ×</button></div>{(showBookmarks ? bookmarks : historyItems).length ? (showBookmarks ? bookmarks : historyItems).slice(0, 12).map((item, index) => <button type="button" className="browser-library-item" key={item.url + index} onClick={() => { setAddress(item.url); setShowBookmarks(false); setShowHistory(false); setBusy(true); openPage(sessionId, item.url).catch((error) => { setStatus("error"); setMessage(error.message || "Could not open that page."); }).finally(() => setBusy(false)); }}><span>{item.title || item.url}</span><small>{item.url}</small></button>) : <p>No {showBookmarks ? "bookmarks" : "history"} yet.</p>}</div>}
 
         <div className="browser-viewport">
           {status === "ready" && frameUrl ? (
