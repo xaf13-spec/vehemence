@@ -1435,7 +1435,7 @@ export default function GamesClient() {
           <div className="games-spotlight-copy">
             <span className="games-overline"><span className="games-live-dot" /> THE ARCADE</span>
             <h1>Find your<br /><span>next obsession.</span></h1>
-            <p>A little break, a quick match, one more round. Pick something and get into it.</p>
+            
             <div className="games-spotlight-actions">
               <button type="button" className="games-spotlight-play" onClick={() => playGame(featuredGame)}><span>▶</span> Play Pac-Man</button>
               <span className="games-spotlight-meta">{games.length} games <i /> no downloads</span>
