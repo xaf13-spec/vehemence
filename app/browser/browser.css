@@ -6,3 +6,8 @@
 
 /* Immersive browser workspace while keeping Vehemence navigation accessible. */
 .browser-iframe-shell{max-width:none;min-height:0;padding:18px 22px 22px}.browser-iframe-shell .browser-heading{margin-bottom:12px;align-items:center}.browser-iframe-shell .browser-heading-copy h1{font-size:30px;margin-bottom:5px}.browser-iframe-shell .browser-heading-copy p:not(.eyebrow){font-size:12px}.browser-iframe-window{border-radius:14px}.browser-iframe-window iframe{height:calc(100vh - 155px);min-height:480px}@media(max-width:800px){.browser-iframe-shell{padding:14px 12px 16px}.browser-iframe-shell .browser-heading-copy h1{font-size:26px}.browser-iframe-window iframe{height:calc(100vh - 150px);min-height:420px}}
+
+/* Current BrowserClient markup uses browser-viewport; size the iframe's actual parent. */
+.browser-viewport{height:calc(100vh - 260px);min-height:560px;background:#fff;overflow:hidden}
+.browser-viewport iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:#fff}
+@media(max-width:800px){.browser-viewport{height:calc(100vh - 300px);min-height:420px}}
