@@ -60,18 +60,8 @@ export async function POST(request) {
       return Response.json({ error: "That session was not found. Create a new session and try again." }, { status: 404 });
     }
 
-    // The deployed Rammerhead server uses the standard routes and does not expose
-    // /api/shuffleDict. Explicitly disable URL shuffling so the target URL can be
-    // passed through in its normal form.
-    const edited = await readText(base, "/editsession", {
-      id: sessionId,
-      enableShuffling: "0",
-      ...auth,
-    });
-    if (edited !== "Success") {
-      return Response.json({ error: "The browser server could not prepare this session." }, { status: 502 });
-    }
-
+    // URL shuffling is disabled when the session is created, so navigation
+    // only needs to validate the session and build the destination URL.
     const targetUrl = base + "/" + encodeURIComponent(sessionId) + "/" + target.href;
     return Response.json({ targetUrl });
   } catch (error) {
