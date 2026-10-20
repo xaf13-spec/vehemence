@@ -27,7 +27,7 @@ export default function Login() {
       <div className="auth-card">
         <p className="eyebrow">VEHEMENCE</p>
         <h1>Welcome Back</h1>
-        <p className="auth-description">Log in to your Vehemence account.</p>
+        
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>Username<input name="username" type="text" placeholder="Enter your username" required /></label>
           <label>Password<input name="password" type="password" placeholder="Enter your password" required /></label>
