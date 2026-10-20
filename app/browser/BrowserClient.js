@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const HOME_URL = "https://www.google.com/";
 
@@ -29,10 +29,10 @@ export default function BrowserClient() {
   const [sessionId, setSessionId] = useState("");
   const [address, setAddress] = useState(HOME_URL);
   const [frameUrl, setFrameUrl] = useState("");
+  const [frameReloadKey, setFrameReloadKey] = useState(0);
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const frameRef = useRef(null);
 
   const openPage = useCallback(async (id, targetUrl) => {
     const response = await fetch("/api/browser/open", {
@@ -117,12 +117,8 @@ export default function BrowserClient() {
   }
 
   function reloadFrame() {
-    if (!frameRef.current) return;
-    try {
-      frameRef.current.contentWindow.location.reload();
-    } catch {
-      setFrameUrl((current) => current);
-    }
+    if (status !== "ready" || !frameUrl) return;
+    setFrameReloadKey((key) => key + 1);
   }
 
   return (
@@ -167,8 +163,7 @@ export default function BrowserClient() {
         <div className="browser-viewport">
           {status === "ready" && frameUrl ? (
             <iframe
-              ref={frameRef}
-              key={sessionId}
+              key={`${sessionId}:${frameReloadKey}`}
               src={frameUrl}
               title="Vehemence web browser"
               allow="fullscreen; autoplay; clipboard-read; clipboard-write"
