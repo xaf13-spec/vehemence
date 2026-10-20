@@ -34,6 +34,22 @@ export default function BrowserClient() {
   const [busy, setBusy] = useState(false);
   const frameRef = useRef(null);
 
+  const openPage = useCallback(async (id, targetUrl) => {
+    const response = await fetch("/api/browser/open", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: id, url: targetUrl }),
+      cache: "no-store",
+    });
+    const data = await response.json();
+    if (!response.ok || !data.targetUrl) {
+      throw new Error(data.error || "The browser server couldn't open that page.");
+    }
+    setAddress(targetUrl);
+    setFrameUrl(data.targetUrl);
+    setStatus("ready");
+  }, []);
+
   const createSession = useCallback(async (baseUrl) => {
     setBusy(true);
     setMessage("");
@@ -52,22 +68,17 @@ export default function BrowserClient() {
         throw new Error(data.error || "The browser server couldn't create a session.");
       }
 
-      const start = normalizeAddress(HOME_URL);
-      const target = baseUrl;
-      if (!target) throw new Error("The browser server URL is missing.");
-
+      if (!baseUrl) throw new Error("The browser server URL is missing.");
+      setServerUrl(baseUrl);
       setSessionId(data.sessionId);
-      setAddress(start);
-      setFrameUrl(`${target.replace(/\/$/, "")}/${encodeURIComponent(data.sessionId)}/${start}`);
-      setStatus("ready");
+      await openPage(data.sessionId, HOME_URL);
     } catch (error) {
       setStatus("error");
       setMessage(error.message || "Could not create a browser session.");
     } finally {
       setBusy(false);
     }
-  }, []);
-
+  }, [openPage]);
   useEffect(() => {
     let cancelled = false;
 
@@ -98,9 +109,11 @@ export default function BrowserClient() {
     event.preventDefault();
     if (!serverUrl || !sessionId) return;
     const target = normalizeAddress(address);
-    setAddress(target);
     setMessage("");
-    setFrameUrl(`${serverUrl}/${encodeURIComponent(sessionId)}/${target}`);
+    setBusy(true);
+    openPage(sessionId, target)
+      .catch((error) => { setStatus("error"); setMessage(error.message || "Could not open that page."); })
+      .finally(() => setBusy(false));
   }
 
   function reloadFrame() {
