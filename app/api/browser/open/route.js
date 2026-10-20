@@ -4,7 +4,7 @@ const baseDictionary = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrst
 const shuffledIndicator = "_rhs";
 
 function getBaseUrl() {
-  const value = process.env.RAMMERHEAD_URL;
+  const value = process.env.RAMMERHEAD_URL || "https://rammerhead-production-9349.up.railway.app";
   if (!value) return null;
   try {
     const url = new URL(value);
