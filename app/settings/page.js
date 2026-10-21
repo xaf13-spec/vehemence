@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { logout, logoutEverywhere, changeUsername, changePassword, deleteAccount } from "./actions";
+import { logout, logoutEverywhere, changeUsername, changePassword, deleteAccount, getRecoveryCodeStatus, generateRecoveryCode } from "./actions";
 
 const themes = ["Midnight", "Cherry Blossom", "Ocean", "Aquatic", "Lavender", "Forest", "Sunset", "Rose", "Cloud", "Autumn", "Frost", "Mocha", "Moss", "Crimson", "Sakura"];
 const fonts = ["Arial", "Helvetica", "Verdana", "Tahoma", "Trebuchet MS", "Georgia", "Garamond", "Times New Roman", "Courier New", "Consolas", "Lucida Console", "Impact", "Comic Sans MS", "Segoe UI", "Calibri", "Cambria", "Century Gothic", "Palatino"];
@@ -55,6 +55,11 @@ function SettingRow({ title, description, children }) {
 export default function Settings() {
   const [showUsername, setShowUsername] = useState(false), [showPassword, setShowPassword] = useState(false), [revealPasswordFields, setRevealPasswordFields] = useState(false), [usernameError, setUsernameError] = useState(""), [usernameSuccess, setUsernameSuccess] = useState(""), [usernameLoading, setUsernameLoading] = useState(false), [passwordError, setPasswordError] = useState(""), [passwordSuccess, setPasswordSuccess] = useState(""), [passwordLoading, setPasswordLoading] = useState(false);
   const [theme, setTheme] = useState("Midnight"), [font, setFont] = useState("Arial"), [uiScale, setUiScale] = useState("Normal"), [compact, setCompact] = useState(false), [animations, setAnimations] = useState(true), [blur, setBlur] = useState(true), [backgroundEffects, setBackgroundEffects] = useState(true), [volume, setVolume] = useState(80), [autoFullscreen, setAutoFullscreen] = useState(false), [rememberLastGame, setRememberLastGame] = useState(true), [friendNotifications, setFriendNotifications] = useState(true), [siteNotifications, setSiteNotifications] = useState(true), [achievementNotifications, setAchievementNotifications] = useState(true), [deleteConfirm, setDeleteConfirm] = useState(false), [deleteLoading, setDeleteLoading] = useState(false), [deleteError, setDeleteError] = useState(""), [accountMessage, setAccountMessage] = useState("");
+  const [recoveryCode, setRecoveryCode] = useState("");
+  const [hasRecoveryCode, setHasRecoveryCode] = useState(false);
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoveryError, setRecoveryError] = useState("");
+  const [recoveryMessage, setRecoveryMessage] = useState("");
   const [navMode, setNavMode] = useState("top");
   const [transparentButtons, setTransparentButtons] = useState(false);
   const [backgroundMode, setBackgroundMode] = useState("Theme");
@@ -81,6 +86,7 @@ export default function Settings() {
     setBrandFont(get("vehemence_brand_font", "Japanese Serif"));
     applyAppearance(loaded);
     document.documentElement.setAttribute("data-nav-mode", get("vehemence_nav_mode", "top"));
+    getRecoveryCodeStatus().then(result => { if (result?.hasRecoveryCode !== undefined) setHasRecoveryCode(result.hasRecoveryCode); else if (result?.error) setRecoveryError(result.error); }).catch(() => setRecoveryError("Could not load recovery code settings."));
   }, []);
 
   function update(k, v, setter) { setter(v); save(k, v, false); }
@@ -184,6 +190,12 @@ export default function Settings() {
   async function handleLogoutEverywhere() { const result = await logoutEverywhere(); if (result?.error) { setAccountMessage(result.error); return; } window.location.href = "/"; }
   async function handleUsernameChange(e) { e.preventDefault(); setUsernameError(""); setUsernameSuccess(""); setUsernameLoading(true); const result = await changeUsername(new FormData(e.currentTarget)); if (result?.error) { setUsernameError(result.error); setUsernameLoading(false); return; } setUsernameSuccess("Username changed successfully."); setUsernameLoading(false); e.currentTarget.reset(); }
   async function handlePasswordChange(e) { e.preventDefault(); setPasswordError(""); setPasswordSuccess(""); setPasswordLoading(true); const result = await changePassword(new FormData(e.currentTarget)); if (result?.error) { setPasswordError(result.error); setPasswordLoading(false); return; } setPasswordSuccess("Password changed successfully."); setPasswordLoading(false); setRevealPasswordFields(false); e.currentTarget.reset(); }
+  async function handleGenerateRecoveryCode() {
+    setRecoveryError(""); setRecoveryMessage(""); setRecoveryLoading(true);
+    const result = await generateRecoveryCode();
+    if (result?.error) { setRecoveryError(result.error); setRecoveryLoading(false); return; }
+    setRecoveryCode(result.recoveryCode); setHasRecoveryCode(true); setRecoveryMessage("Save this code somewhere safe. It will not be shown again after you leave this page."); setRecoveryLoading(false);
+  }
   async function handleDeleteAccount() {
     setDeleteError(""); setDeleteLoading(true);
     const result = await deleteAccount();
@@ -220,5 +232,6 @@ export default function Settings() {
     <section className="settings-section"><div className="settings-section-header"><h2>Games</h2></div><div className="settings-card"><SettingRow title="Default Game Volume" description="Set the starting volume for games that support audio."><div className="settings-range-wrap"><input className="settings-range" type="range" min="0" max="100" value={volume} onChange={e => update("vehemence_volume", e.target.value, setVolume)} /><span>{volume}%</span></div></SettingRow><SettingRow title="Auto Fullscreen" description="Enter fullscreen automatically when a game supports it."><Toggle checked={autoFullscreen} onChange={v => update("vehemence_auto_fullscreen", v, setAutoFullscreen)} /></SettingRow><SettingRow title="Remember Last Game" description="Keep track of the last game you opened for quick access."><Toggle checked={rememberLastGame} onChange={v => update("vehemence_remember_game", v, setRememberLastGame)} /></SettingRow></div></section>
     <section className="settings-section"><div className="settings-section-header"><h2>Notifications</h2></div><div className="settings-card"><SettingRow title="Friend Requests" description="Get notified when someone sends you a friend request."><Toggle checked={friendNotifications} onChange={v => update("vehemence_notify_friends", v, setFriendNotifications)} /></SettingRow><SettingRow title="Site Announcements" description="Get important announcements from Vehemence."><Toggle checked={siteNotifications} onChange={v => update("vehemence_notify_site", v, setSiteNotifications)} /></SettingRow><SettingRow title="Achievements" description="Get notified when you unlock an achievement."><Toggle checked={achievementNotifications} onChange={v => update("vehemence_notify_achievements", v, setAchievementNotifications)} /></SettingRow></div></section>
     <section className="settings-section"><div className="settings-section-header"><h2>Danger Zone</h2></div><div className="settings-card danger-card"><SettingRow title="Sign Out" description="Sign out of your Vehemence account on this device."><button className="secondary-button danger-button" onClick={handleLogout}>Sign Out</button></SettingRow><SettingRow title="Delete Account" description="Permanently delete your Vehemence account and its data."><button className="secondary-button danger-button" onClick={() => { setDeleteError(""); setDeleteConfirm(true); }}>Delete Account</button></SettingRow></div>{deleteConfirm && <div className="settings-delete-warning"><strong>Delete your account?</strong><p>This permanently removes your Vehemence account and signed-in sessions. This cannot be undone.</p>{deleteError && <p className="auth-error">{deleteError}</p>}<div className="settings-delete-actions"><button className="secondary-button" onClick={() => setDeleteConfirm(false)} disabled={deleteLoading}>Cancel</button><button className="secondary-button danger-button" onClick={handleDeleteAccount} disabled={deleteLoading}>{deleteLoading ? "Deleting..." : "Yes, Delete Account"}</button></div></div>}{accountMessage && <p className="settings-note">{accountMessage}</p>}</section>
+    <section className="settings-section"><div className="settings-section-header"><h2>recovery code</h2></div><div className="settings-card"><div className="settings-row"><div><h3>{hasRecoveryCode ? "recovery code is set" : "no recovery code yet"}</h3></div><button type="button" className="secondary-button" onClick={handleGenerateRecoveryCode} disabled={recoveryLoading}>{recoveryLoading ? "generating..." : hasRecoveryCode ? "replace recovery code" : "generate recovery code"}</button></div>{recoveryCode && <div className="settings-form"><label>your new recovery code<input value={recoveryCode} readOnly /></label><button type="button" className="secondary-button" onClick={() => { navigator.clipboard?.writeText(recoveryCode).then(() => setRecoveryMessage("recovery code copied.")).catch(() => setRecoveryMessage("select and copy the code manually.")); }}>copy recovery code</button></div>}{recoveryError && <p className="auth-error" style={{margin:"14px 22px"}}>{recoveryError}</p>}{recoveryMessage && <p className="settings-success" style={{padding:"0 22px 18px"}}>{recoveryMessage}</p>}</div></section>
   </div></main>;
 }
