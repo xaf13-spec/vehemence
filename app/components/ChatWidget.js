@@ -189,6 +189,7 @@ export default function ChatWidget() {
                     >
                       {item.username}
                     </a>
+                    {item.customStatus && <span className="chat-custom-status">{item.customStatus}</span>}
                     <span>{formatTime(item.createdAt)}</span>
                     {item.userId !== currentUserId && <button type="button" className="chat-block-user" onClick={() => blockUser(item.userId, item.username)} title="Block user">block</button>}
                   </div>
