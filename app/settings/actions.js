@@ -56,20 +56,31 @@ export async function changeUsername(formData) {
 }
 
 export async function changePassword(formData) {
+  const passwordMethod = formData.get("passwordMethod")?.toString() === "recovery" ? "recovery" : "current";
   const currentPassword = formData.get("currentPassword")?.toString();
+  const recoveryCode = formData.get("recoveryCode")?.toString().trim().replaceAll("-", "").toUpperCase();
   const newPassword = formData.get("newPassword")?.toString();
   const confirmPassword = formData.get("confirmPassword")?.toString();
-  if (!currentPassword || !newPassword || !confirmPassword) return { error: "Please fill in every field." };
+  if ((passwordMethod === "current" && !currentPassword) || (passwordMethod === "recovery" && !recoveryCode) || !newPassword || !confirmPassword) return { error: "Please fill in every field." };
+  if (passwordMethod === "recovery" && !/^[A-F0-9]{32}$/.test(recoveryCode)) return { error: "That recovery code is incorrect." };
   if (newPassword !== confirmPassword) return { error: "New passwords do not match." };
   if (newPassword.length < 8) return { error: "Your new password must be at least 8 characters." };
   const current = await getSession();
   if (current.error) return { error: current.error };
-  const { data: profile } = await supabase.from("profiles").select("password_hash").eq("id", current.session.user_id).single();
+  const { data: profile } = await supabase.from("profiles").select("password_hash, recovery_code_hash").eq("id", current.session.user_id).single();
   if (!profile) return { error: "Account not found." };
-  const currentPasswordHash = createHash("sha256").update(currentPassword).digest("hex");
-  if (currentPasswordHash !== profile.password_hash) return { error: "Your current password is incorrect." };
+  if (passwordMethod === "current") {
+    const currentPasswordHash = createHash("sha256").update(currentPassword).digest("hex");
+    if (currentPasswordHash !== profile.password_hash) return { error: "Your current password is incorrect." };
+  } else {
+    const suppliedRecoveryHash = createHash("sha256").update(recoveryCode).digest("hex");
+    if (!profile.recovery_code_hash || suppliedRecoveryHash !== profile.recovery_code_hash) return { error: "That recovery code is incorrect or has already been used." };
+  }
   const newPasswordHash = createHash("sha256").update(newPassword).digest("hex");
-  const { error } = await supabase.from("profiles").update({ password_hash: newPasswordHash }).eq("id", current.session.user_id);
+  const updates = passwordMethod === "recovery"
+    ? { password_hash: newPasswordHash, recovery_code_hash: null, recovery_code_encrypted: null }
+    : { password_hash: newPasswordHash };
+  const { error } = await supabase.from("profiles").update(updates).eq("id", current.session.user_id);
   return error ? { error: "Could not change your password." } : { success: true };
 }
 
