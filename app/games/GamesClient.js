@@ -232,25 +232,17 @@ const games = [
     id: "cookie-clicker",
     name: "Cookie Clicker",
     category: "Clicker",
-    description: "A community-built Cookie Clicker clone with buildings, upgrades, golden cookies, and local saves.",
-    playUrl: "https://ojithechamp.github.io/cookie-clicker/",
+    description: "Click cookies, buy upgrades, and build your cookie empire. Original open-source project hosted locally for reliable play.",
+    playUrl: "/games/cookie-clicker/index.html",
     sourceUrl: "https://github.com/OjiTheChamp/cookie-clicker"
   },
   {
-    id: "evolve",
-    name: "Evolve",
+    id: "click-circle",
+    name: "Click Circle",
     category: "Clicker",
-    description: "Evolve a civilization from primordial life into a spacefaring empire in this open-source incremental game.",
-    playUrl: "https://pmotschmann.github.io/Evolve/",
-    sourceUrl: "https://github.com/pmotschmann/Evolve"
-  },
-  {
-    id: "mass",
-    name: "Mass",
-    category: "Clicker",
-    description: "Generate mass, buy planets, and grow your own solar system in this open-source incremental game.",
-    playUrl: "https://abhrankan-chakrabarti.github.io/mass/",
-    sourceUrl: "https://github.com/Abhrankan-Chakrabarti/mass"
+    description: "A fast reaction clicking game: pick a difficulty, click targets before they disappear, and beat your high score.",
+    playUrl: "/games/click-circle/index.html",
+    sourceUrl: "https://github.com/aryankakk/Clicker-game"
   },
   {
     id: "hextris-open",
