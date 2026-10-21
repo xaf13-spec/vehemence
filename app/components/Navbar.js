@@ -23,11 +23,8 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   useEffect(() => {
     const updateBrand = () => {
       const preset = localStorage.getItem("vehemence_brand_preset") || "Vehemence";
-      const name = localStorage.getItem("vehemence_brand_name") || "Vehemence";
       const logoUrl = localStorage.getItem("vehemence_brand_logo_url") || "";
-      const font = localStorage.getItem("vehemence_brand_font") || "Japanese Serif";
-      setBrand({ preset, name, logoUrl, font });
-      document.title = name;
+      setBrand({ preset, name: "Vehemence", logoUrl: "", font: "Display Gothic" });
       let favicon = document.querySelector('link[rel="icon"]');
       if (!favicon) { favicon = document.createElement("link"); favicon.rel = "icon"; document.head.appendChild(favicon); }
       const vehemenceLogo = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%273%27 y=%273%27 width=%2758%27 height=%2758%27 rx=%2717%27 fill=%27%230d0d14%27/%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E";
@@ -91,7 +88,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
 
   return <>
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
-      <a href="/" className={`logo brand-logo brand-font-${brand.font.toLowerCase().replaceAll(" ", "-")}`} onClick={(event) => handle(event, "/")} aria-label={brand.name}><span className={`brand-logo-mark brand-${brand.preset.toLowerCase().replaceAll(" ", "-")}`}><img src={brand.logoUrl || (brand.preset === "Google Classroom" ? "https://www.gstatic.com/classroom/logo_square_rounded.svg" : brand.preset === "Khan Academy" ? "https://cdn.kastatic.org/images/khan-logo-vertical-transparent.png" : brand.preset === "Custom" ? "" : "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%273%27 y=%273%27 width=%2758%27 height=%2758%27 rx=%2717%27 fill=%27%230d0d14%27/%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E")} alt="" /></span><span className="brand-logo-name">{brand.name}</span></a>
+      <a href="/" className="logo brand-logo brand-font-display-gothic" onClick={(event) => handle(event, "/")} aria-label="Vehemence"><span className="brand-logo-mark brand-vehemence"><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%273%27 y=%273%27 width=%2758%27 height=%2758%27 rx=%2717%27 fill=%27%230d0d14%27/%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E" alt="" /></span><span className="brand-logo-name">Vehemence</span></a>
       <div className="nav-links">
         {navItems.slice(0, 8).map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
