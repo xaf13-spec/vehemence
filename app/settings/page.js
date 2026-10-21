@@ -61,6 +61,11 @@ export default function Settings() {
   const [backgroundUrl, setBackgroundUrl] = useState("");
   const [backgroundError, setBackgroundError] = useState("");
   const [backgroundMessage, setBackgroundMessage] = useState("");
+  const [brandPreset, setBrandPreset] = useState("Vehemence");
+  const [brandName, setBrandName] = useState("Vehemence");
+  const [brandLogoUrl, setBrandLogoUrl] = useState("");
+  const [brandFont, setBrandFont] = useState("Japanese Serif");
+  const [brandMessage, setBrandMessage] = useState("");
 
   useEffect(() => {
     const get = (k, f) => localStorage.getItem(k) ?? f;
@@ -70,11 +75,30 @@ export default function Settings() {
     setBackgroundMode(get("vehemence_background_mode", "theme") === "custom" ? "Custom Image" : "Theme");
     setBackgroundUrl(get("vehemence_custom_background_url", ""));
     setTransparentButtons(get("vehemence_transparent_buttons", "false") === "true");
+    setBrandPreset(get("vehemence_brand_preset", "Vehemence"));
+    setBrandName(get("vehemence_brand_name", "Vehemence"));
+    setBrandLogoUrl(get("vehemence_brand_logo_url", ""));
+    setBrandFont(get("vehemence_brand_font", "Japanese Serif"));
     applyAppearance(loaded);
     document.documentElement.setAttribute("data-nav-mode", get("vehemence_nav_mode", "top"));
   }, []);
 
   function update(k, v, setter) { setter(v); save(k, v, false); }
+  function applyBrand() {
+    const safeName = (brandName || "").trim().slice(0, 32) || brandPreset;
+    const safeLogo = brandLogoUrl.trim();
+    if (safeLogo && !/^https:\/\//i.test(safeLogo)) {
+      setBrandMessage("Logo URL must begin with https://.");
+      return;
+    }
+    save("vehemence_brand_preset", brandPreset);
+    save("vehemence_brand_name", safeName);
+    save("vehemence_brand_logo_url", safeLogo);
+    save("vehemence_brand_font", brandFont);
+    window.dispatchEvent(new Event("vehemence-brand-changed"));
+    setBrandMessage("Branding applied to this browser.");
+  }
+
   function changeAppearance(storageKey, stateKey, v, setter) {
     setter(v);
     save(storageKey, v, true);
@@ -171,6 +195,15 @@ export default function Settings() {
 
   return <main className="settings-page"><div className="settings-container"><div className="settings-header"><h1>Settings</h1></div>
     <section className="settings-section"><div className="settings-section-header"><h2>Account</h2><p>Manage your account information.</p></div><div className="settings-card"><SettingRow title="Username" description="Change your username once every 24 hours."><button className="secondary-button" onClick={() => { setShowUsername(!showUsername); setUsernameError(""); setUsernameSuccess(""); }}>{showUsername ? "Cancel" : "Change Username"}</button></SettingRow>{showUsername && <form className="settings-form" onSubmit={handleUsernameChange}><label>New Username<input name="username" type="text" placeholder="Enter your new username" minLength={3} maxLength={20} required /></label>{usernameError && <p className="auth-error">{usernameError}</p>}{usernameSuccess && <p className="settings-success">{usernameSuccess}</p>}<button type="submit" className="primary-button" disabled={usernameLoading}>{usernameLoading ? "Changing..." : "Save Username"}</button></form>}<SettingRow title="Password" description="Change your password whenever you want."><button className="secondary-button" onClick={() => { setShowPassword(!showPassword); setPasswordError(""); setPasswordSuccess(""); }}>{showPassword ? "Cancel" : "Change Password"}</button></SettingRow>{showPassword && <form className="settings-form" onSubmit={handlePasswordChange}><button type="button" className="secondary-button" onClick={() => setRevealPasswordFields(v => !v)} aria-pressed={revealPasswordFields}>{revealPasswordFields ? "Hide Passwords" : "Show Passwords"}</button><label>Current Password<input name="currentPassword" type={revealPasswordFields ? "text" : "password"} autoComplete="current-password" required /></label><label>New Password<input name="newPassword" type={revealPasswordFields ? "text" : "password"} autoComplete="new-password" minLength={8} required /></label><label>Confirm New Password<input name="confirmPassword" type={revealPasswordFields ? "text" : "password"} autoComplete="new-password" minLength={8} required /></label>{passwordError && <p className="auth-error">{passwordError}</p>}{passwordSuccess && <p className="settings-success">{passwordSuccess}</p>}<button type="submit" className="primary-button" disabled={passwordLoading}>{passwordLoading ? "Changing..." : "Save Password"}</button></form>}<SettingRow title="Active Sessions" description="Your current signed-in session."><span className="settings-status">This device · Active</span></SettingRow><SettingRow title="Sign Out Everywhere" description="End all active sessions for this account."><button className="secondary-button" onClick={handleLogoutEverywhere}>Sign Out Everywhere</button></SettingRow></div></section>
+    <section className="settings-section"><div className="settings-section-header"><h2>Brand identity</h2></div><div className="settings-card">
+      <div className="settings-brand-preview"><span className={`settings-brand-mark brand-${brandPreset.toLowerCase().replaceAll(" ", "-")}`}>{brandPreset === "Google Classroom" ? "▣" : brandPreset === "Khan Academy" ? "K" : "文"}</span><div><strong style={{fontFamily:brandFont === "Japanese Serif" ? '"Yuji Syuku","Noto Serif JP",serif' : brandFont === "Display Gothic" ? '"Arial Black",sans-serif' : 'var(--site-font)'}}>{brandName || brandPreset}</strong><small>LIVE PREVIEW</small></div></div>
+      <SettingRow title="Logo preset" description="Choose the identity shown in the navigation and browser tab."><CustomSelect value={brandPreset} options={["Vehemence","Google Classroom","Khan Academy","Custom"]} onChange={(value) => { setBrandPreset(value); if (value !== "Custom") setBrandName(value); }} /></SettingRow>
+      <SettingRow title="Website name" description="Change the name shown in the navigation and browser tab."><input className="settings-brand-input" maxLength={32} value={brandName} onChange={(event) => setBrandName(event.target.value)} placeholder="Enter a site name" /></SettingRow>
+      <SettingRow title="Logo image URL" description="Optional: use your own hosted logo image. Use a direct HTTPS image URL."><input className="settings-brand-input" type="url" value={brandLogoUrl} onChange={(event) => setBrandLogoUrl(event.target.value)} placeholder="https://example.com/logo.png" /></SettingRow>
+      <SettingRow title="Logo typeface" description="A more distinctive Japanese-inspired display style."><CustomSelect value={brandFont} options={["Japanese Serif","Display Gothic","Site Font"]} onChange={setBrandFont} /></SettingRow>
+      <div className="settings-brand-footer"><button type="button" className="primary-button" onClick={applyBrand}>Apply branding</button><button type="button" className="secondary-button" onClick={() => { setBrandPreset("Vehemence"); setBrandName("Vehemence"); setBrandLogoUrl(""); setBrandFont("Japanese Serif"); }}>Reset preview</button></div>
+      {brandMessage && <p className="settings-success">{brandMessage}</p>}
+    </div></section>
     <section className="settings-section"><div className="settings-section-header"><h2>Appearance</h2><p>Control the look and feel of Vehemence.</p></div><div className="settings-card"><SettingRow title="Theme" description="Choose the look and colors of the site."><CustomSelect value={theme} options={themes} onChange={handleThemeChange} /></SettingRow><SettingRow title="Font" description="Choose the font used throughout Vehemence."><CustomSelect value={font} options={fonts} onChange={handleFontChange} /></SettingRow><SettingRow title="UI Scale" description="Adjust the overall size of interface elements."><CustomSelect value={uiScale} options={["Small", "Normal", "Large"]} onChange={handleScaleChange} /></SettingRow><SettingRow title={navMode === "top" ? "Top Navigation Bar" : "Side Navigation Bar"} description={navMode === "top" ? "Switch between the top navigation and a standing side navigation bar." : "Your navigation is standing on the side. Click to switch it back to the top."}><button className="secondary-button" onClick={toggleNavMode}>{navMode === "top" ? "Use Side Navigation Bar" : "Use Top Navigation Bar"}</button></SettingRow><SettingRow title="Compact Mode" description="Reduce spacing to fit more content on screen."><Toggle checked={compact} onChange={v => handleToggle("compact", v, setCompact)} /></SettingRow><SettingRow title="Animations" description="Enable interface motion and transitions."><Toggle checked={animations} onChange={v => handleToggle("animations", v, setAnimations)} /></SettingRow><SettingRow title="Blur Effects" description="Use glass and backdrop blur effects throughout the site."><Toggle checked={blur} onChange={v => handleToggle("blur", v, setBlur)} /></SettingRow><SettingRow title="Background Effects" description="Show the subtle background lighting effects."><Toggle checked={backgroundEffects} onChange={v => handleToggle("backgroundEffects", v, setBackgroundEffects)} /></SettingRow><SettingRow title="Transparent Buttons" description="Remove button fills so controls appear as text and subtle outlines over your background. Dropdown menus stay readable."><Toggle checked={transparentButtons} onChange={v => handleToggle("transparentButtons", v, setTransparentButtons)} /></SettingRow>
       <div className="settings-background-editor">
         <div className="settings-background-editor-heading"><h3>Background style</h3><p>Ocean and Sunset themes get their own animated atmosphere. Or use your own image.</p></div>
