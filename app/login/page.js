@@ -34,6 +34,7 @@ export default function Login() {
           {error && <p className="auth-error">{error}</p>}
           <button type="submit" className="primary-button" disabled={loading}>{loading ? "Logging in..." : "Log In"}</button>
         </form>
+        <p className="auth-footer">forgot your password? <Link href="/recover">recover account</Link></p>
         <p className="auth-footer">Don't have an account? <Link href="/signup">Create one</Link></p>
       </div>
     </main>
