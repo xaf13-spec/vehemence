@@ -229,6 +229,51 @@ const games = [
   },
 
   {
+    id: "button-clicker",
+    name: "Button Clicker",
+    category: "Clicker",
+    description: "Tap, upgrade, and turn a tiny score into ridiculous production.",
+    playUrl: "/games/clicker-arcade/index.html?game=button",
+    sourceUrl: "https://github.com/remarkablegames/button-clicker"
+  },
+  {
+    id: "idle-empire",
+    name: "Idle Empire",
+    category: "Clicker",
+    description: "Build an automated empire with workers, factories, and prestige.",
+    playUrl: "/games/clicker-arcade/index.html?game=empire",
+    sourceUrl: "https://github.com/na1os/clicker-game"
+  },
+  {
+    id: "society-fail",
+    name: "Society Fail",
+    category: "Clicker",
+    description: "A strange post-apocalyptic incremental game.",
+    playUrl: "/games/clicker-arcade/index.html?game=society",
+    sourceUrl: "https://github.com/Shpigford/society-fail"
+  },
+  {
+    id: "space-clicker",
+    name: "Space Clicker",
+    category: "Clicker",
+    description: "Mine stardust, build drones, and expand across the galaxy.",
+    playUrl: "/games/clicker-arcade/index.html?game=space"
+  },
+  {
+    id: "gem-clicker",
+    name: "Gem Clicker",
+    category: "Clicker",
+    description: "Collect gems, buy miners, and unlock bigger multipliers.",
+    playUrl: "/games/clicker-arcade/index.html?game=gems"
+  },
+  {
+    id: "cash-clicker",
+    name: "Cash Clicker",
+    category: "Clicker",
+    description: "Earn cash, invest in businesses, and grow passive income.",
+    playUrl: "/games/clicker-arcade/index.html?game=cash"
+  },
+  {
     id: "hextris-open",
     name: "Hextris",
     category: "Puzzle",
@@ -496,7 +541,8 @@ const games = [
     name: "Cookie Clicker",
     category: "Clicker",
     description: "Bake cookies, buy upgrades, and build a huge cookie empire.",
-    playUrl: "https://orteil.dashnet.org/cookieclicker/"
+    playUrl: "/games/clicker-arcade/index.html?game=cookies",
+    sourceUrl: "https://github.com/OjiTheChamp/cookie-clicker"
   },
   {
     id: "tiny-fishing",
