@@ -510,7 +510,7 @@ const games = [
     id: "tiny-fishing",
     name: "Tiny Fishing",
     category: "Casual",
-    description: "Cast your line and play the original Tiny Fishing browser game.",
+    description: "Play the actual Tiny Fishing browser game.",
     playUrl: "https://ozgames.io/tiny-fishing"
   },
   {
@@ -1373,7 +1373,51 @@ const games = [
     "playUrl": "https://sausi-7.github.io/games/games/puzzle/line-trap/index.html",
     "sourceUrl": "https://github.com/sausi-7/games/tree/main/games/puzzle/line-trap"
   },
-      openRequestedGame();
+  { id: "donut-clicker", name: "Donut Clicker", category: "Clicker", description: "Play the actual Donut Clicker browser game.", playUrl: "https://ozgames.io/donut-clicker" },
+  { id: "chicken-jockey-clicker", name: "Chicken Jockey Clicker", category: "Clicker", description: "Play the actual Chicken Jockey Clicker browser game.", playUrl: "https://ozgames.io/chicken-jockey-clicker" },
+  { id: "italian-brainrot-clicker", name: "Italian Brainrot Clicker 2", category: "Clicker", description: "Play the actual Italian Brainrot Clicker 2 browser game.", playUrl: "https://ozgames.io/italian-brainrot-clicker-2" },
+  { id: "speed-stars-local", name: "Speed Stars", category: "Sports", description: "Play the actual Speed Stars browser game.", playUrl: "https://ozgames.io/speed-stars" },
+  { id: "level-devil-local", name: "Level Devil", category: "Platformer", description: "Play the actual Level Devil browser game.", playUrl: "https://ozgames.io/level-devil" },
+  { id: "crossy-road-local", name: "Crossy Road", category: "Arcade", description: "Play the actual Crossy Road browser game.", playUrl: "https://ozgames.io/crossy-road" },
+  { "id": "duck-clicker", "name": "Duck Clicker", "category": "Clicker", "description": "Collect ducks, buy upgrades, and grow your flock.", "playUrl": "/games/mini-arcade/index.html?mode=duck-clicker" },
+  { "id": "space-clicker", "name": "Space Clicker", "category": "Clicker", "description": "Mine stardust and power up your cosmic factory.", "playUrl": "/games/mini-arcade/index.html?mode=space-clicker" },
+  { "id": "bloodmoney-local", "name": "Bloodmoney", "category": "Clicker", "description": "A dark choice-based clicker about earning cash.", "playUrl": "/games/mini-arcade/index.html?mode=bloodmoney" },
+  { "id": "kick-the-buddy-local", "name": "Kick the Buddy", "category": "Arcade", "description": "Tap the practice dummy and unlock silly effects.", "playUrl": "/games/mini-arcade/index.html?mode=kick-the-buddy" },
+  { "id": "rocket-goal-local", "name": "Rocket Goal", "category": "Sports", "description": "Play the actual Rocket Goal browser game.", "playUrl": "https://ozgames.io/rocket-goal" },
+  { "id": "slither-arena-local", "name": "Slither Arena", "category": "Arcade", "description": "Collect orbs, grow longer, and avoid crashing.", "playUrl": "/games/mini-arcade/index.html?mode=slither-io" },
+];
+
+const categories = ["All", ...new Set(games.map((game) => game.category))];
+
+const symbols = {
+  "pacman": "◉", "2048": "▦", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
+  "battleship": "▤", "block-drop": "▦", "breakout": "▥", "bubble-shooter": "◌",
+  "connect-four": "⊞", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
+  "gem-match": "◆", "helix-drop": "◉", "lights-out": "✦", "maze-muncher": "⌘",
+  "memory-match": "▧", "merge-drop": "◉", "minesweeper": "▦", "paddle-duel": "◉",
+  "piano-tap": "▥", "reversi": "◉", "slide-puzzle": "▦", "snake": "〰",
+  "sokoban": "▣", "stack-tower": "▤", "star-defender": "✦", "sudoku": "▦",
+  "tic-tac-toe": "×", "water-sort": "◍", "whack-a-mole": "✹"
+};
+const artThemes = ["violet", "blue", "mint", "amber", "rose"];
+
+export default function GamesClient() {
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
+  const [selectedGame, setSelectedGame] = useState(null);
+  const featuredGame = games.find((game) => game.id === "pacman") || games[0];
+
+  useEffect(() => {
+    function openRequestedGame() {
+      try {
+        const requested = JSON.parse(localStorage.getItem("vehemence_featured_pick") || "null");
+        if (!requested) return;
+        localStorage.removeItem("vehemence_featured_pick");
+        const match = games.find((game) => game.id === requested.id || game.name === requested.name);
+        if (match) setSelectedGame(match);
+      } catch {}
+    }
+    openRequestedGame();
     window.addEventListener("vehemence-open-game", openRequestedGame);
     return () => window.removeEventListener("vehemence-open-game", openRequestedGame);
   }, []);
