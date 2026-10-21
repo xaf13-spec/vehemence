@@ -49,7 +49,10 @@ export async function GET() {
     return NextResponse.json({ error: "Could not load chat messages." }, { status: 500 });
   }
 
-  const { data: blockRows } = await supabase.from("user_blocks").select("blocked_id").eq("blocker_id", user.id);\n  const blockedIds = new Set((blockRows || []).map((row) => row.blocked_id));\n\n  const messages = (data || []).filter((item) => !blockedIds.has(item.user_id)).map((item) => ({
+  const { data: blockRows } = await supabase.from("user_blocks").select("blocked_id").eq("blocker_id", user.id);
+  const blockedIds = new Set((blockRows || []).map((row) => row.blocked_id));
+
+  const messages = (data || []).filter((item) => !blockedIds.has(item.user_id)).map((item) => ({
     id: item.id,
     userId: item.user_id,
     username: item.profiles?.username || "Unknown",
