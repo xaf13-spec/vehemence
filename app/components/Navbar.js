@@ -17,7 +17,29 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   const [commandIndex, setCommandIndex] = useState(0);
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [brand, setBrand] = useState({ preset: "Vehemence", name: "Vehemence", logoUrl: "", font: "Japanese Serif" });
   const commandInput = useRef(null);
+
+  useEffect(() => {
+    const updateBrand = () => {
+      const preset = localStorage.getItem("vehemence_brand_preset") || "Vehemence";
+      const name = localStorage.getItem("vehemence_brand_name") || "Vehemence";
+      const logoUrl = localStorage.getItem("vehemence_brand_logo_url") || "";
+      const font = localStorage.getItem("vehemence_brand_font") || "Japanese Serif";
+      setBrand({ preset, name, logoUrl, font });
+      document.title = name;
+      let favicon = document.querySelector('link[rel="icon"]');
+      if (!favicon) { favicon = document.createElement("link"); favicon.rel = "icon"; document.head.appendChild(favicon); }
+      const color = preset === "Google Classroom" ? "#16865b" : preset === "Khan Academy" ? "#14a886" : "#a99aff";
+      const letter = preset === "Google Classroom" ? "▣" : preset === "Khan Academy" ? "K" : "文";
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="3" y="3" width="58" height="58" rx="17" fill="' + color + '"/><text x="32" y="43" text-anchor="middle" font-size="35" font-family="serif" fill="white">' + letter + '</text></svg>';
+      favicon.href = logoUrl || "data:image/svg+xml," + encodeURIComponent(svg);
+    };
+    updateBrand();
+    window.addEventListener("vehemence-brand-changed", updateBrand);
+    window.addEventListener("storage", updateBrand);
+    return () => { window.removeEventListener("vehemence-brand-changed", updateBrand); window.removeEventListener("storage", updateBrand); };
+  }, []);
 
   useEffect(() => {
     if (!localStorage.getItem("vehemence_notifications")) localStorage.setItem("vehemence_notifications", JSON.stringify(defaultNotifications));
@@ -71,14 +93,14 @@ export default function Navbar({ activePath = "/", onNavigate }) {
 
   return <>
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
-      <a href="/" className="logo" onClick={(event) => handle(event, "/")}>VEHEMENCE</a>
+      <a href="/" className={`logo brand-logo brand-font-${brand.font.toLowerCase().replaceAll(" ", "-")}`} onClick={(event) => handle(event, "/")} aria-label={brand.name}><span className={`brand-logo-mark brand-${brand.preset.toLowerCase().replaceAll(" ", "-")}`}>{brand.logoUrl ? <img src={brand.logoUrl} alt="" /> : brand.preset === "Google Classroom" ? "▣" : brand.preset === "Khan Academy" ? "K" : "文"}</span><span className="brand-logo-name">{brand.name}</span></a>
       <div className="nav-links">
         {navItems.slice(0, 8).map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
       <div className="navbar-status">
         {isOwner && <button type="button" className="command-trigger" onClick={() => setOwnerOpen(true)} title="Open owner control center">Owner Panel</button>}
         <button type="button" className="command-trigger" onClick={() => setCommandOpen(true)} aria-label="Open command menu" title="Command menu (Ctrl+K)"><span>⌕</span><kbd>Ctrl K</kbd></button>
-        <a href="/notifications" onClick={(event) => handle(event, "/notifications")} className={`notification-nav ${activePath === "/notifications" ? "active" : ""}`} aria-label="Notifications"><span className="notification-bell">♧</span>{unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}</a>
+        <a href="/notifications" onClick={(event) => handle(event, "/notifications")} className={`notification-nav ${activePath === "/notifications" ? "active" : ""}`} aria-label="Notifications"><svg className="notification-bell" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>{unread > 0 && <span className="notification-count">{unread > 9 ? "9+" : unread}</span>}</a>
         <div className="navbar-clock" aria-label="Ontario time and date"><span className="navbar-clock-period">{amPm}</span><strong>{hour}:{minute}:{second}</strong><span>{date} · Ontario / New York</span></div>
       </div>
     </nav>
