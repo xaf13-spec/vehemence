@@ -264,7 +264,7 @@ const games = [
     name: "Classic Snake",
     category: "Classic",
     description: "Grow longer while avoiding your own tail.",
-    playUrl: "https://linkingtechnologies.github.io/libre-arcade/html5-snake/public/index.html",
+    playUrl: "/games/classic-snake/index.html",
     sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/html5-snake"
   },
   {
