@@ -510,8 +510,8 @@ const games = [
     id: "tiny-fishing",
     name: "Tiny Fishing",
     category: "Casual",
-    description: "Cast a line and collect fish as you progress.",
-    playUrl: "https://poki.com/en/g/tiny-fishing"
+    description: "Cast your hook, collect fish, and try to fill your haul.",
+    playUrl: "/games/mini-arcade/index.html?mode=tiny-fishing"
   },
   {
     id: "hill-climb",
