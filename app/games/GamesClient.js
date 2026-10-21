@@ -510,15 +510,15 @@ const games = [
     id: "tiny-fishing",
     name: "Tiny Fishing",
     category: "Casual",
-    description: "Cast your hook, collect fish, and try to fill your haul.",
-    playUrl: "/games/mini-arcade/index.html?mode=tiny-fishing"
+    description: "Cast your line and play the original Tiny Fishing browser game.",
+    playUrl: "https://ozgames.io/tiny-fishing"
   },
   {
     id: "hill-climb",
     name: "Hill Climb Racing",
     category: "Racing",
-    description: "Drive across uneven terrain while managing your fuel.",
-    playUrl: "https://poki.com/en/g/hill-climb-racing-lite"
+    description: "Play the actual Hill Climb Racing browser game.",
+    playUrl: "https://ozgames.io/hill-climb-racing"
   },
   {
     id: "geoguessr",
@@ -1373,57 +1373,7 @@ const games = [
     "playUrl": "https://sausi-7.github.io/games/games/puzzle/line-trap/index.html",
     "sourceUrl": "https://github.com/sausi-7/games/tree/main/games/puzzle/line-trap"
   },
-  { id: "doge-clicker", name: "Doge Clicker", category: "Clicker", description: "Tap for coins, buy upgrades, and stack up Doge.", playUrl: "/games/mini-arcade/index.html?mode=doge-clicker" },
-  { id: "donut-clicker", name: "Donut Clicker", category: "Clicker", description: "Bake your way from one donut to a whole production line.", playUrl: "/games/mini-arcade/index.html?mode=donut-clicker" },
-  { id: "pizza-clicker", name: "Pizza Clicker", category: "Clicker", description: "Tap for slices and upgrade your pizza kitchen.", playUrl: "/games/mini-arcade/index.html?mode=pizza-clicker" },
-  { id: "chicken-jockey-clicker", name: "Chicken Jockey Clicker", category: "Clicker", description: "Grow your crew and unlock faster taps.", playUrl: "/games/mini-arcade/index.html?mode=chicken-jockey-clicker" },
-  { id: "planet-clicker", name: "Planet Clicker", category: "Clicker", description: "Collect cosmic energy and boost your output.", playUrl: "/games/mini-arcade/index.html?mode=planet-clicker" },
-  { id: "italian-brainrot-clicker", name: "Italian Brainrot Clicker 2", category: "Clicker", description: "Tap for chaos and unlock ridiculous upgrades.", playUrl: "/games/mini-arcade/index.html?mode=italian-brainrot-clicker" },
-  { id: "space-waves-local", name: "Space Waves", category: "Arcade", description: "Dodge the hazard walls and survive as long as possible.", playUrl: "/games/mini-arcade/index.html?mode=space-waves" },
-  { id: "slope-local", name: "Slope", category: "Racing", description: "Stay on the track as speed keeps increasing.", playUrl: "/games/mini-arcade/index.html?mode=slope" },
-  { id: "speed-stars-local", name: "Speed Stars", category: "Sports", description: "Alternate your stride to keep sprinting down the track.", playUrl: "/games/mini-arcade/index.html?mode=speed-stars" },
-  { id: "level-devil-local", name: "Level Devil", category: "Platformer", description: "A tricky platform course with surprise hazards.", playUrl: "/games/mini-arcade/index.html?mode=level-devil" },
-  { id: "crossy-road-local", name: "Crossy Road", category: "Arcade", description: "Hop across traffic lanes and keep moving.", playUrl: "/games/mini-arcade/index.html?mode=crossy-road" },
-  { "id": "duck-clicker", "name": "Duck Clicker", "category": "Clicker", "description": "Collect ducks, buy upgrades, and grow your flock.", "playUrl": "/games/mini-arcade/index.html?mode=duck-clicker" },
-  { "id": "space-clicker", "name": "Space Clicker", "category": "Clicker", "description": "Mine stardust and power up your cosmic factory.", "playUrl": "/games/mini-arcade/index.html?mode=space-clicker" },
-  { "id": "bloodmoney-local", "name": "Bloodmoney", "category": "Clicker", "description": "A dark choice-based clicker about earning cash.", "playUrl": "/games/mini-arcade/index.html?mode=bloodmoney" },
-  { "id": "kick-the-buddy-local", "name": "Kick the Buddy", "category": "Arcade", "description": "Tap the practice dummy and unlock silly effects.", "playUrl": "/games/mini-arcade/index.html?mode=kick-the-buddy" },
-  { "id": "rocket-goal-local", "name": "Rocket Goal", "category": "Sports", "description": "Drive, boost, and shoot the ball into the goal.", "playUrl": "/games/mini-arcade/index.html?mode=rocket-goal" },
-  { "id": "slither-arena-local", "name": "Slither Arena", "category": "Arcade", "description": "Collect orbs, grow longer, and avoid crashing.", "playUrl": "/games/mini-arcade/index.html?mode=slither-io" },
-  { "id": "backyard-baseball-local", "name": "Backyard Baseball", "category": "Sports", "description": "Time your swing and hit the ball into the field.", "playUrl": "/games/mini-arcade/index.html?mode=backyard-baseball" }
-];
-
-const categories = ["All", ...new Set(games.map((game) => game.category))];
-
-const symbols = {
-  "pacman": "◉", "2048": "▦", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
-  "battleship": "▤", "block-drop": "▦", "breakout": "▥", "bubble-shooter": "◌",
-  "connect-four": "⊞", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
-  "gem-match": "◆", "helix-drop": "◉", "lights-out": "✦", "maze-muncher": "⌘",
-  "memory-match": "▧", "merge-drop": "◉", "minesweeper": "▦", "paddle-duel": "◉",
-  "piano-tap": "▥", "reversi": "◉", "slide-puzzle": "▦", "snake": "〰",
-  "sokoban": "▣", "stack-tower": "▤", "star-defender": "✦", "sudoku": "▦",
-  "tic-tac-toe": "×", "water-sort": "◍", "whack-a-mole": "✹"
-};
-const artThemes = ["violet", "blue", "mint", "amber", "rose"];
-
-export default function GamesClient() {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
-  const [selectedGame, setSelectedGame] = useState(null);
-  const featuredGame = games.find((game) => game.id === "pacman") || games[0];
-
-  useEffect(() => {
-    function openRequestedGame() {
-      try {
-        const requested = JSON.parse(localStorage.getItem("vehemence_featured_pick") || "null");
-        if (!requested) return;
-        localStorage.removeItem("vehemence_featured_pick");
-        const match = games.find((game) => game.id === requested.id || game.name === requested.name);
-        if (match) setSelectedGame(match);
-      } catch {}
-    }
-    openRequestedGame();
+      openRequestedGame();
     window.addEventListener("vehemence-open-game", openRequestedGame);
     return () => window.removeEventListener("vehemence-open-game", openRequestedGame);
   }, []);
