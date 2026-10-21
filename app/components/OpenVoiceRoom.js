@@ -223,6 +223,7 @@ export default function OpenVoiceRoom() {
     localStreamRef.current = null;
     if (audioHostRef.current) audioHostRef.current.replaceChildren();
     setParticipants([]);
+    setSpeakingIds([]);
     setConnectionCount(0);
     setMuted(false);
     setDeafened(false);
@@ -257,13 +258,17 @@ export default function OpenVoiceRoom() {
 
   useEffect(() => () => {
     joinedRef.current = false;
-    for (const entry of peersRef.current.values()) entry.peer.close();
+    for (const entry of peersRef.current.values()) {
+      if (entry.speakingFrame) cancelAnimationFrame(entry.speakingFrame);
+      if (entry.audioContext) entry.audioContext.close().catch(() => {});
+      entry.peer.close();
+    }
     localStreamRef.current?.getTracks().forEach((track) => track.stop());
   }, []);
 
   useEffect(() => {
-    for (const entry of peersRef.current.values()) {
-      if (entry.audio) entry.audio.muted = deafened || blockedUserIdsRef.current.has([...peersRef.current.entries()].find(([, candidate]) => candidate === entry)?.[0]);
+    for (const [userId, entry] of peersRef.current.entries()) {
+      if (entry.audio) entry.audio.muted = deafened || blockedUserIdsRef.current.has(userId);
     }
   }, [deafened]);
 
