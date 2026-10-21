@@ -6,6 +6,7 @@ import "./profile.css";
 import "./settings.css";
 import "./chat-widget.css";
 import "./call-widget.css";
+import "./open-voice.css";
 import "./page-transition.css";
 import "./navigation.css";
 import "./friends/friends.css";
