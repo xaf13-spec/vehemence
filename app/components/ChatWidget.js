@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import OpenVoiceRoom from "./OpenVoiceRoom";
 
 const ONTARIO_TIME_ZONE = "America/Toronto";
 
@@ -149,6 +150,8 @@ export default function ChatWidget() {
               −
             </button>
           </header>
+
+          <OpenVoiceRoom />
 
           <div className="chat-messages">
             {loading ? (
