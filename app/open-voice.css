@@ -65,3 +65,27 @@
   .chat-window { width: min(370px, calc(100vw - 24px)); height: min(620px, calc(100vh - 32px)); }
   .chat-window .open-voice-card { margin-left:8px; margin-right:8px; }
 }
+
+
+/* social controls, blocked users, and voice activity */
+.social-controls-card { padding: 0; }
+.social-status-form, .social-block-list { padding: 20px 22px; }
+.social-status-form { border-bottom: 1px solid var(--border-color, rgba(255,255,255,.08)); }
+.social-status-form h3, .social-block-list h3 { margin: 0 0 5px; font-size: 15px; }
+.social-status-form p, .social-block-list > div:first-child p { margin: 0; color: var(--muted-text, #9292a5); font-size: 13px; line-height: 1.5; }
+.social-status-controls { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.social-status-controls input { flex: 1; min-width: 160px; border: 1px solid var(--border-color, rgba(255,255,255,.12)); border-radius: 10px; padding: 10px 12px; background: var(--input-bg, rgba(255,255,255,.04)); color: inherit; }
+.social-status-count { display: block; margin-top: 7px; color: var(--muted-text, #9292a5); font-size: 11px; text-align: right; }
+.social-block-list { display: grid; gap: 12px; }
+.social-block-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border-color, rgba(255,255,255,.08)); border-radius: 10px; }
+.social-block-empty { color: var(--muted-text, #9292a5); font-size: 13px; margin: 0; }
+.social-controls-message { margin: 0 22px 18px; }
+.chat-message-top { flex-wrap: wrap; }
+.chat-custom-status { flex-basis: 100%; color: var(--muted-text, #9999aa); font-size: 11px; margin-top: -2px; overflow-wrap: anywhere; }
+.chat-block-user { border: 0; background: transparent; color: var(--muted-text, #9999aa); cursor: pointer; font-size: 10px; padding: 2px 4px; }
+.chat-block-user:hover { color: #ff8585; }
+.open-voice-person-copy { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.open-voice-person-status { font-size: 10px; color: var(--muted-text, #9999aa); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+.open-voice-person.is-speaking .open-voice-avatar { box-shadow: 0 0 0 2px #6ee7a8, 0 0 14px rgba(110,231,168,.45); }
+.open-voice-person.is-speaking .open-voice-person-name { color: #8df0b8; }
+.open-voice-person.is-blocked-muted { opacity: .58; }
