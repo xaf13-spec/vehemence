@@ -227,7 +227,6 @@ const games = [
     "description": "Hit the targets before time runs out.",
     "playUrl": "/games/whack-a-mole/index.html",
   },
-
   {
     id: "cookie-clicker",
     name: "Cookie Clicker",
@@ -515,20 +514,6 @@ const games = [
     playUrl: "https://poki.com/en/g/tiny-fishing"
   },
   {
-    id: "moto-x3m",
-    name: "Moto X3M",
-    category: "Racing",
-    description: "Race through stunt tracks and try to beat the clock.",
-    playUrl: "https://poki.com/en/g/moto-x3m"
-  },
-  {
-    id: "moto-x3m-pool",
-    name: "Moto X3M Pool Party",
-    category: "Racing",
-    description: "Ride through water-themed stunt tracks.",
-    playUrl: "https://poki.com/en/g/moto-x3m-pool-party"
-  },
-  {
     id: "hill-climb",
     name: "Hill Climb Racing",
     category: "Racing",
@@ -542,7 +527,6 @@ const games = [
     description: "Explore a location and guess where you are.",
     playUrl: "https://www.geoguessr.com/"
   },
-
   {
     id: "chess",
     name: "Chess",
@@ -556,20 +540,6 @@ const games = [
     category: "Racing",
     description: "Race across bumpy tracks and upgrade your vehicle.",
     playUrl: "https://poki.com/en/g/hill-climb-racing-2"
-  },
-  {
-    id: "moto-x3m-winter",
-    name: "Moto X3M Winter",
-    category: "Racing",
-    description: "Race through snowy stunt courses.",
-    playUrl: "https://poki.com/en/g/moto-x3m-winter"
-  },
-  {
-    id: "moto-x3m-spooky",
-    name: "Moto X3M Spooky Land",
-    category: "Racing",
-    description: "Ride through spooky themed obstacle tracks.",
-    playUrl: "https://poki.com/en/g/moto-x3m-spooky-land"
   },
   {
     "id": "opensource-6oct",
@@ -1402,8 +1372,7 @@ const games = [
     "description": "Trap the dot inside your line.",
     "playUrl": "https://sausi-7.github.io/games/games/puzzle/line-trap/index.html",
     "sourceUrl": "https://github.com/sausi-7/games/tree/main/games/puzzle/line-trap"
-  }
-,
+  },
   { id: "doge-clicker", name: "Doge Clicker", category: "Clicker", description: "Tap for coins, buy upgrades, and stack up Doge.", playUrl: "/games/mini-arcade/index.html?mode=doge-clicker" },
   { id: "donut-clicker", name: "Donut Clicker", category: "Clicker", description: "Bake your way from one donut to a whole production line.", playUrl: "/games/mini-arcade/index.html?mode=donut-clicker" },
   { id: "pizza-clicker", name: "Pizza Clicker", category: "Clicker", description: "Tap for slices and upgrade your pizza kitchen.", playUrl: "/games/mini-arcade/index.html?mode=pizza-clicker" },
@@ -1414,9 +1383,7 @@ const games = [
   { id: "slope-local", name: "Slope", category: "Racing", description: "Stay on the track as speed keeps increasing.", playUrl: "/games/mini-arcade/index.html?mode=slope" },
   { id: "speed-stars-local", name: "Speed Stars", category: "Sports", description: "Alternate your stride to keep sprinting down the track.", playUrl: "/games/mini-arcade/index.html?mode=speed-stars" },
   { id: "level-devil-local", name: "Level Devil", category: "Platformer", description: "A tricky platform course with surprise hazards.", playUrl: "/games/mini-arcade/index.html?mode=level-devil" },
-  { id: "soflo-wheelie-life-local", name: "SoFlo Wheelie Life", category: "Racing", description: "Balance the bike and keep the front wheel up.", playUrl: "/games/mini-arcade/index.html?mode=soflo-wheelie-life" },
-  { id: "crossy-road-local", name: "Crossy Road", category: "Arcade", description: "Hop across traffic lanes and keep moving.", playUrl: "/games/mini-arcade/index.html?mode=crossy-road" }
-,
+  { id: "crossy-road-local", name: "Crossy Road", category: "Arcade", description: "Hop across traffic lanes and keep moving.", playUrl: "/games/mini-arcade/index.html?mode=crossy-road" },
   { "id": "duck-clicker", "name": "Duck Clicker", "category": "Clicker", "description": "Collect ducks, buy upgrades, and grow your flock.", "playUrl": "/games/mini-arcade/index.html?mode=duck-clicker" },
   { "id": "space-clicker", "name": "Space Clicker", "category": "Clicker", "description": "Mine stardust and power up your cosmic factory.", "playUrl": "/games/mini-arcade/index.html?mode=space-clicker" },
   { "id": "bloodmoney-local", "name": "Bloodmoney", "category": "Clicker", "description": "A dark choice-based clicker about earning cash.", "playUrl": "/games/mini-arcade/index.html?mode=bloodmoney" },
