@@ -31,7 +31,7 @@ export async function GET(request) {
   await db.from("open_voice_signals").delete().lt("created_at", new Date(Date.now() - 10 * 60 * 1000).toISOString());
 
   const [{ data: participants, error: participantsError }, { data: signals, error: signalsError }] = await Promise.all([
-    db.from("open_voice_participants").select("user_id, username, joined_at, last_seen_at").eq("room_id", ROOM_ID).order("joined_at", { ascending: true }),
+    db.from("open_voice_participants").select("user_id, username, custom_status, joined_at, last_seen_at").eq("room_id", ROOM_ID).order("joined_at", { ascending: true }),
     db.from("open_voice_signals").select("id, from_user, to_user, kind, payload, created_at").eq("room_id", ROOM_ID).eq("to_user", user.id).gt("id", since).order("id", { ascending: true }).limit(100)
   ]);
 
