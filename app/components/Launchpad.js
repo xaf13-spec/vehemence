@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createPartyRoom, listPartyRooms, joinPartyRoom, closePartyRoom, challengeUser, listChallenges, respondToChallenge } from "./platform-actions";
 
 const featured = [
   { id: "pacman", name: "Pac-Man", category: "Arcade", note: "Classic maze chase", icon: "◉" },
@@ -224,26 +223,6 @@ export default function Launchpad({ user, onNavigate }) {
           {widgets.achievements && <section className="launchpad-side-panel"><div className="launchpad-section-heading"><div><p className="eyebrow">MILESTONES</p><h2>Achievements</h2></div><span className="launchpad-achievement-count">{achievements.filter((item) => item.unlocked).length}/{achievements.length}</span></div><div className="launchpad-achievement-list">{achievements.map((item) => <div className={item.unlocked ? "launchpad-achievement is-unlocked" : "launchpad-achievement"} key={item.id}><span>{item.unlocked ? "✦" : "◇"}</span><div><strong>{item.title}</strong><small>{item.detail}</small></div><i>{item.unlocked ? "UNLOCKED" : "LOCKED"}</i></div>)}</div></section>}
 
           {widgets.themes && <section className="launchpad-side-panel"><div className="launchpad-section-heading"><div><p className="eyebrow">MAKE IT YOURS</p><h2>Theme workshop</h2></div><span className="launchpad-theme-icon">◒</span></div><p className="launchpad-theme-description">Try a new atmosphere without digging through settings.</p><div className="launchpad-theme-grid">{themePacks.map((pack) => <button type="button" key={pack.id} className={customTheme.toLowerCase() === pack.theme.toLowerCase() ? "launchpad-theme-swatch is-active" : "launchpad-theme-swatch"} onClick={() => applyTheme(pack)}><span style={{ "--pack-color": pack.color }} /><b>{pack.name}</b>{customTheme.toLowerCase() === pack.theme.toLowerCase() && <i>✓</i>}</button>)}</div><button type="button" className="launchpad-open-settings" onClick={() => onNavigate("/settings")}>More appearance settings <span>↗</span></button></section>}
-
-          <section className="launchpad-side-panel launchpad-party-panel">
-            <div className="launchpad-section-heading"><div><p className="eyebrow">PLAY TOGETHER</p><h2>Party rooms</h2></div><span className="launchpad-theme-icon">⌘</span></div>
-            {user ? <>
-              <p className="launchpad-theme-description">Create a room for today's featured game and share the invite code. Rooms expire after 12 hours.</p>
-              <button type="button" className="launchpad-room-create" disabled={platformBusy} onClick={handleCreateRoom}>{platformBusy ? "Working…" : `Create room · ${dailyGame.name}`} <span>↗</span></button>
-              <form className="launchpad-room-join" onSubmit={handleJoinRoom}><input value={roomCodeInput} onChange={(event) => setRoomCodeInput(event.target.value.toUpperCase().replace(/[^A-F0-9]/g, "").slice(0,8))} placeholder="Enter 8-character code" aria-label="Party room code" maxLength={8} /><button type="submit" disabled={platformBusy || roomCodeInput.length !== 8}>Join</button></form>
-              {rooms.length > 0 && <div className="launchpad-room-list">{rooms.slice(0,5).map((room) => <article key={room.id}><span className="launchpad-room-game">◉</span><div><strong>{room.game_name}</strong><small>By {room.owner?.username || "player"} · {room.members?.length || 1} joined</small><b>CODE {room.code}</b></div><button type="button" title="Copy room code" onClick={() => { try { navigator.clipboard.writeText(room.code); setPlatformMessage("Room code copied."); } catch { setPlatformMessage(`Room code: ${room.code}`); } }}>Copy</button>{room.owner_id === userId && <button type="button" title="Close room" disabled={platformBusy} onClick={() => handleCloseRoom(room.id)}>×</button>}</article>)}</div>}
-            </> : <p className="launchpad-theme-description">Sign in to create a room and share a game code with friends.</p>}
-          </section>
-
-          <section className="launchpad-side-panel launchpad-challenge-panel">
-            <div className="launchpad-section-heading"><div><p className="eyebrow">FRIENDLY COMPETITION</p><h2>Rivalries</h2></div><span className="launchpad-quest-mark">⚔</span></div>
-            {user ? <>
-              <form className="launchpad-challenge-form" onSubmit={handleChallenge}><input value={challengeUsername} onChange={(event) => setChallengeUsername(event.target.value)} placeholder="Friend's exact username" aria-label="Challenge username" maxLength={20} /><select value={challengeGameId} onChange={(event) => setChallengeGameId(event.target.value)} aria-label="Challenge game">{featured.map((game) => <option key={game.id} value={game.id}>{game.name}</option>)}</select><button type="submit" disabled={platformBusy || !challengeUsername.trim()}>Send challenge</button></form>
-              {challenges.length > 0 ? <div className="launchpad-challenge-list">{challenges.slice(0,5).map((challenge) => { const incoming = challenge.challenged_id === userId; const otherName = incoming ? challenge.challenger?.username : challenge.challenged?.username; return <article key={challenge.id}><div><strong>{challenge.game_name}</strong><small>{incoming ? "From" : "To"} {otherName || "player"}</small><span className={`challenge-status status-${challenge.status}`}>{challenge.status}</span></div>{incoming && challenge.status === "pending" && <div className="launchpad-challenge-actions"><button type="button" disabled={platformBusy} onClick={() => handleChallengeResponse(challenge.id, true)}>Accept</button><button type="button" disabled={platformBusy} onClick={() => handleChallengeResponse(challenge.id, false)}>Decline</button></div>}</article>; })}</div> : <p className="launchpad-theme-description">Challenge another player to a friendly game. Scores stay self-reported until a game supports verified score tracking.</p>}
-            </> : <p className="launchpad-theme-description">Sign in to challenge another player and manage your rivalries.</p>}
-          </section>
-          {platformError && <p className="launchpad-platform-message is-error">{platformError}</p>}
-          {platformMessage && <p className="launchpad-platform-message">{platformMessage}</p>}
 
           <section className="launchpad-side-panel launchpad-event-panel"><span className="launchpad-event-icon">✧</span><p className="eyebrow">VEHEMENCE DROPS</p><h2>Something new, every day.</h2><p>Check today's featured game, finish a quest, and keep building your profile milestones.</p><button type="button" onClick={() => openGame(dailyGame)}>Today's drop <span>↗</span></button></section>
         </aside>
