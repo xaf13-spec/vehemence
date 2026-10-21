@@ -35,11 +35,13 @@ export async function GET(request) {
     db.from("open_voice_signals").select("id, from_user, to_user, kind, payload, created_at").eq("room_id", ROOM_ID).eq("to_user", user.id).gt("id", since).order("id", { ascending: true }).limit(100)
   ]);
 
-  if (participantsError || signalsError) return fail("Could not load the voice room.", 500);
+  const { data: blockedRows, error: blocksError } = await db.from("user_blocks").select("blocked_id").eq("blocker_id", user.id);
+  if (participantsError || signalsError || blocksError) return fail("Could not load the voice room.", 500);
   return NextResponse.json({
     roomId: ROOM_ID,
     currentUserId: user.id,
     participants: participants || [],
+    blockedUserIds: (blockedRows || []).map((item) => item.blocked_id),
     signals: (signals || []).map((item) => ({ id: item.id, fromUser: item.from_user, kind: item.kind, payload: item.payload })),
     latestSignalId: signals?.length ? signals[signals.length - 1].id : since
   });
