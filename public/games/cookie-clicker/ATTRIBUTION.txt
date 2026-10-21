@@ -1,0 +1,5 @@
+Cookie Clicker clone
+Original source: https://github.com/OjiTheChamp/cookie-clicker
+Author: OjiTheChamp
+License: MIT
+This copy is hosted locally in Vehemence to avoid third-party iframe and URL issues.
