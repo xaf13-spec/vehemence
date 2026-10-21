@@ -12,6 +12,7 @@ import "./navigation.css";
 import "./friends/friends.css";
 import "./soundboard/soundboard.css";
 import "./social-dashboard.css";
+import "./social-controls.css";
 import "./games/games.css";
 import "./browser/browser.css";
 import "./modern-ui.css";
