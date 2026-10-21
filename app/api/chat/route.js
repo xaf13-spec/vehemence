@@ -56,6 +56,7 @@ export async function GET() {
     id: item.id,
     userId: item.user_id,
     username: item.profiles?.username || "Unknown",
+    customStatus: item.profiles?.custom_status || "",
     message: item.message,
     createdAt: item.created_at
   }));
