@@ -31,9 +31,9 @@ export default function Navbar({ activePath = "/", onNavigate }) {
       let favicon = document.querySelector('link[rel="icon"]');
       if (!favicon) { favicon = document.createElement("link"); favicon.rel = "icon"; document.head.appendChild(favicon); }
       const color = preset === "Google Classroom" ? "#16865b" : preset === "Khan Academy" ? "#14a886" : "#a99aff";
-      const letter = preset === "Google Classroom" ? "▣" : preset === "Khan Academy" ? "K" : "文";
+      const letter = preset === "Google Classroom" ? "G" : preset === "Khan Academy" ? "K" : "文";
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="3" y="3" width="58" height="58" rx="17" fill="' + color + '"/><text x="32" y="43" text-anchor="middle" font-size="35" font-family="serif" fill="white">' + letter + '</text></svg>';
-      favicon.href = logoUrl || "data:image/svg+xml," + encodeURIComponent(svg);
+      favicon.href = logoUrl || (preset === "Google Classroom" ? "https://www.gstatic.com/classroom/logo_square_rounded.svg" : preset === "Khan Academy" ? "https://cdn.kastatic.org/images/khan-logo-vertical-transparent.png" : "data:image/svg+xml," + encodeURIComponent(svg));
     };
     updateBrand();
     window.addEventListener("vehemence-brand-changed", updateBrand);
@@ -93,7 +93,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
 
   return <>
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
-      <a href="/" className={`logo brand-logo brand-font-${brand.font.toLowerCase().replaceAll(" ", "-")}`} onClick={(event) => handle(event, "/")} aria-label={brand.name}><span className={`brand-logo-mark brand-${brand.preset.toLowerCase().replaceAll(" ", "-")}`}>{brand.logoUrl ? <img src={brand.logoUrl} alt="" /> : brand.preset === "Google Classroom" ? "▣" : brand.preset === "Khan Academy" ? "K" : "文"}</span><span className="brand-logo-name">{brand.name}</span></a>
+      <a href="/" className={`logo brand-logo brand-font-${brand.font.toLowerCase().replaceAll(" ", "-")}`} onClick={(event) => handle(event, "/")} aria-label={brand.name}><span className={`brand-logo-mark brand-${brand.preset.toLowerCase().replaceAll(" ", "-")}`}>{brand.logoUrl || brand.preset === "Google Classroom" || brand.preset === "Khan Academy" ? <img src={brand.logoUrl || (brand.preset === "Google Classroom" ? "https://www.gstatic.com/classroom/logo_square_rounded.svg" : "https://cdn.kastatic.org/images/khan-logo-vertical-transparent.png")} alt="" /> : "文"}</span><span className="brand-logo-name">{brand.name}</span></a>
       <div className="nav-links">
         {navItems.slice(0, 8).map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
