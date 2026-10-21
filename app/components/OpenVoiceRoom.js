@@ -25,7 +25,7 @@ export default function OpenVoiceRoom() {
   const [muted, setMuted] = useState(false);
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState("");
-  const [connectionCount, setConnectionCount] = useState(0);
+  const [connectionCount, setConnectionCount] = useState(0);\n  const [speakingIds, setSpeakingIds] = useState([]);\n  const blockedUserIdsRef = useRef(new Set());
 
   const localStreamRef = useRef(null);
   const peersRef = useRef(new Map());
@@ -149,7 +149,7 @@ export default function OpenVoiceRoom() {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || "Could not refresh voice chat.");
     setCurrentUserId(data.currentUserId || "");
-    setParticipants(data.participants || []);
+    setParticipants(data.participants || []);\n    blockedUserIdsRef.current = new Set(data.blockedUserIds || []);\n    for (const [userId, entry] of peersRef.current.entries()) {\n      if (entry.audio) entry.audio.muted = deafened || blockedUserIdsRef.current.has(userId);\n      if (blockedUserIdsRef.current.has(userId) && entry.speaking) { entry.speaking = false; setSpeakingIds((ids) => ids.filter((id) => id !== userId)); }\n    }
     const signals = data.signals || [];
     if (signals.length) {
       signalCursorRef.current = Math.max(signalCursorRef.current, Number(data.latestSignalId) || 0);
@@ -226,7 +226,7 @@ export default function OpenVoiceRoom() {
 
   useEffect(() => {
     for (const entry of peersRef.current.values()) {
-      if (entry.audio) entry.audio.muted = deafened;
+      if (entry.audio) entry.audio.muted = deafened || blockedUserIdsRef.current.has([...peersRef.current.entries()].find(([, candidate]) => candidate === entry)?.[0]);
     }
   }, [deafened]);
 
