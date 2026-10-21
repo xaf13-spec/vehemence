@@ -54,10 +54,12 @@ export async function POST(request) {
   const action = body?.action;
 
   if (action === "join" || action === "heartbeat") {
+    const { data: profile } = await db.from("profiles").select("custom_status").eq("id", user.id).maybeSingle();
     const { error } = await db.from("open_voice_participants").upsert({
       room_id: ROOM_ID,
       user_id: user.id,
       username: user.username,
+      custom_status: profile?.custom_status || "",
       last_seen_at: new Date().toISOString()
     }, { onConflict: "room_id,user_id" });
     if (error) return fail("Could not join the voice room.", 500);
