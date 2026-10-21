@@ -10,9 +10,13 @@ export async function GET() {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Log in first." }, { status: 401 });
   if (!db) return NextResponse.json({ error: "Block settings are unavailable." }, { status: 503 });
-  const { data, error } = await db.from("user_blocks").select("blocked_id, profiles:blocked_id(username)").eq("blocker_id", user.id).order("created_at", { ascending: false });
+  const { data, error } = await db.from("user_blocks").select("blocked_id").eq("blocker_id", user.id).order("created_at", { ascending: false });
   if (error) return NextResponse.json({ error: "Could not load blocked users." }, { status: 500 });
-  return NextResponse.json({ blocks: (data || []).map((item) => ({ userId: item.blocked_id, username: item.profiles?.username || "Unknown" })) });
+  const ids = (data || []).map((item) => item.blocked_id);
+  const { data: profiles, error: profilesError } = ids.length ? await db.from("profiles").select("id, username").in("id", ids) : { data: [], error: null };
+  if (profilesError) return NextResponse.json({ error: "Could not load blocked users." }, { status: 500 });
+  const usernames = new Map((profiles || []).map((profile) => [profile.id, profile.username]));
+  return NextResponse.json({ blocks: ids.map((userId) => ({ userId, username: usernames.get(userId) || "Unknown" })) });
 }
 
 export async function POST(request) {
