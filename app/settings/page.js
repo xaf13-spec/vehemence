@@ -92,11 +92,11 @@ export default function Settings() {
       return;
     }
     save("vehemence_brand_preset", brandPreset);
-    save("vehemence_brand_name", safeName);
+    save("vehemence_brand_name", "Vehemence");
     save("vehemence_brand_logo_url", safeLogo);
-    save("vehemence_brand_font", brandFont);
+    save("vehemence_brand_font", "Display Gothic");
     window.dispatchEvent(new Event("vehemence-brand-changed"));
-    setBrandMessage("Branding applied to this browser.");
+    setBrandMessage("Browser tab icon updated. The website logo and name stay the same.");
   }
 
   function changeAppearance(storageKey, stateKey, v, setter) {
@@ -198,9 +198,9 @@ export default function Settings() {
     <section className="settings-section"><div className="settings-section-header"><h2>Brand identity</h2></div><div className="settings-card">
       <div className="settings-brand-preview"><span className={`settings-brand-mark brand-${brandPreset.toLowerCase().replaceAll(" ", "-")}`}><img src={brandLogoUrl || (brandPreset === "Google Classroom" ? "https://www.gstatic.com/classroom/logo_square_rounded.svg" : brandPreset === "Khan Academy" ? "https://cdn.kastatic.org/images/khan-logo-vertical-transparent.png" : brandPreset === "Vehemence" ? "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E" : "")} alt="" /></span><div><strong style={{fontFamily:brandFont === "Japanese Serif" ? '"Yuji Syuku","Noto Serif JP",serif' : brandFont === "Display Gothic" ? '"Arial Black",sans-serif' : 'var(--site-font)'}}>{brandName || brandPreset}</strong><small>LIVE PREVIEW</small></div></div>
       <SettingRow title="Logo preset" description="Choose the identity shown in the navigation and browser tab."><CustomSelect value={brandPreset} options={["Vehemence","Google Classroom","Khan Academy","Custom"]} onChange={(value) => { setBrandPreset(value); if (value !== "Custom") setBrandName(value); }} /></SettingRow>
-      <SettingRow title="Website name" description="Change the name shown in the navigation and browser tab."><input className="settings-brand-input" maxLength={32} value={brandName} onChange={(event) => setBrandName(event.target.value)} placeholder="Enter a site name" /></SettingRow>
+      
       <SettingRow title="Logo image URL" description="Optional: use your own hosted logo image. Use a direct HTTPS image URL."><input className="settings-brand-input" type="url" value={brandLogoUrl} onChange={(event) => setBrandLogoUrl(event.target.value)} placeholder="https://example.com/logo.png" /></SettingRow>
-      <SettingRow title="Logo typeface" description="Choose the site wordmark style. This only changes the text, not the logo artwork."><CustomSelect value={brandFont} options={["Japanese Serif","Display Gothic","Site Font"]} onChange={setBrandFont} /></SettingRow>
+      
       <div className="settings-brand-footer"><button type="button" className="primary-button" onClick={applyBrand}>Apply branding</button><button type="button" className="secondary-button" onClick={() => { setBrandPreset("Vehemence"); setBrandName("Vehemence"); setBrandLogoUrl(""); setBrandFont("Display Gothic"); }}>Reset preview</button></div>
       {brandMessage && <p className="settings-success">{brandMessage}</p>}
     </div></section>
