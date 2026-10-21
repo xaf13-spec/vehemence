@@ -41,7 +41,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("chat_messages")
-    .select("id, user_id, message, created_at, profiles(username)")
+    .select("id, user_id, message, created_at, profiles(username, custom_status)")
     .order("created_at", { ascending: true })
     .limit(100);
 
@@ -49,7 +49,7 @@ export async function GET() {
     return NextResponse.json({ error: "Could not load chat messages." }, { status: 500 });
   }
 
-  const messages = (data || []).map((item) => ({
+  const { data: blockRows } = await supabase.from("user_blocks").select("blocked_id").eq("blocker_id", user.id);\n  const blockedIds = new Set((blockRows || []).map((row) => row.blocked_id));\n\n  const messages = (data || []).filter((item) => !blockedIds.has(item.user_id)).map((item) => ({
     id: item.id,
     userId: item.user_id,
     username: item.profiles?.username || "Unknown",
@@ -57,7 +57,7 @@ export async function GET() {
     createdAt: item.created_at
   }));
 
-  return NextResponse.json({ messages, currentUserId: user.id });
+  return NextResponse.json({ messages, currentUserId: user.id, blockedUserIds: [...blockedIds] });
 }
 
 export async function POST(request) {
