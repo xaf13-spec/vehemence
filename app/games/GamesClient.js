@@ -1390,8 +1390,6 @@ const games = [
   { "id": "kick-the-buddy-local", "name": "Kick the Buddy", "category": "Arcade", "description": "Tap the practice dummy and unlock silly effects.", "playUrl": "/games/mini-arcade/index.html?mode=kick-the-buddy" },
   { "id": "rocket-goal-local", "name": "Rocket Goal", "category": "Sports", "description": "Drive, boost, and shoot the ball into the goal.", "playUrl": "/games/mini-arcade/index.html?mode=rocket-goal" },
   { "id": "slither-arena-local", "name": "Slither Arena", "category": "Arcade", "description": "Collect orbs, grow longer, and avoid crashing.", "playUrl": "/games/mini-arcade/index.html?mode=slither-io" },
-  { "id": "one-v-one-local", "name": "1v1 Arena", "category": "Shooter", "description": "Practice aim and movement against target bots.", "playUrl": "/games/mini-arcade/index.html?mode=one-v-one" },
-  { "id": "two-v-two-local", "name": "2v2 Arena", "category": "Sports", "description": "Train your movement and shots in a compact arena.", "playUrl": "/games/mini-arcade/index.html?mode=two-v-two" },
   { "id": "backyard-baseball-local", "name": "Backyard Baseball", "category": "Sports", "description": "Time your swing and hit the ball into the field.", "playUrl": "/games/mini-arcade/index.html?mode=backyard-baseball" }
 ];
 
