@@ -1,17 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import OpenVoiceRoom from "../components/OpenVoiceRoom";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
 
   function handleSubmit(event) {
     event.preventDefault();
-
-    if (!message.trim()) {
-      return;
-    }
-
+    if (!message.trim()) return;
     setMessage("");
   }
 
@@ -28,6 +25,7 @@ export default function Chat() {
         </div>
 
         <section className="chat-card">
+          <OpenVoiceRoom />
           <div className="chat-messages">
             <div className="chat-empty">
               <h2>No messages yet</h2>
@@ -43,9 +41,7 @@ export default function Chat() {
               placeholder="Send a message..."
               maxLength={500}
             />
-            <button type="submit" className="primary-button">
-              Send
-            </button>
+            <button type="submit" className="primary-button">Send</button>
           </form>
         </section>
       </div>
