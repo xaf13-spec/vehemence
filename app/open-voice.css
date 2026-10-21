@@ -39,3 +39,29 @@
   .open-voice-live,.open-voice-closed { margin-left:54px; }
   .open-voice-connection-count { width:100%; }
 }
+
+.chat-window .open-voice-card {
+  flex: 0 0 auto;
+  margin: 10px 12px 0;
+  padding: 11px;
+  gap: 9px;
+  border-radius: 12px;
+  background: rgba(133,111,242,.075);
+}
+.chat-window .open-voice-mark { width:32px; height:32px; flex-basis:32px; border-radius:10px; font-size:19px; }
+.chat-window .open-voice-title h2 { font-size:13px; }
+.chat-window .open-voice-title p { font-size:10px; }
+.chat-window .open-voice-live,.chat-window .open-voice-closed { font-size:9px; padding:4px 6px; }
+.chat-window .open-voice-participants { max-height:74px; overflow-y:auto; }
+.chat-window .open-voice-person { min-height:27px; gap:7px; }
+.chat-window .open-voice-avatar { width:25px; height:25px; flex-basis:25px; font-size:10px; }
+.chat-window .open-voice-person-name { font-size:11px; }
+.chat-window .open-voice-person-state,.chat-window .open-voice-empty { font-size:10px; }
+.chat-window .open-voice-actions { gap:5px; }
+.chat-window .open-voice-join,.chat-window .open-voice-control,.chat-window .open-voice-leave { padding:7px 9px; border-radius:8px; font-size:10px; }
+.chat-window .open-voice-connection-count { font-size:10px; }
+.chat-window .open-voice-error { font-size:10px; }
+@media (max-width: 430px) {
+  .chat-window { width: min(370px, calc(100vw - 24px)); height: min(620px, calc(100vh - 32px)); }
+  .chat-window .open-voice-card { margin-left:8px; margin-right:8px; }
+}
