@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍪 Cookie Clicker</title>
+<link href="https://fonts.googleapis.com/css2?family=Kavoon&family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a0a00;
+  --panel: #2a1500;
+  --panel2: #1f1000;
+  --border: #8B4513;
+  --gold: #FFD700;
+  --gold2: #FFA500;
+  --cream: #FFF8DC;
+  --brown: #8B4513;
+  --glow: #ff8c00;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Comfortaa', cursive;
+  background: var(--bg);
+  color: var(--cream);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(ellipse at 50% 0%, #3d1a00 0%, #1a0a00 60%);
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(180deg,#3d1a00,#2a1000);
+  border-bottom: 2px solid var(--border);
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(255,140,0,0.2);
+  gap: 12px;
+}
+.game-title {
+  font-family: 'Kavoon', cursive;
+  font-size: 1.5rem;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(255,215,0,0.5), 0 2px 4px rgba(0,0,0,0.8);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+.header-stats { display:flex; gap:14px; align-items:center; flex:1; justify-content:center; }
+.hstat { text-align:center; font-size:0.7rem; font-weight:700; color:rgba(255,248,220,0.5); text-transform:uppercase; letter-spacing:1px; }
+.hstat-val { display:block; font-size:0.95rem; font-weight:700; color:var(--gold); }
+.header-btns { display:flex; gap:8px; flex-shrink:0; }
+.hdr-btn {
+  padding: 7px 14px; border:none; border-radius:10px;
+  font-family:'Comfortaa',cursive; font-size:0.8rem; font-weight:700;
+  cursor:pointer; position:relative; top:0; transition:all 0.1s;
+}
+.hdr-btn:active { top:2px; }
+.btn-gold { background:linear-gradient(180deg,#ffe44d,#e6b800); color:#5a3e00; box-shadow:0 3px 0 #9a7700; }
+.btn-gold:hover { background:linear-gradient(180deg,#fff060,#ffd000); }
+.btn-blue { background:linear-gradient(180deg,#74c0fc,#339af0); color:#003566; box-shadow:0 3px 0 #1864ab; }
+.btn-blue:hover { background:linear-gradient(180deg,#a5d8ff,#4dabf7); }
+
+/* ── LAYOUT ── */
+.game-body { display:flex; flex:1; overflow:hidden; }
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  width:255px; flex-shrink:0;
+  background:var(--panel2);
+  border-right:2px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.panel-hdr {
+  padding:9px 13px;
+  background:linear-gradient(180deg,#3d1a00,#2a1000);
+  border-bottom:2px solid var(--border);
+  font-family:'Kavoon',cursive; font-size:0.88rem; color:var(--gold);
+  letter-spacing:1px; flex-shrink:0;
+}
+.bld-list { flex:1; overflow-y:auto; padding:5px; }
+.bld-list::-webkit-scrollbar{width:4px;}
+.bld-list::-webkit-scrollbar-track{background:#1a0a00;}
+.bld-list::-webkit-scrollbar-thumb{background:#8B4513;border-radius:2px;}
+
+.bld {
+  display:flex; align-items:center; gap:9px;
+  padding:7px 9px; border-radius:8px; cursor:pointer;
+  border:1.5px solid rgba(139,69,19,0.35);
+  background:rgba(255,255,255,0.025);
+  margin-bottom:4px; transition:all 0.13s;
+}
+.bld:hover { border-color:var(--gold2); background:rgba(255,165,0,0.07); transform:translateX(2px); }
+.bld.can-buy { border-color:rgba(255,215,0,0.45); background:rgba(255,215,0,0.04); }
+.bld.can-buy:hover { border-color:var(--gold); box-shadow:0 0 10px rgba(255,215,0,0.18); }
+.bld.locked { opacity:0.3; cursor:not-allowed; }
+.bld.locked:hover { transform:none; border-color:rgba(139,69,19,0.35); background:rgba(255,255,255,0.025); }
+.bld-icon { font-size:1.7rem; width:34px; text-align:center; flex-shrink:0; }
+.bld-info { flex:1; min-width:0; }
+.bld-name { font-size:0.77rem; font-weight:700; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bld-cps { font-size:0.65rem; color:rgba(255,248,220,0.45); }
+.bld-cost { font-size:0.72rem; font-weight:700; color:var(--gold); }
+.bld-owned {
+  background:rgba(255,215,0,0.13); border:1.5px solid rgba(255,215,0,0.28);
+  border-radius:6px; padding:2px 7px; font-size:0.76rem; font-weight:700;
+  color:var(--gold); flex-shrink:0; min-width:26px; text-align:center;
+}
+
+/* ── CENTER ── */
+.center-panel {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%, #2a1200 0%, #120500 100%);
+}
+#particles { position:absolute; inset:0; pointer-events:none; z-index:1; }
+.prestige-ring {
+  position:absolute; width:235px; height:235px; border-radius:50%;
+  pointer-events:none; z-index:1;
+  animation:prestigeRing 3s ease-in-out infinite;
+}
+@keyframes prestigeRing {
+  0%,100%{box-shadow:0 0 20px rgba(255,165,0,0.25),inset 0 0 20px rgba(255,165,0,0.08);}
+  50%{box-shadow:0 0 50px rgba(255,215,0,0.5),inset 0 0 40px rgba(255,215,0,0.12);}
+}
+.cookie-counter { text-align:center; margin-bottom:8px; z-index:2; }
+.cookie-count { font-family:'Kavoon',cursive; font-size:2rem; color:var(--gold); text-shadow:0 0 20px rgba(255,215,0,0.45); line-height:1; }
+.cookie-count-sub { font-size:0.75rem; color:rgba(255,248,220,0.45); margin-top:3px; }
+.cookie-wrap { position:relative; z-index:2; margin:8px 0; }
+.cookie-btn {
+  width:195px; height:195px; border-radius:50%; border:none;
+  background:none; cursor:pointer; position:relative;
+  filter:drop-shadow(0 0 28px rgba(210,105,30,0.55));
+  -webkit-tap-highlight-color:transparent; outline:none;
+  transition:filter 0.15s;
+}
+.cookie-btn:active { transform:scale(0.93); }
+.cookie-btn:hover { filter:drop-shadow(0 0 38px rgba(255,165,0,0.75)); }
+.cookie-svg { width:100%; height:100%; animation:spin 40s linear infinite; }
+.cookie-btn:active .cookie-svg { animation-play-state:paused; }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.cps-info { font-size:0.82rem; color:rgba(255,248,220,0.55); text-align:center; z-index:2; line-height:1.8; }
+.cps-info span { color:var(--gold2); font-weight:700; }
+
+.float-txt {
+  position:absolute; pointer-events:none;
+  font-family:'Kavoon',cursive; font-size:1.05rem; font-weight:700;
+  color:var(--gold); text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  z-index:10; animation:floatUp 1.1s ease forwards;
+}
+@keyframes floatUp { 0%{opacity:1;transform:translateY(0) scale(1);} 20%{transform:translateY(-18px) scale(1.18);} 100%{opacity:0;transform:translateY(-85px) scale(0.8);} }
+
+.golden-ck {
+  position:absolute; font-size:2.4rem; cursor:pointer;
+  z-index:20; filter:drop-shadow(0 0 12px gold);
+  transition:transform 0.1s;
+  animation:gFloat 6s ease-in-out, gFade 6s ease forwards;
+}
+.golden-ck:hover { transform:scale(1.2); }
+@keyframes gFloat { 0%,100%{margin-top:0} 50%{margin-top:-18px} }
+@keyframes gFade { 0%{opacity:0} 10%{opacity:1} 80%{opacity:1} 100%{opacity:0} }
+
+.milestone {
+  position:absolute; top:55px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,#3d1a00,#5c2800);
+  border:2px solid var(--gold); border-radius:12px;
+  padding:9px 18px; text-align:center; z-index:50; white-space:nowrap;
+  animation:mDrop 0.35s cubic-bezier(0.175,0.885,0.32,1.275), mFade 0.5s ease 3.2s forwards;
+  box-shadow:0 0 28px rgba(255,215,0,0.35);
+}
+.milestone-t { font-family:'Kavoon',cursive; font-size:0.95rem; color:var(--gold); }
+.milestone-s { font-size:0.72rem; color:rgba(255,248,220,0.68); margin-top:1px; }
+@keyframes mDrop { from{opacity:0;transform:translateX(-50%) translateY(-25px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+@keyframes mFade { from{opacity:1} to{opacity:0;transform:translateX(-50%) translateY(-18px)} }
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  width:255px; flex-shrink:0;
+  background:var(--panel2);
+  border-left:2px solid var(--border);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.upg-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; padding:7px; border-bottom:2px solid var(--border); flex-shrink:0; }
+.upg-btn {
+  aspect-ratio:1; border-radius:8px; border:2px solid rgba(139,69,19,0.45);
+  background:rgba(255,255,255,0.035); cursor:pointer; font-size:1.25rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.13s; position:relative; overflow:hidden;
+}
+.upg-btn:hover { border-color:var(--gold); background:rgba(255,215,0,0.1); transform:scale(1.07); box-shadow:0 0 9px rgba(255,215,0,0.25); }
+.upg-btn.bought { border-color:rgba(76,175,80,0.4); background:rgba(76,175,80,0.08); cursor:default; opacity:0.55; }
+.upg-btn.bought:hover { transform:none; }
+.upg-btn.locked { opacity:0.2; cursor:not-allowed; filter:grayscale(1); }
+.upg-btn.locked:hover { transform:none; border-color:rgba(139,69,19,0.45); background:rgba(255,255,255,0.035); }
+.upg-shine { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.13) 0%,transparent 50%); border-radius:6px; }
+
+.stats-section { padding:9px 13px; border-bottom:2px solid var(--border); flex-shrink:0; }
+.stat-row { display:flex; justify-content:space-between; align-items:center; padding:2px 0; font-size:0.7rem; border-bottom:1px solid rgba(139,69,19,0.18); }
+.stat-row:last-child { border-bottom:none; }
+.stat-label { color:rgba(255,248,220,0.45); }
+.stat-val { color:var(--gold); font-weight:700; }
+
+.news { padding:6px 13px; background:rgba(0,0,0,0.28); border-bottom:2px solid var(--border); font-size:0.68rem; color:rgba(255,248,220,0.45); flex-shrink:0; }
+.news span { color:var(--gold2); }
+
+/* ── TOOLTIP ── */
+.tip {
+  position:fixed; background:linear-gradient(180deg,#3d1a00,#1f0a00);
+  border:1.5px solid var(--gold2); border-radius:10px; padding:9px 13px;
+  max-width:210px; z-index:9999; pointer-events:none; opacity:0;
+  transition:opacity 0.13s; box-shadow:0 8px 24px rgba(0,0,0,0.8);
+}
+.tip.show { opacity:1; }
+.tip-name { font-family:'Kavoon',cursive; font-size:0.88rem; color:var(--gold); margin-bottom:3px; }
+.tip-desc { font-size:0.7rem; color:rgba(255,248,220,0.68); line-height:1.4; margin-bottom:5px; }
+.tip-cost { font-size:0.75rem; font-weight:700; color:var(--gold2); }
+.tip-sub { font-size:0.68rem; color:rgba(255,248,220,0.45); margin-top:1px; }
+
+/* ── MODAL BASE ── */
+.overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(5px);
+  z-index:500; display:flex; align-items:center; justify-content:center;
+  animation:fadeIn 0.18s ease;
+}
+.overlay.hidden { display:none; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ── LEADERBOARD MODAL ── */
+.lb-modal {
+  background:linear-gradient(180deg,#2a1200,#1a0800);
+  border:2px solid var(--gold); border-radius:20px;
+  width:490px; max-width:95vw; max-height:85vh;
+  display:flex; flex-direction:column; overflow:hidden;
+  box-shadow:0 0 55px rgba(255,165,0,0.35), 0 20px 60px rgba(0,0,0,0.8);
+  animation:popIn 0.32s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.modal-hdr {
+  padding:16px 20px 13px;
+  background:linear-gradient(180deg,#3d1a00,#2a1000);
+  border-bottom:2px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.modal-title { font-family:'Kavoon',cursive; font-size:1.35rem; color:var(--gold); text-shadow:0 0 12px rgba(255,215,0,0.4); }
+.modal-close {
+  background:rgba(255,255,255,0.09); border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:8px; color:white; font-size:0.9rem; padding:4px 10px;
+  cursor:pointer; font-family:'Comfortaa',cursive; transition:all 0.13s;
+}
+.modal-close:hover { background:rgba(255,80,80,0.28); border-color:#ff5050; }
+.lb-name-row { padding:11px 18px; border-bottom:1.5px solid rgba(139,69,19,0.35); display:flex; gap:9px; align-items:center; flex-shrink:0; }
+.lb-input {
+  flex:1; background:rgba(0,0,0,0.38); border:1.5px solid rgba(255,215,0,0.28);
+  border-radius:8px; padding:7px 11px; color:var(--cream); font-family:'Comfortaa',cursive;
+  font-size:0.82rem; outline:none; transition:border-color 0.18s;
+}
+.lb-input:focus { border-color:var(--gold); }
+.lb-input::placeholder { color:rgba(255,248,220,0.28); }
+.lb-submit {
+  background:linear-gradient(180deg,#5ce87a,#2db84d); color:white; border:none;
+  border-radius:8px; padding:7px 14px; font-family:'Comfortaa',cursive; font-size:0.78rem;
+  font-weight:700; cursor:pointer; box-shadow:0 3px 0 #1a7a34; position:relative; top:0; transition:all 0.1s; white-space:nowrap;
+}
+.lb-submit:active { top:2px; box-shadow:0 1px 0 #1a7a34; }
+.lb-list { flex:1; overflow-y:auto; padding:9px 13px; }
+.lb-list::-webkit-scrollbar{width:4px;}
+.lb-list::-webkit-scrollbar-track{background:#1a0a00;}
+.lb-list::-webkit-scrollbar-thumb{background:#8B4513;border-radius:2px;}
+.lb-row {
+  display:flex; align-items:center; gap:11px;
+  padding:9px 13px; border-radius:11px; margin-bottom:5px;
+  background:rgba(255,255,255,0.035); border:1.5px solid rgba(139,69,19,0.28);
+}
+.lb-row.is-you { background:rgba(255,215,0,0.09); border-color:rgba(255,215,0,0.45); box-shadow:0 0 10px rgba(255,215,0,0.13); }
+.lb-row.r1 { background:rgba(255,215,0,0.11); border-color:rgba(255,215,0,0.55); }
+.lb-row.r2 { background:rgba(192,192,192,0.07); border-color:rgba(192,192,192,0.35); }
+.lb-row.r3 { background:rgba(205,127,50,0.07); border-color:rgba(205,127,50,0.35); }
+.lb-rank { font-size:1.25rem; width:30px; text-align:center; flex-shrink:0; }
+.lb-rank-n { font-family:'Kavoon',cursive; font-size:0.95rem; color:rgba(255,248,220,0.38); width:28px; text-align:center; flex-shrink:0; }
+.lb-av { width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,#8B4513,#5a2d00); display:flex; align-items:center; justify-content:center; font-size:1.15rem; flex-shrink:0; border:1.5px solid rgba(255,215,0,0.18); }
+.lb-info { flex:1; min-width:0; }
+.lb-name { font-size:0.84rem; font-weight:700; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lb-sub { font-size:0.65rem; color:rgba(255,248,220,0.4); margin-top:1px; }
+.lb-score { text-align:right; flex-shrink:0; }
+.lb-score-v { font-family:'Kavoon',cursive; font-size:0.9rem; color:var(--gold); display:block; }
+.lb-score-l { font-size:0.6rem; color:rgba(255,248,220,0.38); }
+.you-tag { font-size:0.58rem; font-weight:700; background:rgba(255,215,0,0.18); border:1px solid rgba(255,215,0,0.38); border-radius:4px; color:var(--gold); padding:1px 5px; margin-left:5px; vertical-align:middle; }
+.lb-footer { padding:8px 18px; border-top:1.5px solid rgba(139,69,19,0.35); font-size:0.67rem; color:rgba(255,248,220,0.3); text-align:center; flex-shrink:0; }
+
+/* ── FEEDBACK MODAL ── */
+.fb-modal {
+  background:linear-gradient(160deg,#0d1b2a,#1a0f2e);
+  border:2px solid #74c0fc; border-radius:22px;
+  width:460px; max-width:95vw; max-height:88vh;
+  display:flex; flex-direction:column; overflow:hidden;
+  box-shadow:0 0 55px rgba(116,192,252,0.28), 0 20px 60px rgba(0,0,0,0.8);
+  animation:popIn 0.32s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.fb-modal .modal-hdr { background:linear-gradient(180deg,#12263a,#0d1b2a); border-bottom-color:rgba(116,192,252,0.22); }
+.fb-modal .modal-title { color:#74c0fc; text-shadow:0 0 12px rgba(116,192,252,0.4); }
+.fb-avg-row {
+  display:flex; align-items:center; gap:13px;
+  padding:11px 20px; border-bottom:1.5px solid rgba(116,192,252,0.15); flex-shrink:0;
+}
+.fb-avg-big { font-family:'Kavoon',cursive; font-size:2.5rem; color:var(--gold); line-height:1; }
+.fb-avg-right { flex:1; }
+.fb-avg-stars { font-size:1.05rem; }
+.fb-avg-count { font-size:0.67rem; color:rgba(255,248,220,0.38); margin-top:1px; }
+.fb-bar-row { display:flex; align-items:center; gap:5px; margin-top:2px; }
+.fb-bar-lbl { font-size:0.58rem; color:rgba(255,248,220,0.38); width:7px; text-align:right; flex-shrink:0; }
+.fb-bar-track { flex:1; height:3px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
+.fb-bar-fill { height:100%; background:linear-gradient(90deg,#e6b800,var(--gold)); border-radius:2px; transition:width 0.55s ease; }
+.fb-scroll { flex:1; overflow-y:auto; }
+.fb-scroll::-webkit-scrollbar{width:4px;}
+.fb-scroll::-webkit-scrollbar-track{background:transparent;}
+.fb-scroll::-webkit-scrollbar-thumb{background:rgba(116,192,252,0.28);border-radius:2px;}
+.fb-body { padding:16px 20px; }
+.fb-lbl { font-size:0.72rem; font-weight:700; color:rgba(255,248,220,0.45); text-transform:uppercase; letter-spacing:1.4px; margin-bottom:8px; }
+.fb-stars { display:flex; gap:7px; margin-bottom:14px; }
+.fb-star { font-size:2.1rem; cursor:pointer; filter:grayscale(1) brightness(0.38); transition:transform 0.13s, filter 0.13s; line-height:1; }
+.fb-star:hover, .fb-star.on { filter:grayscale(0) brightness(1.1); transform:scale(1.18); }
+.fb-star.on { filter:grayscale(0) brightness(1.12) drop-shadow(0 0 5px gold); }
+.fb-star-msg { font-size:0.8rem; font-weight:700; color:#74c0fc; min-height:17px; margin-bottom:14px; }
+.fb-chips { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px; }
+.fb-chip {
+  padding:4px 11px; border-radius:20px; border:1.5px solid rgba(116,192,252,0.28);
+  background:rgba(116,192,252,0.05); color:rgba(255,248,220,0.58); font-size:0.72rem;
+  font-weight:700; cursor:pointer; transition:all 0.13s; font-family:'Comfortaa',cursive;
+}
+.fb-chip:hover { border-color:#74c0fc; color:white; background:rgba(116,192,252,0.13); }
+.fb-chip.on { border-color:#74c0fc; background:rgba(116,192,252,0.22); color:#74c0fc; }
+.fb-textarea {
+  width:100%; height:82px; resize:none;
+  background:rgba(0,0,0,0.33); border:1.5px solid rgba(116,192,252,0.22);
+  border-radius:9px; padding:9px 13px; color:var(--cream);
+  font-family:'Comfortaa',cursive; font-size:0.8rem; outline:none; margin-bottom:12px;
+  transition:border-color 0.18s; line-height:1.5;
+}
+.fb-textarea:focus { border-color:#74c0fc; }
+.fb-textarea::placeholder { color:rgba(255,248,220,0.22); }
+.fb-name-inp {
+  width:100%; background:rgba(0,0,0,0.33); border:1.5px solid rgba(116,192,252,0.22);
+  border-radius:9px; padding:8px 13px; color:var(--cream);
+  font-family:'Comfortaa',cursive; font-size:0.8rem; outline:none; margin-bottom:14px;
+  transition:border-color 0.18s;
+}
+.fb-name-inp:focus { border-color:#74c0fc; }
+.fb-name-inp::placeholder { color:rgba(255,248,220,0.22); }
+.fb-submit-btn {
+  width:100%; padding:11px; border:none; border-radius:11px;
+  background:linear-gradient(180deg,#74c0fc,#339af0); color:#003566;
+  font-family:'Comfortaa',cursive; font-size:0.9rem; font-weight:700;
+  cursor:pointer; box-shadow:0 4px 0 #1864ab; position:relative; top:0;
+  transition:all 0.1s; letter-spacing:0.4px;
+}
+.fb-submit-btn:hover { background:linear-gradient(180deg,#a5d8ff,#4dabf7); }
+.fb-submit-btn:active { top:3px; box-shadow:0 1px 0 #1864ab; }
+.fb-success { display:none; text-align:center; padding:28px 20px; }
+.fb-success.show { display:block; }
+.fb-success-icon { font-size:3.8rem; margin-bottom:9px; animation:popIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275); }
+.fb-success-title { font-family:'Kavoon',cursive; font-size:1.25rem; color:#74c0fc; margin-bottom:5px; }
+.fb-success-sub { font-size:0.8rem; color:rgba(255,248,220,0.55); }
+.fb-edit-btn {
+  margin-top:16px; padding:9px 22px; border:none; border-radius:10px;
+  background:rgba(116,192,252,0.15); border:1.5px solid rgba(116,192,252,0.35);
+  color:#74c0fc; font-family:'Comfortaa',cursive; font-size:0.8rem; font-weight:700;
+  cursor:pointer; transition:all 0.13s;
+}
+.fb-edit-btn:hover { background:rgba(116,192,252,0.25); }
+.fb-divider { border:none; border-top:1.5px solid rgba(116,192,252,0.13); margin:0; flex-shrink:0; }
+.fb-rev-title { font-size:0.72rem; font-weight:700; color:rgba(255,248,220,0.4); text-transform:uppercase; letter-spacing:1.4px; padding:10px 20px 7px; flex-shrink:0; }
+.fb-rev-list { padding:0 14px 14px; }
+.fb-rev-card { background:rgba(255,255,255,0.035); border:1.5px solid rgba(116,192,252,0.13); border-radius:11px; padding:9px 13px; margin-bottom:7px; }
+.fb-rev-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+.fb-rev-name { font-size:0.77rem; font-weight:700; color:#74c0fc; }
+.fb-rev-stars { font-size:0.72rem; }
+.fb-rev-cats { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:4px; }
+.fb-rev-cat { font-size:0.6rem; font-weight:700; padding:2px 6px; border-radius:9px; background:rgba(116,192,252,0.1); border:1px solid rgba(116,192,252,0.18); color:rgba(255,248,220,0.55); }
+.fb-rev-text { font-size:0.7rem; color:rgba(255,248,220,0.62); line-height:1.4; }
+.fb-rev-time { font-size:0.6rem; color:rgba(255,248,220,0.28); margin-top:3px; }
+</style>
+</head>
+<body>
+
+<!-- TOOLTIP -->
+<div class="tip" id="tip">
+  <div class="tip-name" id="tipName"></div>
+  <div class="tip-desc" id="tipDesc"></div>
+  <div class="tip-cost" id="tipCost"></div>
+  <div class="tip-sub" id="tipSub"></div>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div class="overlay hidden" id="lbOverlay">
+  <div class="lb-modal">
+    <div class="modal-hdr">
+      <div class="modal-title">🏆 Cookie Leaderboard</div>
+      <button class="modal-close" onclick="closeLb()">✕ Close</button>
+    </div>
+    <div class="lb-name-row">
+      <input class="lb-input" id="lbNameInp" placeholder="Enter your baker name..." maxlength="24"/>
+      <button class="lb-submit" onclick="submitLb()">📤 Submit</button>
+    </div>
+    <div class="lb-list" id="lbList"></div>
+    <div class="lb-footer">Scores saved in your browser · Updates live as you bake</div>
+  </div>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="overlay hidden" id="fbOverlay">
+  <div class="fb-modal">
+    <div class="modal-hdr">
+      <div class="modal-title">⭐ Rate Cookie Clicker</div>
+      <button class="modal-close" onclick="closeFb()">✕ Close</button>
+    </div>
+    <div class="fb-avg-row">
+      <div class="fb-avg-big" id="fbAvgNum">4.7</div>
+      <div class="fb-avg-right">
+        <div class="fb-avg-stars" id="fbAvgStars">⭐⭐⭐⭐⭐</div>
+        <div class="fb-avg-count" id="fbAvgCount">6 ratings</div>
+        <div id="fbBars"></div>
+      </div>
+    </div>
+    <div class="fb-scroll">
+      <div id="fbFormWrap">
+        <div class="fb-body">
+          <div class="fb-lbl">Your Rating</div>
+          <div class="fb-stars">
+            <span class="fb-star" onclick="setRating(1)" onmouseenter="hoverStar(1)" onmouseleave="unhoverStar()">⭐</span>
+            <span class="fb-star" onclick="setRating(2)" onmouseenter="hoverStar(2)" onmouseleave="unhoverStar()">⭐</span>
+            <span class="fb-star" onclick="setRating(3)" onmouseenter="hoverStar(3)" onmouseleave="unhoverStar()">⭐</span>
+            <span class="fb-star" onclick="setRating(4)" onmouseenter="hoverStar(4)" onmouseleave="unhoverStar()">⭐</span>
+            <span class="fb-star" onclick="setRating(5)" onmouseenter="hoverStar(5)" onmouseleave="unhoverStar()">⭐</span>
+          </div>
+          <div class="fb-star-msg" id="fbStarMsg">Click a star to rate</div>
+          <div class="fb-lbl">What do you like?</div>
+          <div class="fb-chips">
+            <div class="fb-chip" onclick="toggleChip(this)">🎮 Gameplay</div>
+            <div class="fb-chip" onclick="toggleChip(this)">✨ Effects</div>
+            <div class="fb-chip" onclick="toggleChip(this)">🏪 Buildings</div>
+            <div class="fb-chip" onclick="toggleChip(this)">⬆️ Upgrades</div>
+            <div class="fb-chip" onclick="toggleChip(this)">🏆 Leaderboard</div>
+            <div class="fb-chip" onclick="toggleChip(this)">🎨 Design</div>
+            <div class="fb-chip" onclick="toggleChip(this)">🚀 Performance</div>
+            <div class="fb-chip" onclick="toggleChip(this)">👵 Grandmas</div>
+          </div>
+          <div class="fb-lbl">Tell us more (optional)</div>
+          <textarea class="fb-textarea" id="fbText" placeholder="What do you think? Any bugs? Feature ideas?"></textarea>
+          <input class="fb-name-inp" id="fbName" placeholder="Your name (optional)" maxlength="24"/>
+          <button class="fb-submit-btn" onclick="submitFb()">🚀 Submit Feedback</button>
+        </div>
+        <div class="fb-success" id="fbSuccess">
+          <div class="fb-success-icon">🎉</div>
+          <div class="fb-success-title">Thanks for the feedback!</div>
+          <div class="fb-success-sub">Your review helps make Cookie Clicker even better 🍪</div>
+          <button class="fb-edit-btn" onclick="fbShowForm()">✏️ Edit Review</button>
+        </div>
+      </div>
+      <hr class="fb-divider"/>
+      <div class="fb-rev-title">💬 Recent Reviews</div>
+      <div class="fb-rev-list" id="fbRevList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="game-title">🍪 Cookie Clicker</div>
+  <div class="header-stats">
+    <div class="hstat">All Time<span class="hstat-val" id="hAllTime">0</span></div>
+    <div class="hstat">Buildings<span class="hstat-val" id="hBuildings">0</span></div>
+    <div class="hstat">Upgrades<span class="hstat-val" id="hUpgrades">0</span></div>
+  </div>
+  <div class="header-btns">
+    <button class="hdr-btn btn-gold" onclick="openLb()">🏆 Leaderboard</button>
+    <button class="hdr-btn btn-blue" onclick="openFb()">⭐ Feedback</button>
+  </div>
+</div>
+
+<div class="game-body">
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="panel-hdr">🏪 Cookie Store</div>
+    <div class="bld-list" id="bldList"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center-panel" id="centerPanel">
+    <canvas id="particles"></canvas>
+    <div class="prestige-ring"></div>
+    <div class="cookie-counter">
+      <div class="cookie-count" id="cookieCount">0</div>
+      <div class="cookie-count-sub">cookies</div>
+    </div>
+    <div class="cookie-wrap">
+      <button class="cookie-btn" id="cookieBtn" onclick="clickCookie(event)">
+        <svg class="cookie-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="95" fill="#c8793a"/>
+          <circle cx="100" cy="100" r="93" fill="#d4883f"/>
+          <circle cx="100" cy="100" r="91" fill="none" stroke="#bf7030" stroke-width="2" stroke-dasharray="8 6"/>
+          <ellipse cx="65" cy="60" rx="11" ry="9" fill="#4a2800" transform="rotate(-15,65,60)"/>
+          <ellipse cx="138" cy="72" rx="12" ry="10" fill="#3d2000" transform="rotate(20,138,72)"/>
+          <ellipse cx="55" cy="120" rx="10" ry="8" fill="#4a2800" transform="rotate(10,55,120)"/>
+          <ellipse cx="130" cy="130" rx="11" ry="9" fill="#3d2000" transform="rotate(-20,130,130)"/>
+          <ellipse cx="100" cy="80" rx="9" ry="8" fill="#4a2800"/>
+          <ellipse cx="78" cy="145" rx="10" ry="8" fill="#3d2000" transform="rotate(15,78,145)"/>
+          <ellipse cx="148" cy="105" rx="9" ry="8" fill="#4a2800" transform="rotate(-10,148,105)"/>
+          <ellipse cx="40" cy="88" rx="8" ry="7" fill="#3d2000" transform="rotate(5,40,88)"/>
+          <ellipse cx="120" cy="50" rx="8" ry="7" fill="#4a2800" transform="rotate(-25,120,50)"/>
+          <ellipse cx="68" cy="48" rx="22" ry="12" fill="rgba(255,255,255,0.12)" transform="rotate(-30,68,48)"/>
+          <circle cx="100" cy="100" r="93" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="cps-info">
+      per second: <span id="cpsDisplay">0</span> 🍪<br>
+      per click: <span id="cpcDisplay">1</span> 🍪
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="panel-hdr">⬆️ Upgrades</div>
+    <div class="upg-grid" id="upgGrid"></div>
+    <div class="stats-section">
+      <div class="panel-hdr" style="padding:0 0 6px;background:none;border:none;font-size:0.78rem;">📊 Stats</div>
+      <div class="stat-row"><span class="stat-label">Cookies / sec</span><span class="stat-val" id="sCPS">0</span></div>
+      <div class="stat-row"><span class="stat-label">Cookies / click</span><span class="stat-val" id="sCPC">1</span></div>
+      <div class="stat-row"><span class="stat-label">Total clicks</span><span class="stat-val" id="sClicks">0</span></div>
+      <div class="stat-row"><span class="stat-label">Golden cookies</span><span class="stat-val" id="sGolden">0</span></div>
+    </div>
+    <div class="news" id="newsEl">📰 <span>Breaking: Cookie supply discovered to be infinite!</span></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════
+// DATA
+// ═══════════════════════════════
+var BUILDINGS = [
+  {id:'cursor',     name:'Cursor',       icon:'👆', baseCost:15,      baseCps:0.1,   desc:'Autoclicks the big cookie.'},
+  {id:'grandma',    name:'Grandma',      icon:'👵', baseCost:100,     baseCps:0.5,   desc:'A nice grandma to bake more cookies.'},
+  {id:'farm',       name:'Cookie Farm',  icon:'🌾', baseCost:1100,    baseCps:4,     desc:'Grows cookie plants from cookie seeds.'},
+  {id:'mine',       name:'Cookie Mine',  icon:'⛏️', baseCost:12000,   baseCps:10,    desc:'Mines out cookie dough and chocolate chips.'},
+  {id:'factory',    name:'Factory',      icon:'🏭', baseCost:130000,  baseCps:40,    desc:'Bakes cookies by the million.'},
+  {id:'bank',       name:'Cookie Bank',  icon:'🏦', baseCost:1.4e6,   baseCps:100,   desc:'Generates cookie income and interest.'},
+  {id:'temple',     name:'Temple',       icon:'🏛️', baseCost:20e6,    baseCps:400,   desc:'Worshippers devote their lives to the cookie.'},
+  {id:'wizard',     name:'Wizard Tower', icon:'🧙', baseCost:330e6,   baseCps:1666,  desc:'Summons cookies with magic.'},
+  {id:'shipment',   name:'Shipment',     icon:'🚀', baseCost:5.1e9,   baseCps:7778,  desc:'Imports cookies from outer space.'},
+  {id:'alchemy',    name:'Alchemy Lab',  icon:'⚗️', baseCost:75e9,    baseCps:44444, desc:'Transmutes gold into cookies.'},
+  {id:'portal',     name:'Portal',       icon:'🌀', baseCost:1e12,    baseCps:333333,desc:'Opens a portal to the cookieverse.'},
+  {id:'timemachine',name:'Time Machine', icon:'⏱️', baseCost:14e12,   baseCps:2e6,   desc:'Travels back in time to collect more cookies.'},
+];
+
+var UPGRADES = [
+  {id:'u1',  name:'Reinforced Index Finger', icon:'☝️',  cost:100,    req:function(){return owned('cursor')>=1;},    eff:function(){clickMult+=1;},                               desc:'Your cursor is a little better.'},
+  {id:'u2',  name:'Carpal Tunnel Prevention',icon:'🧤', cost:500,    req:function(){return owned('cursor')>=10;},   eff:function(){clickMult+=4;},                               desc:'Prevents wrist pain. Clicks even harder.'},
+  {id:'u3',  name:'Ambidextrous',            icon:'🤜',  cost:10000,  req:function(){return owned('cursor')>=25;},   eff:function(){clickMult+=9;},                               desc:'Use both hands at once!'},
+  {id:'u4',  name:'Chocolate Chip Cookies',  icon:'🍫',  cost:500,    req:function(){return owned('grandma')>=1;},   eff:function(){bldMult['grandma']=(bldMult['grandma']||1)*2;}, desc:'Grandmas produce twice as many cookies.'},
+  {id:'u5',  name:'Whole Wheat Cookies',     icon:'🌾',  cost:5000,   req:function(){return owned('grandma')>=5;},   eff:function(){bldMult['grandma']=(bldMult['grandma']||1)*2;}, desc:'Even healthier grandma cookies.'},
+  {id:'u6',  name:'Sugary Cookies',          icon:'🧁',  cost:50000,  req:function(){return owned('grandma')>=25;},  eff:function(){bldMult['grandma']=(bldMult['grandma']||1)*2;}, desc:'Pure sugar grandma power.'},
+  {id:'u7',  name:'Fertilizer',              icon:'💩',  cost:10000,  req:function(){return owned('farm')>=1;},      eff:function(){bldMult['farm']=(bldMult['farm']||1)*2;},       desc:'Farms produce twice as many cookies.'},
+  {id:'u8',  name:'Cookie Trees',            icon:'🌳',  cost:120000, req:function(){return owned('farm')>=5;},      eff:function(){bldMult['farm']=(bldMult['farm']||1)*2;},       desc:'Genetically engineered cookie trees.'},
+  {id:'u9',  name:'Sugar Gas',               icon:'⛽',  cost:200000, req:function(){return owned('mine')>=1;},      eff:function(){bldMult['mine']=(bldMult['mine']||1)*2;},       desc:'Mines run on pure sugar gas.'},
+  {id:'u10', name:'Conveyor Belts',          icon:'⚙️', cost:1.5e6,  req:function(){return owned('factory')>=1;},   eff:function(){bldMult['factory']=(bldMult['factory']||1)*2;}, desc:'Sturdier belts, more cookies.'},
+  {id:'u11', name:'Lucky Day',               icon:'🍀',  cost:777777, req:function(){return clicks>=777;},           eff:function(){clickMult+=7;},                               desc:'Fortune smiles upon your clicking.'},
+  {id:'u12', name:'Serendipity',             icon:'✨',  cost:7777777,req:function(){return clicks>=7777;},          eff:function(){clickMult+=21;},                              desc:'Serendipitous clicking power.'},
+  {id:'u13', name:'Lucky Cookies',           icon:'🌟',  cost:5000,   req:function(){return goldenClicked>=1;},      eff:function(){goldenMult=2;},                               desc:'Golden cookies give double rewards.'},
+  {id:'u14', name:'Fortune Cookies',         icon:'🔮',  cost:500000, req:function(){return goldenClicked>=7;},      eff:function(){goldenMult=4;},                               desc:'Golden cookies give quadruple rewards.'},
+  {id:'u15', name:'Elder Pledge',            icon:'📜',  cost:1e6,    req:function(){return owned('portal')>=1;},    eff:function(){bldMult['portal']=(bldMult['portal']||1)*2;},  desc:'Portals produce twice as many cookies.'},
+  {id:'u16', name:"Philosopher's Stone",     icon:'💎',  cost:1e9,    req:function(){return owned('alchemy')>=1;},   eff:function(){bldMult['alchemy']=(bldMult['alchemy']||1)*2;},desc:'Alchemy labs produce twice as many cookies.'},
+];
+
+var NEWS_LINES = [
+  'Local baker shocks world with cookie the size of a moon!',
+  'Scientists baffled: cookies appearing spontaneously in labs worldwide.',
+  'Cookie economy surpasses global GDP for the 3rd consecutive year.',
+  'Grandmas form union, demand better working conditions.',
+  'Time travelers spotted carrying suspicious cookie-shaped objects.',
+  'Portal to cookieverse discovered in grandma\'s pantry.',
+  'Cookie wizard arrested for excessive pastry conjuration.',
+  'Alien civilizations make contact — they want our cookie recipe.',
+  'Cookie mines strike rich vein of chocolate chip ore.',
+  'Fortune cookie predicts: "You will bake more cookies."',
+];
+
+var FAKE_PLAYERS = [
+  {name:'CookieGod',      avatar:'👑', score:9.8e18, cps:4.2e15},
+  {name:'BakerSupreme',   avatar:'🧁', score:3.4e17, cps:8.7e13},
+  {name:'GrandmaKiller',  avatar:'👵', score:7.2e16, cps:2.1e13},
+  {name:'ChocChipKing',   avatar:'🍫', score:1.5e16, cps:5.5e12},
+  {name:'PortalMaster',   avatar:'🌀', score:4.4e15, cps:9.1e11},
+  {name:'TimeTraveler99', avatar:'⏱️', score:8.3e14, cps:1.8e11},
+  {name:'AlchemistX',     avatar:'⚗️', score:2.2e14, cps:4.4e10},
+  {name:'CursorQueen',    avatar:'👆', score:5.7e13, cps:8.8e9},
+  {name:'FarmFrenzy',     avatar:'🌾', score:1.1e13, cps:2.3e9},
+  {name:'GoldenHunter',   avatar:'✨', score:3.8e12, cps:7.6e8},
+  {name:'NewBaker',       avatar:'🌱', score:4.2e8,  cps:84000},
+];
+
+var FAKE_REVIEWS = [
+  {name:'CookieGod',     stars:5, cats:['🎮 Gameplay','✨ Effects'],  text:'The particles when you click are SO satisfying. Been playing 6 hours straight.', time:'2 hours ago'},
+  {name:'BakerSupreme',  stars:5, cats:['🎨 Design','✨ Effects'],    text:'Looks incredible. Golden cookies feel so rewarding. 10/10',                       time:'1 day ago'},
+  {name:'GrandmaKiller', stars:4, cats:['🏪 Buildings','⬆️ Upgrades'],text:'Love the building progression. Would love more upgrades!',                        time:'5 hours ago'},
+  {name:'FarmFrenzy',    stars:4, cats:['👵 Grandmas'],               text:'The grandma upgrade descriptions are hilarious. More lore please!!',               time:'3 days ago'},
+  {name:'Anonymous',     stars:3, cats:['🚀 Performance'],            text:'Gets a bit laggy with hundreds of buildings. Otherwise fun!',                      time:'1 day ago'},
+  {name:'ChocChipKing',  stars:5, cats:['🎮 Gameplay','🏆 Leaderboard'],text:'Leaderboard is a great addition. Already competing with friends.',              time:'2 days ago'},
+];
+
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+var cookies = 999999999999;
+var allTimeCookies = 999999999999;
+var clicks = 99999;
+var goldenClicked = 99;
+var clickMult = 1;
+var goldenMult = 1;
+var bldMult = {};
+var bldOwned = {};
+var boughtUpgrades = {};
+var lastNewsIdx = -1;
+
+// Give 90 of every building
+for (var i = 0; i < BUILDINGS.length; i++) bldOwned[BUILDINGS[i].id] = 90;
+
+// Apply all upgrades
+for (var j = 0; j < UPGRADES.length; j++) {
+  boughtUpgrades[UPGRADES[j].id] = true;
+  UPGRADES[j].eff();
+}
+
+// ═══════════════════════════════
+// HELPERS
+// ═══════════════════════════════
+function owned(id) { return bldOwned[id] || 0; }
+function totalBld() { var t=0; for(var k in bldOwned) t+=bldOwned[k]; return t; }
+function boughtCount() { var t=0; for(var k in boughtUpgrades) if(boughtUpgrades[k]) t++; return t; }
+
+function getBldCost(b) {
+  return Math.ceil(b.baseCost * Math.pow(1.15, owned(b.id)));
+}
+
+function getCPS() {
+  var total = 0;
+  for (var i = 0; i < BUILDINGS.length; i++) {
+    var b = BUILDINGS[i];
+    var m = bldMult[b.id] || 1;
+    total += b.baseCps * owned(b.id) * m;
+  }
+  total += owned('cursor') * 0.1 * clickMult;
+  return total;
+}
+
+function getCPC() {
+  return Math.max(1, Math.floor((1 + getCPS() * 0.01) * clickMult));
+}
+
+function fmt(n) {
+  if (n < 1000)   return Math.floor(n).toLocaleString();
+  if (n < 1e6)    return (n/1000).toFixed(1)+'K';
+  if (n < 1e9)    return (n/1e6).toFixed(2)+'M';
+  if (n < 1e12)   return (n/1e9).toFixed(2)+'B';
+  if (n < 1e15)   return (n/1e12).toFixed(2)+'T';
+  if (n < 1e18)   return (n/1e15).toFixed(2)+'Qa';
+  return (n/1e18).toFixed(2)+'Qi';
+}
+
+// ═══════════════════════════════
+// RENDER
+// ═══════════════════════════════
+function renderBld() {
+  var el = document.getElementById('bldList');
+  var html = '';
+  for (var i = 0; i < BUILDINGS.length; i++) {
+    var b = BUILDINGS[i];
+    var cost = getBldCost(b);
+    var n = owned(b.id);
+    var canBuy = cookies >= cost;
+    var locked = allTimeCookies < b.baseCost * 0.5 && n === 0;
+    var cls = locked ? 'locked' : canBuy ? 'bld can-buy' : 'bld';
+    var costTxt = locked ? '???' : fmt(cost) + ' 🍪';
+    var bCps = b.baseCps * (bldMult[b.id] || 1);
+    html += '<div class="bld ' + (locked?'locked':canBuy?'can-buy':'') + '"'
+      + ' onclick="buyBld(\'' + b.id + '\')"'
+      + ' onmouseenter="showTip(event,\'' + b.name.replace(/'/g,"\\'") + '\',\'' + b.desc.replace(/'/g,"\\'") + '\',\'' + (locked?'Locked':fmt(cost)+' cookies') + '\',\'Each produces ' + bCps.toFixed(1) + ' CPS · you own ' + n + '\')"'
+      + ' onmouseleave="hideTip()">'
+      + '<div class="bld-icon">' + b.icon + '</div>'
+      + '<div class="bld-info">'
+      + '<div class="bld-name">' + b.name + '</div>'
+      + '<div class="bld-cps">' + bCps.toFixed(1) + ' cps each</div>'
+      + '<div class="bld-cost">' + costTxt + '</div>'
+      + '</div>'
+      + '<div class="bld-owned">' + n + '</div>'
+      + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderUpg() {
+  var el = document.getElementById('upgGrid');
+  var html = '';
+  for (var i = 0; i < UPGRADES.length; i++) {
+    var u = UPGRADES[i];
+    var bought = !!boughtUpgrades[u.id];
+    var avail = u.req();
+    var canBuy = !bought && avail && cookies >= u.cost;
+    var cls = bought ? 'upg-btn bought' : (!avail ? 'upg-btn locked' : 'upg-btn');
+    var costTxt = bought ? 'Purchased' : fmt(u.cost) + ' cookies';
+    html += '<div class="' + cls + '"'
+      + ' onclick="buyUpg(\'' + u.id + '\')"'
+      + ' onmouseenter="showTip(event,\'' + u.name.replace(/'/g,"\\'") + '\',\'' + u.desc.replace(/'/g,"\\'") + '\',\'' + costTxt + '\',\'\')"'
+      + ' onmouseleave="hideTip()">'
+      + u.icon
+      + (!bought && avail ? '<div class="upg-shine"></div>' : '')
+      + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function updateUI() {
+  var cps = getCPS();
+  var cpc = getCPC();
+  document.getElementById('cookieCount').textContent = fmt(cookies);
+  document.getElementById('cpsDisplay').textContent = fmt(cps);
+  document.getElementById('cpcDisplay').textContent = fmt(cpc);
+  document.getElementById('hAllTime').textContent = fmt(allTimeCookies);
+  document.getElementById('hBuildings').textContent = totalBld();
+  document.getElementById('hUpgrades').textContent = boughtCount();
+  document.getElementById('sCPS').textContent = fmt(cps);
+  document.getElementById('sCPC').textContent = fmt(cpc);
+  document.getElementById('sClicks').textContent = fmt(clicks);
+  document.getElementById('sGolden').textContent = goldenClicked;
+}
+
+// ═══════════════════════════════
+// ACTIONS
+// ═══════════════════════════════
+function clickCookie(e) {
+  var cpc = getCPC();
+  cookies += cpc;
+  allTimeCookies += cpc;
+  clicks++;
+  var panel = document.getElementById('centerPanel');
+  var r = panel.getBoundingClientRect();
+  spawnFloat(e.clientX - r.left, e.clientY - r.top, '+' + fmt(cpc), panel);
+  burstParticles(e.clientX, e.clientY, 6);
+  updateUI();
+  renderBld();
+  renderUpg();
+}
+
+function buyBld(id) {
+  var b = null;
+  for (var i = 0; i < BUILDINGS.length; i++) if (BUILDINGS[i].id === id) { b = BUILDINGS[i]; break; }
+  if (!b) return;
+  var cost = getBldCost(b);
+  if (cookies < cost) return;
+  cookies -= cost;
+  bldOwned[id] = (bldOwned[id] || 0) + 1;
+  updateUI(); renderBld(); renderUpg();
+  spawnBuyFx(b.icon);
+}
+
+function buyUpg(id) {
+  var u = null;
+  for (var i = 0; i < UPGRADES.length; i++) if (UPGRADES[i].id === id) { u = UPGRADES[i]; break; }
+  if (!u || boughtUpgrades[u.id] || !u.req() || cookies < u.cost) return;
+  cookies -= u.cost;
+  boughtUpgrades[u.id] = true;
+  u.eff();
+  updateUI(); renderBld(); renderUpg();
+  showMilestone('⬆️ Upgrade!', u.name + ' purchased!');
+}
+
+// ═══════════════════════════════
+// GOLDEN COOKIE
+// ═══════════════════════════════
+function spawnGolden() {
+  var panel = document.getElementById('centerPanel');
+  var r = panel.getBoundingClientRect();
+  var x = 60 + Math.random() * (r.width - 120);
+  var y = 60 + Math.random() * (r.height - 120);
+  var el = document.createElement('div');
+  el.className = 'golden-ck';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.textContent = '✨🍪✨';
+  el.onclick = function(e) {
+    e.stopPropagation();
+    goldenClicked++;
+    var bonus = Math.floor(getCPS() * 13 * goldenMult + getCPC() * 77 * goldenMult);
+    cookies += bonus;
+    allTimeCookies += bonus;
+    spawnFloat(x, y, '🌟 +' + fmt(bonus) + '!', panel);
+    burstParticles(e.clientX, e.clientY, 20);
+    el.remove();
+    updateUI(); renderBld(); renderUpg();
+    showMilestone('✨ Golden Cookie!', '+' + fmt(bonus) + ' cookies!');
+  };
+  panel.appendChild(el);
+  setTimeout(function() { el.remove(); }, 6000);
+}
+setInterval(function() { if (Math.random() < 0.3) spawnGolden(); }, 8000);
+
+// ═══════════════════════════════
+// PARTICLES
+// ═══════════════════════════════
+var canvas = document.getElementById('particles');
+var ctx = canvas.getContext('2d');
+var particles = [];
+
+function resizeCanvas() {
+  var p = document.getElementById('centerPanel');
+  canvas.width = p.offsetWidth;
+  canvas.height = p.offsetHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function burstParticles(cx, cy, count) {
+  var p = document.getElementById('centerPanel');
+  var r = p.getBoundingClientRect();
+  var lx = cx - r.left, ly = cy - r.top;
+  for (var i = 0; i < count; i++) {
+    var angle = Math.random() * Math.PI * 2;
+    var speed = 1.5 + Math.random() * 3;
+    particles.push({ x:lx, y:ly, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed-1, life:1, size:3+Math.random()*4, color:'hsl('+(30+Math.random()*30)+',100%,'+(50+Math.random()*30)+'%)' });
+  }
+}
+
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles = particles.filter(function(p) { return p.life > 0; });
+  for (var i = 0; i < particles.length; i++) {
+    var p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life -= 0.03;
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ═══════════════════════════════
+// FLOATERS / MILESTONE
+// ═══════════════════════════════
+function spawnFloat(x, y, txt, parent) {
+  var el = document.createElement('div');
+  el.className = 'float-txt';
+  el.textContent = txt;
+  el.style.left = (x - 20) + 'px';
+  el.style.top = (y - 20) + 'px';
+  parent.appendChild(el);
+  setTimeout(function() { el.remove(); }, 1200);
+}
+
+function spawnBuyFx(icon) {
+  var panel = document.getElementById('centerPanel');
+  var el = document.createElement('div');
+  el.className = 'float-txt';
+  el.textContent = icon;
+  el.style.fontSize = '1.9rem';
+  el.style.left = (Math.random() * 60 + 20) + '%';
+  el.style.top = '50%';
+  panel.appendChild(el);
+  setTimeout(function() { el.remove(); }, 1200);
+}
+
+function showMilestone(title, sub) {
+  var old = document.querySelector('.milestone');
+  if (old) old.remove();
+  var el = document.createElement('div');
+  el.className = 'milestone';
+  el.innerHTML = '<div class="milestone-t">' + title + '</div><div class="milestone-s">' + sub + '</div>';
+  document.getElementById('centerPanel').appendChild(el);
+  setTimeout(function() { el.remove(); }, 3900);
+}
+
+// ═══════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════
+var tipEl = document.getElementById('tip');
+function showTip(e, name, desc, cost, sub) {
+  document.getElementById('tipName').textContent = name;
+  document.getElementById('tipDesc').textContent = desc;
+  document.getElementById('tipCost').textContent = '🍪 ' + cost;
+  document.getElementById('tipSub').textContent = sub;
+  tipEl.classList.add('show');
+  moveTip(e);
+}
+function moveTip(e) {
+  var x = e.clientX + 13, y = e.clientY - 10;
+  if (x + 220 > window.innerWidth) x = e.clientX - 224;
+  tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+}
+function hideTip() { tipEl.classList.remove('show'); }
+document.addEventListener('mousemove', function(e) { if (tipEl.classList.contains('show')) moveTip(e); });
+
+// ═══════════════════════════════
+// NEWS
+// ═══════════════════════════════
+function rotateNews() {
+  var idx;
+  do { idx = Math.floor(Math.random() * NEWS_LINES.length); } while (idx === lastNewsIdx);
+  lastNewsIdx = idx;
+  document.getElementById('newsEl').innerHTML = '📰 <span>' + NEWS_LINES[idx] + '</span>';
+}
+setInterval(rotateNews, 8000);
+
+// ═══════════════════════════════
+// GAME LOOP
+// ═══════════════════════════════
+var lastTick = Date.now();
+var tick = 0;
+function gameLoop() {
+  var now = Date.now();
+  var dt = (now - lastTick) / 1000;
+  lastTick = now;
+  var earned = getCPS() * dt;
+  cookies += earned;
+  allTimeCookies += earned;
+  tick++;
+  if (tick % 6 === 0) { updateUI(); renderBld(); renderUpg(); }
+  setTimeout(gameLoop, 50);
+}
+gameLoop();
+
+// ═══════════════════════════════
+// LEADERBOARD
+// ═══════════════════════════════
+var myLbEntry = null;
+try { var _s = localStorage.getItem('cc_lb'); if (_s) myLbEntry = JSON.parse(_s); } catch(e) {}
+
+function openLb() {
+  if (myLbEntry) document.getElementById('lbNameInp').value = myLbEntry.name || '';
+  renderLb();
+  document.getElementById('lbOverlay').classList.remove('hidden');
+}
+function closeLb() { document.getElementById('lbOverlay').classList.add('hidden'); }
+
+function submitLb() {
+  var nameEl = document.getElementById('lbNameInp');
+  var name = nameEl.value.trim();
+  if (!name) { nameEl.style.borderColor='#ff4444'; nameEl.focus(); setTimeout(function(){nameEl.style.borderColor='';},1000); return; }
+  myLbEntry = { name:name, score:allTimeCookies, cps:getCPS(), avatar:'🍪' };
+  try { localStorage.setItem('cc_lb', JSON.stringify(myLbEntry)); } catch(e) {}
+  renderLb();
+  showMilestone('📤 Score Submitted!', name + ' — ' + fmt(allTimeCookies) + ' cookies!');
+}
+
+function renderLb() {
+  if (myLbEntry) { myLbEntry.score = allTimeCookies; myLbEntry.cps = getCPS(); try{localStorage.setItem('cc_lb',JSON.stringify(myLbEntry));}catch(e){} }
+  var entries = [];
+  for (var i = 0; i < FAKE_PLAYERS.length; i++) entries.push({ name:FAKE_PLAYERS[i].name, avatar:FAKE_PLAYERS[i].avatar, score:FAKE_PLAYERS[i].score, cps:FAKE_PLAYERS[i].cps, isYou:false });
+  if (myLbEntry) entries.push({ name:myLbEntry.name, avatar:myLbEntry.avatar||'🍪', score:myLbEntry.score, cps:myLbEntry.cps, isYou:true });
+  entries.sort(function(a,b){return b.score-a.score;});
+  var medals = ['🥇','🥈','🥉'];
+  var html = '';
+  for (var j = 0; j < entries.length; j++) {
+    var e = entries[j];
+    var rank = j+1;
+    var rCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+    var yCls = e.isYou ? 'is-you' : '';
+    var badge = medals[j] ? '<div class="lb-rank">' + medals[j] + '</div>' : '<div class="lb-rank-n">' + rank + '</div>';
+    html += '<div class="lb-row ' + rCls + ' ' + yCls + '">'
+      + badge
+      + '<div class="lb-av">' + e.avatar + '</div>'
+      + '<div class="lb-info">'
+      + '<div class="lb-name">' + e.name + (e.isYou ? '<span class="you-tag">YOU</span>' : '') + '</div>'
+      + '<div class="lb-sub">' + fmt(e.cps) + ' CPS</div>'
+      + '</div>'
+      + '<div class="lb-score"><span class="lb-score-v">' + fmt(e.score) + '</span><span class="lb-score-l">cookies baked</span></div>'
+      + '</div>';
+  }
+  document.getElementById('lbList').innerHTML = html;
+}
+
+setInterval(function() {
+  if (!document.getElementById('lbOverlay').classList.contains('hidden')) renderLb();
+}, 5000);
+
+document.getElementById('lbOverlay').addEventListener('click', function(e) { if (e.target === this) closeLb(); });
+
+// ═══════════════════════════════
+// FEEDBACK
+// ═══════════════════════════════
+var fbRating = 0;
+var STAR_MSGS = ['','😤 Terrible...','😐 Not great','🙂 Pretty good','😊 Really good!','🤩 Amazing!!!'];
+
+function openFb() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('cc_fb') || 'null');
+    if (saved && saved.submitted) {
+      fbRating = saved.rating;
+      paintStars(fbRating);
+      document.getElementById('fbStarMsg').textContent = STAR_MSGS[fbRating] || '';
+      document.getElementById('fbFormWrap').querySelector('.fb-body').style.display = 'none';
+      document.getElementById('fbSuccess').classList.add('show');
+    } else {
+      document.getElementById('fbFormWrap').querySelector('.fb-body').style.display = '';
+      document.getElementById('fbSuccess').classList.remove('show');
+    }
+  } catch(e) {}
+  renderFbAvg();
+  renderFbRevs();
+  document.getElementById('fbOverlay').classList.remove('hidden');
+}
+function closeFb() { document.getElementById('fbOverlay').classList.add('hidden'); }
+
+function setRating(v) { fbRating = v; paintStars(v); document.getElementById('fbStarMsg').textContent = STAR_MSGS[v]||''; }
+function hoverStar(v) { paintStars(v); }
+function unhoverStar() { paintStars(fbRating); }
+function paintStars(v) {
+  var stars = document.querySelectorAll('.fb-star');
+  for (var i = 0; i < stars.length; i++) {
+    if (i < v) stars[i].classList.add('on'); else stars[i].classList.remove('on');
+  }
+}
+function toggleChip(el) { el.classList.toggle('on'); }
+
+function submitFb() {
+  if (!fbRating) {
+    document.getElementById('fbStarMsg').textContent = '👆 Please pick a star rating first!';
+    document.getElementById('fbStarMsg').style.color = '#ff6b6b';
+    setTimeout(function(){document.getElementById('fbStarMsg').style.color='';}, 1500);
+    return;
+  }
+  var name = document.getElementById('fbName').value.trim() || 'Anonymous';
+  var text = document.getElementById('fbText').value.trim();
+  var chips = document.querySelectorAll('.fb-chip.on');
+  var cats = [];
+  for (var i = 0; i < chips.length; i++) cats.push(chips[i].textContent.trim());
+  var review = { name:name, stars:fbRating, cats:cats, text:text, time:'Just now', ts:Date.now() };
+  try {
+    var revs = JSON.parse(localStorage.getItem('cc_revs') || '[]');
+    revs = revs.filter(function(r){return r.name!==name;});
+    revs.unshift(review);
+    if (revs.length > 20) revs = revs.slice(0,20);
+    localStorage.setItem('cc_revs', JSON.stringify(revs));
+    localStorage.setItem('cc_fb', JSON.stringify({submitted:true, rating:fbRating}));
+  } catch(e) {}
+  document.getElementById('fbFormWrap').querySelector('.fb-body').style.display = 'none';
+  document.getElementById('fbSuccess').classList.add('show');
+  renderFbAvg(); renderFbRevs();
+  showMilestone('⭐ Thanks for rating!', fbRating + ' stars — ' + name);
+}
+
+function fbShowForm() {
+  document.getElementById('fbFormWrap').querySelector('.fb-body').style.display = '';
+  document.getElementById('fbSuccess').classList.remove('show');
+}
+
+function getAllRevs() {
+  var user = [];
+  try { user = JSON.parse(localStorage.getItem('cc_revs') || '[]'); } catch(e) {}
+  return user.concat(FAKE_REVIEWS);
+}
+
+function renderFbAvg() {
+  var all = getAllRevs();
+  var total = 0; var counts = {1:0,2:0,3:0,4:0,5:0};
+  for (var i = 0; i < all.length; i++) { total += all[i].stars; counts[all[i].stars] = (counts[all[i].stars]||0)+1; }
+  var avg = all.length ? total/all.length : 0;
+  document.getElementById('fbAvgNum').textContent = avg.toFixed(1);
+  var s = '';
+  for (var x = 1; x <= 5; x++) s += (x <= Math.round(avg) ? '⭐' : '✩');
+  document.getElementById('fbAvgStars').textContent = s;
+  document.getElementById('fbAvgCount').textContent = all.length + ' ratings';
+  var bHtml = '';
+  for (var b = 5; b >= 1; b--) {
+    var pct = all.length ? Math.round((counts[b]||0)/all.length*100) : 0;
+    bHtml += '<div class="fb-bar-row"><div class="fb-bar-lbl">'+b+'</div><div class="fb-bar-track"><div class="fb-bar-fill" style="width:'+pct+'%"></div></div></div>';
+  }
+  document.getElementById('fbBars').innerHTML = bHtml;
+}
+
+function renderFbRevs() {
+  var all = getAllRevs();
+  var html = '';
+  for (var i = 0; i < all.length; i++) {
+    var r = all[i];
+    var s = '';
+    for (var x = 1; x <= 5; x++) s += (x <= r.stars ? '⭐' : '✩');
+    var cHtml = '';
+    if (r.cats) for (var c = 0; c < r.cats.length; c++) cHtml += '<span class="fb-rev-cat">'+r.cats[c]+'</span>';
+    html += '<div class="fb-rev-card">'
+      + '<div class="fb-rev-top"><span class="fb-rev-name">'+r.name+'</span><span class="fb-rev-stars">'+s+'</span></div>'
+      + (cHtml ? '<div class="fb-rev-cats">'+cHtml+'</div>' : '')
+      + (r.text ? '<div class="fb-rev-text">'+r.text+'</div>' : '')
+      + '<div class="fb-rev-time">'+r.time+'</div>'
+      + '</div>';
+  }
+  document.getElementById('fbRevList').innerHTML = html || '<div style="color:rgba(255,248,220,0.28);font-size:0.75rem;text-align:center;padding:10px">No reviews yet. Be the first!</div>';
+}
+
+document.getElementById('fbOverlay').addEventListener('click', function(e) { if (e.target === this) closeFb(); });
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
+updateUI();
+renderBld();
+renderUpg();
+rotateNews();
+setTimeout(function() { showMilestone('🍪 Cookie Clicker!', 'Click the big cookie to bake!'); }, 500);
+</script>
+</body>
+</html>
