@@ -1416,6 +1416,16 @@ const games = [
   { id: "level-devil-local", name: "Level Devil", category: "Platformer", description: "A tricky platform course with surprise hazards.", playUrl: "/games/mini-arcade/index.html?mode=level-devil" },
   { id: "soflo-wheelie-life-local", name: "SoFlo Wheelie Life", category: "Racing", description: "Balance the bike and keep the front wheel up.", playUrl: "/games/mini-arcade/index.html?mode=soflo-wheelie-life" },
   { id: "crossy-road-local", name: "Crossy Road", category: "Arcade", description: "Hop across traffic lanes and keep moving.", playUrl: "/games/mini-arcade/index.html?mode=crossy-road" }
+,
+  { "id": "duck-clicker", "name": "Duck Clicker", "category": "Clicker", "description": "Collect ducks, buy upgrades, and grow your flock.", "playUrl": "/games/mini-arcade/index.html?mode=duck-clicker" },
+  { "id": "space-clicker", "name": "Space Clicker", "category": "Clicker", "description": "Mine stardust and power up your cosmic factory.", "playUrl": "/games/mini-arcade/index.html?mode=space-clicker" },
+  { "id": "bloodmoney-local", "name": "Bloodmoney", "category": "Clicker", "description": "A dark choice-based clicker about earning cash.", "playUrl": "/games/mini-arcade/index.html?mode=bloodmoney" },
+  { "id": "kick-the-buddy-local", "name": "Kick the Buddy", "category": "Arcade", "description": "Tap the practice dummy and unlock silly effects.", "playUrl": "/games/mini-arcade/index.html?mode=kick-the-buddy" },
+  { "id": "rocket-goal-local", "name": "Rocket Goal", "category": "Sports", "description": "Drive, boost, and shoot the ball into the goal.", "playUrl": "/games/mini-arcade/index.html?mode=rocket-goal" },
+  { "id": "slither-arena-local", "name": "Slither Arena", "category": "Arcade", "description": "Collect orbs, grow longer, and avoid crashing.", "playUrl": "/games/mini-arcade/index.html?mode=slither-io" },
+  { "id": "one-v-one-local", "name": "1v1 Arena", "category": "Shooter", "description": "Practice aim and movement against target bots.", "playUrl": "/games/mini-arcade/index.html?mode=one-v-one" },
+  { "id": "two-v-two-local", "name": "2v2 Arena", "category": "Sports", "description": "Train your movement and shots in a compact arena.", "playUrl": "/games/mini-arcade/index.html?mode=two-v-two" },
+  { "id": "backyard-baseball-local", "name": "Backyard Baseball", "category": "Sports", "description": "Time your swing and hit the ball into the field.", "playUrl": "/games/mini-arcade/index.html?mode=backyard-baseball" }
 ];
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
