@@ -47,6 +47,9 @@ export default function OpenVoiceRoom() {
     entry.peer.onicecandidate = null;
     entry.peer.ontrack = null;
     entry.peer.onconnectionstatechange = null;
+    if (entry.speakingFrame) cancelAnimationFrame(entry.speakingFrame);
+    if (entry.audioContext) entry.audioContext.close().catch(() => {});
+    setSpeakingIds((ids) => ids.filter((id) => id !== userId));
     entry.peer.close();
     if (entry.audio) {
       entry.audio.srcObject = null;
@@ -86,8 +89,35 @@ export default function OpenVoiceRoom() {
         entry.audio = audio;
       }
       entry.audio.srcObject = stream;
-      entry.audio.muted = deafened;
+      entry.audio.muted = deafened || blockedUserIdsRef.current.has(userId);
       entry.audio.play().catch(() => setError("Your browser blocked voice playback. Click the page and try again."));
+      if (!entry.analyser) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          try {
+            const context = new AudioContextClass();
+            const source = context.createMediaStreamSource(stream);
+            const analyser = context.createAnalyser();
+            analyser.fftSize = 256;
+            source.connect(analyser);
+            entry.audioContext = context;
+            entry.analyser = analyser;
+            const samples = new Uint8Array(analyser.frequencyBinCount);
+            const checkSpeaking = () => {
+              if (peersRef.current.get(userId) !== entry || !entry.analyser) return;
+              analyser.getByteFrequencyData(samples);
+              const average = samples.reduce((sum, value) => sum + value, 0) / samples.length;
+              const speaking = average > 10 && !blockedUserIdsRef.current.has(userId);
+              if (entry.speaking !== speaking) {
+                entry.speaking = speaking;
+                setSpeakingIds((ids) => speaking ? (ids.includes(userId) ? ids : [...ids, userId]) : ids.filter((id) => id !== userId));
+              }
+              entry.speakingFrame = requestAnimationFrame(checkSpeaking);
+            };
+            checkSpeaking();
+          } catch {}
+        }
+      }
     };
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === "failed" || peer.connectionState === "closed") {
@@ -291,10 +321,10 @@ export default function OpenVoiceRoom() {
       <div className="open-voice-participants">
         {joined && <div className="open-voice-person open-voice-you"><span className="open-voice-avatar">you</span><span className="open-voice-person-name">you</span><span className="open-voice-person-state">{muted ? "muted" : "in voice"}</span></div>}
         {participants.filter((person) => person.user_id !== currentUserId).map((person) => (
-          <div className="open-voice-person" key={person.user_id}>
+          <div className={`open-voice-person ${speakingIds.includes(person.user_id) ? "is-speaking" : ""} ${blockedUserIdsRef.current.has(person.user_id) ? "is-blocked-muted" : ""}`} key={person.user_id}>
             <span className="open-voice-avatar">{(person.username || "?").slice(0, 1)}</span>
-            <span className="open-voice-person-name">{person.username}</span>
-            <span className="open-voice-person-state">in voice</span>
+            <span className="open-voice-person-copy"><span className="open-voice-person-name">{person.username}</span>{person.custom_status && <span className="open-voice-person-status">{person.custom_status}</span>}</span>
+            <span className="open-voice-person-state">{blockedUserIdsRef.current.has(person.user_id) ? "muted for you" : speakingIds.includes(person.user_id) ? "speaking" : "in voice"}</span>
           </div>
         ))}
         {!participants.length && !joined && <p className="open-voice-empty">no one's in voice right now. be the first.</p>}
