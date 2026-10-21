@@ -1,0 +1,4 @@
+Click Circle Game
+Original source: https://github.com/aryankakk/Clicker-game
+Author: Aryan Kakkar
+License: See the upstream repository for license terms.
