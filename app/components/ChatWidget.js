@@ -48,6 +48,7 @@ export default function ChatWidget() {
       const latestId = nextMessages[nextMessages.length - 1]?.id || null;
 
       setCurrentUserId(data.currentUserId);
+      setBlockedUserIds(data.blockedUserIds || []);
       setMessages(nextMessages);
       setError("");
 
@@ -189,6 +190,7 @@ export default function ChatWidget() {
                       {item.username}
                     </a>
                     <span>{formatTime(item.createdAt)}</span>
+                    {item.userId !== currentUserId && <button type="button" className="chat-block-user" onClick={() => blockUser(item.userId, item.username)} title="Block user">block</button>}
                   </div>
                   <div className={`chat-bubble ${item.userId === currentUserId ? "chat-bubble-own" : ""}`}>
                     {item.message}
