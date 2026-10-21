@@ -256,7 +256,7 @@ const games = [
     name: "HTML5 Breakout",
     category: "Arcade",
     description: "Break every brick with a bouncing ball.",
-    playUrl: "https://linkingtechnologies.github.io/libre-arcade/html5-breakout/public/index.html",
+    playUrl: "/games/classic-breakout/index.html",
     sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/html5-breakout"
   },
   {
