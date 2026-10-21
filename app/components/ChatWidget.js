@@ -25,6 +25,7 @@ export default function ChatWidget() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [blockedUserIds, setBlockedUserIds] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -86,6 +87,25 @@ export default function ChatWidget() {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [open, messages.length]);
+
+  async function blockUser(userId, username) {
+    if (!userId || userId === currentUserId) return;
+    const confirmed = window.confirm(`block ${username}? their messages will be hidden and their group voice audio will be muted for you.`);
+    if (!confirmed) return;
+    try {
+      const response = await fetch("/api/blocks", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "block", userId })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not block user.");
+      setBlockedUserIds((items) => items.includes(userId) ? items : [...items, userId]);
+      setMessages((items) => items.filter((item) => item.userId !== userId));
+      window.dispatchEvent(new Event("vehemence-blocks-changed"));
+    } catch (err) {
+      setError(err.message || "Could not block user.");
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
