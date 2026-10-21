@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    overflow: hidden;
+  }
+  
+  #game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+  }
+
+  #score-tab {
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+  #score-tab span {
+    font-weight: bold;
+  }
+  
+  .circle {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    animation: shrink 2s linear forwards;
+  }
+  
+#start-button {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px 40px;
+    font-size: 24px;
+    color: #fff;
+    background-color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1002;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  #start-button:hover {
+    background-color: #555;
+  }
+  
+  #start-button:active {
+    background-color: #222;
+    transform: translateX(-50%) scale(0.95);
+  }
+  
+  #start-button.hidden {
+    display: none;
+  }
+  
+  #difficulty-selection {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1002;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    display: block; /* Ensure it's visible by default */
+}
+
+#difficulty-selection h2 {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.difficulty-button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.difficulty-button:hover {
+    background-color: #555;
+}
+
+  @keyframes shrink {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(0);
+    }
+  }
