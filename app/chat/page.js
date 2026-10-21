@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import OpenVoiceRoom from "../components/OpenVoiceRoom";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -25,7 +24,6 @@ export default function Chat() {
         </div>
 
         <section className="chat-card">
-          <OpenVoiceRoom />
           <div className="chat-messages">
             <div className="chat-empty">
               <h2>No messages yet</h2>
