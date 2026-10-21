@@ -54,8 +54,25 @@ export default function ChatWidget() {
 
       if (!isInitial && previousId && latestId && previousId !== latestId && !open) {
         const index = nextMessages.findIndex((item) => item.id === previousId);
-        const newMessages = index === -1 ? nextMessages : nextMessages.slice(index + 1);
+        const newMessages = index === -1 ? nextMessages.slice(-1) : nextMessages.slice(index + 1);
         setUnreadCount((count) => count + newMessages.length);
+        try {
+          const saved = JSON.parse(localStorage.getItem("vehemence_notifications") || "[]");
+          const incoming = newMessages.filter((item) => item.userId !== data.currentUserId).map((item) => ({
+            id: `chat-${item.id}`,
+            title: `message from ${item.username}`,
+            text: item.message,
+            type: "Message",
+            createdAt: item.createdAt,
+            read: false
+          }));
+          if (incoming.length) {
+            const existingIds = new Set(saved.map((item) => item.id));
+            const merged = [...incoming.filter((item) => !existingIds.has(item.id)), ...saved].slice(0, 100);
+            localStorage.setItem("vehemence_notifications", JSON.stringify(merged));
+            window.dispatchEvent(new Event("vehemence-notifications-changed"));
+          }
+        } catch {}
       }
 
       previousLatestId.current = latestId;
