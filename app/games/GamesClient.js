@@ -495,9 +495,8 @@ const games = [
     id: "eaglercraft",
     name: "Eaglercraft",
     category: "Sandbox",
-    description: "Minecraft-inspired browser sandbox. Embedded hosting may be limited by the source site.",
-    playUrl: "https://eaglercraft.com/",
-    sourceUrl: "https://github.com/a50411278apeter40-svg/eaglercraft-x"
+    description: "Open-source browser sandbox client.",
+    playUrl: "/games/eaglercraft/index.html"
   },
   {
     id: "retro-bowl",
