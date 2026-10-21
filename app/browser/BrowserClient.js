@@ -200,7 +200,7 @@ export default function BrowserClient() {
               title="Vehemence web browser"
               allow="fullscreen; autoplay; clipboard-read; clipboard-write"
               allowFullScreen
-              referrerPolicy="no-referrer"
+              referrerPolicy="strict-origin-when-cross-origin"
             />
           ) : (
             <div className="browser-empty">
