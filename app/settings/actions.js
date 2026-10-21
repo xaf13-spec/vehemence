@@ -1,6 +1,6 @@
 "use server";
 
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
@@ -80,4 +80,26 @@ export async function deleteAccount() {
   if (error) return { error: error.message || "Could not delete your account." };
   current.cookieStore.delete("vehemence_session");
   return { success: true };
+}
+
+
+export async function getRecoveryCodeStatus() {
+  const current = await getSession();
+  if (current.error) return { error: current.error };
+  const { data: profile, error } = await supabase.from("profiles").select("recovery_code_hash").eq("id", current.session.user_id).single();
+  if (error || !profile) return { error: "Could not load recovery code settings." };
+  return { hasRecoveryCode: Boolean(profile.recovery_code_hash) };
+}
+
+export async function generateRecoveryCode() {
+  const current = await getSession();
+  if (current.error) return { error: current.error };
+  const { data: profile } = await supabase.from("profiles").select("id").eq("id", current.session.user_id).single();
+  if (!profile) return { error: "Account not found." };
+  const raw = randomBytes(16).toString("hex").toUpperCase();
+  const recoveryCode = raw.match(/.{1,8}/g).join("-");
+  const recoveryCodeHash = createHash("sha256").update(raw).digest("hex");
+  const { error } = await supabase.from("profiles").update({ recovery_code_hash: recoveryCodeHash }).eq("id", current.session.user_id);
+  if (error) return { error: "Could not save your recovery code." };
+  return { success: true, recoveryCode };
 }
