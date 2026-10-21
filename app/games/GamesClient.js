@@ -1403,6 +1403,19 @@ const games = [
     "playUrl": "https://sausi-7.github.io/games/games/puzzle/line-trap/index.html",
     "sourceUrl": "https://github.com/sausi-7/games/tree/main/games/puzzle/line-trap"
   }
+,
+  { id: "doge-clicker", name: "Doge Clicker", category: "Clicker", description: "Tap for coins, buy upgrades, and stack up Doge.", playUrl: "/games/mini-arcade/index.html?mode=doge-clicker" },
+  { id: "donut-clicker", name: "Donut Clicker", category: "Clicker", description: "Bake your way from one donut to a whole production line.", playUrl: "/games/mini-arcade/index.html?mode=donut-clicker" },
+  { id: "pizza-clicker", name: "Pizza Clicker", category: "Clicker", description: "Tap for slices and upgrade your pizza kitchen.", playUrl: "/games/mini-arcade/index.html?mode=pizza-clicker" },
+  { id: "chicken-jockey-clicker", name: "Chicken Jockey Clicker", category: "Clicker", description: "Grow your crew and unlock faster taps.", playUrl: "/games/mini-arcade/index.html?mode=chicken-jockey-clicker" },
+  { id: "planet-clicker", name: "Planet Clicker", category: "Clicker", description: "Collect cosmic energy and boost your output.", playUrl: "/games/mini-arcade/index.html?mode=planet-clicker" },
+  { id: "italian-brainrot-clicker", name: "Italian Brainrot Clicker 2", category: "Clicker", description: "Tap for chaos and unlock ridiculous upgrades.", playUrl: "/games/mini-arcade/index.html?mode=italian-brainrot-clicker" },
+  { id: "space-waves-local", name: "Space Waves", category: "Arcade", description: "Dodge the hazard walls and survive as long as possible.", playUrl: "/games/mini-arcade/index.html?mode=space-waves" },
+  { id: "slope-local", name: "Slope", category: "Racing", description: "Stay on the track as speed keeps increasing.", playUrl: "/games/mini-arcade/index.html?mode=slope" },
+  { id: "speed-stars-local", name: "Speed Stars", category: "Sports", description: "Alternate your stride to keep sprinting down the track.", playUrl: "/games/mini-arcade/index.html?mode=speed-stars" },
+  { id: "level-devil-local", name: "Level Devil", category: "Platformer", description: "A tricky platform course with surprise hazards.", playUrl: "/games/mini-arcade/index.html?mode=level-devil" },
+  { id: "soflo-wheelie-life-local", name: "SoFlo Wheelie Life", category: "Racing", description: "Balance the bike and keep the front wheel up.", playUrl: "/games/mini-arcade/index.html?mode=soflo-wheelie-life" },
+  { id: "crossy-road-local", name: "Crossy Road", category: "Arcade", description: "Hop across traffic lanes and keep moving.", playUrl: "/games/mini-arcade/index.html?mode=crossy-road" }
 ];
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
@@ -1506,7 +1519,6 @@ export default function GamesClient() {
             <div className="games-player-header">
               <div><span className="games-player-live" /> <h2>{selectedGame.name}</h2></div>
               <div className="games-player-header-actions">
-                {selectedGame.sourceUrl && <a href={selectedGame.sourceUrl} target="_blank" rel="noreferrer">Source &amp; license ↗</a>}
                 <button type="button" onClick={() => setSelectedGame(null)} aria-label="Close game">Close ✕</button>
               </div>
             </div>
