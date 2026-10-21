@@ -1,6 +1,6 @@
 "use server";
 
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes, createCipheriv, createDecipheriv } from "crypto";
 import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
@@ -83,12 +83,37 @@ export async function deleteAccount() {
 }
 
 
+function recoveryEncryptionKey() {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) throw new Error("Recovery encryption is not configured.");
+  return createHash("sha256").update(secret).digest();
+}
+
+function encryptRecoveryCode(code) {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", recoveryEncryptionKey(), iv);
+  const encrypted = Buffer.concat([cipher.update(code, "utf8"), cipher.final()]);
+  return [iv.toString("base64url"), cipher.getAuthTag().toString("base64url"), encrypted.toString("base64url")].join(".");
+}
+
+function decryptRecoveryCode(value) {
+  const [iv, tag, encrypted] = value.split(".");
+  const decipher = createDecipheriv("aes-256-gcm", recoveryEncryptionKey(), Buffer.from(iv, "base64url"));
+  decipher.setAuthTag(Buffer.from(tag, "base64url"));
+  return Buffer.concat([decipher.update(Buffer.from(encrypted, "base64url")), decipher.final()]).toString("utf8");
+}
+
 export async function getRecoveryCodeStatus() {
   const current = await getSession();
   if (current.error) return { error: current.error };
-  const { data: profile, error } = await supabase.from("profiles").select("recovery_code_hash").eq("id", current.session.user_id).single();
+  const { data: profile, error } = await supabase.from("profiles").select("recovery_code_hash, recovery_code_encrypted").eq("id", current.session.user_id).single();
   if (error || !profile) return { error: "Could not load recovery code settings." };
-  return { hasRecoveryCode: Boolean(profile.recovery_code_hash) };
+  let recoveryCode = null;
+  if (profile.recovery_code_encrypted) {
+    try { recoveryCode = decryptRecoveryCode(profile.recovery_code_encrypted); }
+    catch { return { error: "Could not read your saved recovery code. Generate a new one." }; }
+  }
+  return { hasRecoveryCode: Boolean(profile.recovery_code_hash), recoveryCode };
 }
 
 export async function generateRecoveryCode() {
@@ -99,7 +124,10 @@ export async function generateRecoveryCode() {
   const raw = randomBytes(16).toString("hex").toUpperCase();
   const recoveryCode = raw.match(/.{1,8}/g).join("-");
   const recoveryCodeHash = createHash("sha256").update(raw).digest("hex");
-  const { error } = await supabase.from("profiles").update({ recovery_code_hash: recoveryCodeHash }).eq("id", current.session.user_id);
+  let recoveryCodeEncrypted;
+  try { recoveryCodeEncrypted = encryptRecoveryCode(recoveryCode); }
+  catch { return { error: "Recovery code storage is not configured. Please try again later." }; }
+  const { error } = await supabase.from("profiles").update({ recovery_code_hash: recoveryCodeHash, recovery_code_encrypted: recoveryCodeEncrypted }).eq("id", current.session.user_id);
   if (error) return { error: "Could not save your recovery code." };
   return { success: true, recoveryCode };
 }
