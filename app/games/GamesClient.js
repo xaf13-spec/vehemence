@@ -288,7 +288,7 @@ const games = [
     name: "Netris",
     category: "Puzzle",
     description: "A classic falling-block puzzle game.",
-    playUrl: "https://linkingtechnologies.github.io/libre-arcade/netris/public/index.html",
+    playUrl: "/games/netris/index.html",
     sourceUrl: "https://github.com/linkingtechnologies/libre-arcade/tree/main/netris"
   },
   {
