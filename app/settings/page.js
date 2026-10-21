@@ -86,7 +86,7 @@ export default function Settings() {
     setBrandFont(get("vehemence_brand_font", "Japanese Serif"));
     applyAppearance(loaded);
     document.documentElement.setAttribute("data-nav-mode", get("vehemence_nav_mode", "top"));
-    getRecoveryCodeStatus().then(result => { if (result?.hasRecoveryCode !== undefined) setHasRecoveryCode(result.hasRecoveryCode); else if (result?.error) setRecoveryError(result.error); }).catch(() => setRecoveryError("Could not load recovery code settings."));
+    getRecoveryCodeStatus().then(result => { if (result?.hasRecoveryCode !== undefined) { setHasRecoveryCode(result.hasRecoveryCode); setRecoveryCode(result.recoveryCode || ""); } else if (result?.error) setRecoveryError(result.error); }).catch(() => setRecoveryError("Could not load recovery code settings."));
   }, []);
 
   function update(k, v, setter) { setter(v); save(k, v, false); }
