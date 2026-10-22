@@ -7,141 +7,43 @@ const games = [
     id: "2048",
     name: "2048",
     category: "Puzzle",
-    description: "Slide matching tiles and build larger numbers.",
+    description: "The original open-source number-merging puzzle.",
     playUrl: "/games/2048/index.html"
   },
   {
-    id: "cookie-clicker",
-    name: "Cookie Clicker",
-    category: "Clicker",
-    description: "Grow your cookie count with clicks and upgrades.",
-    playUrl: "/games/cookie-clicker/index.html"
-  },
-  {
-    id: "open-breakout",
-    name: "HTML5 Breakout",
-    category: "Arcade",
-    description: "Clear the brick field with a paddle and bouncing ball.",
-    playUrl: "/games/classic-breakout/index.html"
-  },
-  {
-    id: "open-snake",
-    name: "Classic Snake",
-    category: "Classic",
-    description: "Collect food, grow longer, and avoid your tail.",
-    playUrl: "/games/classic-snake/index.html"
-  },
-  {
-    id: "netris",
-    name: "Netris",
-    category: "Puzzle",
-    description: "A fast block-stacking puzzle game.",
-    playUrl: "/games/netris/index.html"
-  },
-  {
     id: "eaglercraft",
-    name: "Eaglercraft",
+    name: "Eaglercraft 1.20",
     category: "Sandbox",
-    description: "Play the open-source browser sandbox client.",
+    description: "A locally hosted browser Minecraft client.",
     playUrl: "/games/eaglercraft/index.html"
   },
   {
-    id: "hextris-open",
-    name: "Hextris",
-    category: "Puzzle",
-    description: "Rotate the hexagon and match falling blocks.",
-    playUrl: "/games/hextris-open/index.html"
+    id: "open-snake",
+    name: "Snake",
+    category: "Classic",
+    description: "The classic snake game, using upstream open-source code.",
+    playUrl: "/games/classic-snake/index.html"
   },
   {
-    id: "klondike",
-    name: "Klondike Solitaire",
-    category: "Board",
-    description: "Arrange the cards into the four foundation piles.",
-    playUrl: "/games/klondike/index.html"
-  },
-  {
-    id: "for-science",
-    name: "For Science!",
-    category: "Puzzle",
-    description: "Play the original open-source puzzle game.",
-    playUrl: "/games/for-science/index.html"
-  },
-  {
-    id: "donkey-bolonkey",
-    name: "Donkey Bolonkey",
+    id: "open-breakout",
+    name: "Breakout",
     category: "Arcade",
-    description: "Play the original open-source arcade game.",
-    playUrl: "/games/donkey-bolonkey/index.html"
+    description: "The classic brick-breaker game, using upstream open-source code.",
+    playUrl: "/games/classic-breakout/index.html"
   },
   {
-    id: "psypong3d",
-    name: "Psy Pong 3D",
-    category: "Sports",
-    description: "A 3D take on paddle-and-ball sports.",
-    playUrl: "/games/psypong3d/index.html"
-  },
-  {
-    id: "wok-open",
-    name: "Wok",
+    id: "space-invaders",
+    name: "Space Invaders",
     category: "Arcade",
-    description: "Play the original open-source arcade game.",
-    playUrl: "/games/wok-open/index.html"
+    description: "The classic alien-wave arcade game, using upstream open-source code.",
+    playUrl: "/games/space-invaders/index.html"
   },
   {
-    id: "yanoid",
-    name: "Yanoid",
+    id: "asteroids",
+    name: "Asteroids",
     category: "Arcade",
-    description: "A brick-breaking arcade game.",
-    playUrl: "/games/yanoid/index.html"
-  },
-  {
-    id: "glparchis",
-    name: "glParchis",
-    category: "Board",
-    description: "A digital version of the classic board game.",
-    playUrl: "/games/glparchis/index.html"
-  },
-  {
-    id: "bubble-train",
-    name: "Bubble Train",
-    category: "Puzzle",
-    description: "Match bubbles and clear the track.",
-    playUrl: "/games/bubble-train/index.html"
-  },
-  {
-    id: "nova-pinball",
-    name: "Nova Pinball",
-    category: "Arcade",
-    description: "Play a full pinball table in your browser.",
-    playUrl: "/games/nova-pinball/index.html"
-  },
-  {
-    id: "mechanical-night-pinball",
-    name: "Mechanical Night Pinball",
-    category: "Arcade",
-    description: "A mechanical-themed pinball game.",
-    playUrl: "/games/mechanical-night-pinball/index.html"
-  },
-  {
-    id: "comet-pinball",
-    name: "Comet Pinball",
-    category: "Arcade",
-    description: "Launch the ball and keep the pinball run going.",
-    playUrl: "/games/comet-pinball/index.html"
-  },
-  {
-    id: "disk-field",
-    name: "Disk Field",
-    category: "Puzzle",
-    description: "Play the original open-source puzzle game.",
-    playUrl: "/games/disk-field/index.html"
-  },
-  {
-    id: "the-lost-path",
-    name: "The Lost Path",
-    category: "Puzzle",
-    description: "Find your way through a puzzle path.",
-    playUrl: "/games/the-lost-path/index.html"
+    description: "Pilot through an asteroid field in this classic arcade game.",
+    playUrl: "/games/asteroids/index.html"
   }
 ];
 
