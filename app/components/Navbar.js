@@ -5,8 +5,8 @@ import OwnerPanel from "./OwnerPanel";
 import { isOwnerAccount } from "./owner-actions";
 
 const defaultNotifications = [{ id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }];
-const navItems = [["/", "Home"], ["/games", "Games"], ["/browser", "Browser"], ["/soundboard", "Soundboard"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
-const commandItems = navItems.map(([path, label]) => ({ id: path, label, detail: `Go to ${label}`, path, icon: ({ Home: "⌂", Games: "▦", Browser: "◫", Soundboard: "♫", Marketplace: "◇", Profile: "◎", Friends: "♧", Settings: "⚙", Notifications: "◌" })[label] }));
+const navItems = [["/", "Home"], ["/games", "Games"], ["/movies", "Movies"], ["/browser", "Browser"], ["/soundboard", "Soundboard"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
+const commandItems = navItems.map(([path, label]) => ({ id: path, label, detail: `Go to ${label}`, path, icon: ({ Home: "⌂", Games: "▦", Movies: "▶", Browser: "◫", Soundboard: "♫", Marketplace: "◇", Profile: "◎", Friends: "♧", Settings: "⚙", Notifications: "◌" })[label] }));
 
 export default function Navbar({ activePath = "/", onNavigate }) {
   const [unread, setUnread] = useState(0);
@@ -90,7 +90,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
       <a href="/" className="logo brand-logo brand-font-display-gothic" onClick={(event) => handle(event, "/")} aria-label="Vehemence"><span className="brand-logo-mark brand-vehemence"><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%273%27 y=%273%27 width=%2758%27 height=%2758%27 rx=%2717%27 fill=%27%230d0d14%27/%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E" alt="" /></span><span className="brand-logo-name">Vehemence</span></a>
       <div className="nav-links">
-        {navItems.slice(0, 8).map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
+        {navItems.filter(([href]) => href !== "/notifications").map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
       <div className="navbar-status">
         {isOwner && <button type="button" className="command-trigger" onClick={() => setOwnerOpen(true)} title="Open owner control center">Owner Panel</button>}
