@@ -14,20 +14,10 @@ const libreArcade = {
   revision: "a5bddc0655f151b518d173d27cf93a20ef3203bf",
 };
 const selectedGames = [
-  ["hextris-open", "hextris"],
-  ["klondike", "klondike"],
-  ["for-science", "for-science"],
-  ["donkey-bolonkey", "donkey-bolonkey"],
-  ["psypong3d", "psypong3d"],
-  ["wok-open", "wok"],
-  ["yanoid", "yanoid"],
-  ["glparchis", "glparchis"],
-  ["bubble-train", "bubble-train"],
-  ["nova-pinball", "nova-pinball"],
-  ["mechanical-night-pinball", "mechanical-night-pinball"],
-  ["comet-pinball", "comet-pinball"],
-  ["disk-field", "disk-field"],
-  ["the-lost-path", "the-lost-path"],
+  ["classic-breakout", "html5-breakout"],
+  ["classic-snake", "html5-snake"],
+  ["space-invaders", "html5-space-invaders"],
+  ["asteroids", "asteroids-infinity"],
 ];
 
 async function fetchText(url, minimumLength = 1) {
@@ -125,6 +115,38 @@ async function vendorLibreArcade() {
   }
 }
 
-await vendorEaglercraft();
+
+async function vendor2048() {
+  const work = await mkdtemp(join(tmpdir(), "vehemence-2048-"));
+  try {
+    const archive = join(work, "source.tar.gz");
+    const extracted = join(work, "source");
+    await mkdir(extracted, { recursive: true });
+    await fetchToFile(
+      "https://codeload.github.com/gabrielecirulli/2048/tar.gz/refs/heads/master",
+      archive
+    );
+    execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
+    const outputDir = join(root, "public", "games", "2048");
+    await rm(outputDir, { recursive: true, force: true });
+    await mkdir(outputDir, { recursive: true });
+    await cp(join(extracted, "index.html"), join(outputDir, "index.html"));
+    for (const name of ["js", "style", "meta", "favicon.ico", "LICENSE.txt", "README.md"]) {
+      try { await cp(join(extracted, name), join(outputDir, name), { recursive: true }); } catch {}
+    }
+    const { readFile } = await import("node:fs/promises");
+    const licensePath = join(extracted, "LICENSE.txt");
+    try { await cp(licensePath, join(outputDir, "UPSTREAM_LICENSE.txt")); } catch {}
+    await writeFile(join(outputDir, "PROVENANCE.md"), [
+      "# 2048 source provenance", "",
+      "- Upstream repository: https://github.com/gabrielecirulli/2048",
+      "- Source is fetched from the upstream repository during build and served locally.",
+      "- Retain the upstream license and notices.", ""
+    ].join("\n"), "utf8");
+  } finally {
+    await rm(work, { recursive: true, force: true });
+  }
+}
+\nawait vendor2048();\nawait vendorEaglercraft();
 await vendorLibreArcade();
 console.log("Vendored pinned open-source game code for Vehemence.");

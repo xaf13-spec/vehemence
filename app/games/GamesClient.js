@@ -163,7 +163,7 @@ export default function GamesClient() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [selectedGame, setSelectedGame] = useState(null);
-  const featuredGame = games.find((game) => game.id === "pacman") || games[0];
+  const featuredGame = games.find((game) => game.id === "2048") || games[0];
 
   useEffect(() => {
     function openRequestedGame() {
@@ -201,7 +201,7 @@ export default function GamesClient() {
             <h1>Find your<br /><span>next obsession.</span></h1>
             
             <div className="games-spotlight-actions">
-              <button type="button" className="games-spotlight-play" onClick={() => playGame(featuredGame)}><span>▶</span> Play Pac-Man</button>
+              <button type="button" className="games-spotlight-play" onClick={() => playGame(featuredGame)}><span>▶</span> Play 2048</button>
               <span className="games-spotlight-meta">{games.length} games <i /> no downloads</span>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function GamesClient() {
             <div className="spotlight-dot spotlight-dot-one" />
             <div className="spotlight-dot spotlight-dot-two" />
             <div className="spotlight-dot spotlight-dot-three" />
-            <div className="spotlight-caption"><span>FEATURED GAME</span><strong>Pac-Man</strong><small>CLASSIC · ARCADE</small></div>
+            <div className="spotlight-caption"><span>FEATURED GAME</span><strong>2048</strong><small>CLASSIC · ARCADE</small></div>
           </div>
           <div className="games-spotlight-index">01 <span>/</span> {String(games.length).padStart(2, "0")}</div>
         </section>
