@@ -18,6 +18,20 @@ const games = [
     playUrl: "https://vehemence.neocities.org/eaglercraft26-2"
   },
   {
+    id: "cookie-clicker",
+    name: "Cookie Clicker",
+    category: "Idle",
+    description: "Grow your cookie empire in the classic incremental game.",
+    playUrl: "https://ozh.github.io/cookieclicker/"
+  },
+  {
+    id: "moto-x3m-winter",
+    name: "Moto X3M Winter",
+    category: "Racing",
+    description: "Race through snowy tracks in this winter stunt-bike game.",
+    playUrl: "https://moto-x3m-winter.github.io/"
+  },
+  {
     id: "open-snake",
     name: "Snake",
     category: "Classic",
@@ -38,9 +52,9 @@ const categories = ["All", ...new Set(games.map((game) => game.category))];
 const symbols = {
   "pacman": "◉", "2048": "▦", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
   "battleship": "▤", "block-drop": "▦", "breakout": "▥", "bubble-shooter": "◌",
-  "connect-four": "⊞", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
+  "connect-four": "⊞", "cookie-clicker": "🍪", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
   "gem-match": "◆", "helix-drop": "◉", "lights-out": "✦", "maze-muncher": "⌘",
-  "memory-match": "▧", "merge-drop": "◉", "minesweeper": "▦", "paddle-duel": "◉",
+  "memory-match": "▧", "moto-x3m-winter": "🏍", "merge-drop": "◉", "minesweeper": "▦", "paddle-duel": "◉",
   "piano-tap": "▥", "reversi": "◉", "slide-puzzle": "▦", "snake": "〰",
   "sokoban": "▣", "stack-tower": "▤", "star-defender": "✦", "sudoku": "▦",
   "tic-tac-toe": "×", "water-sort": "◍", "whack-a-mole": "✹"
