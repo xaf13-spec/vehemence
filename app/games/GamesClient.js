@@ -137,6 +137,11 @@ export default function GamesClient() {
   ), [query, category]);
 
   function playGame(game) {
+    if (game.id === "cookie-clicker") {
+      try { const entry = { name: game.name, type: "game", id: game.id, playedAt: new Date().toISOString() }; localStorage.setItem("vehemence_last_played", JSON.stringify(entry)); const prior = JSON.parse(localStorage.getItem("vehemence_game_history") || "[]"); const history = Array.isArray(prior) ? prior : []; localStorage.setItem("vehemence_game_history", JSON.stringify([entry, ...history.filter((item) => item.id !== game.id)].slice(0, 50)); } catch {}
+      window.location.assign(game.playUrl);
+      return;
+    }
     setSelectedGame(game);
     try { const entry = { name: game.name, type: "game", id: game.id, playedAt: new Date().toISOString() }; localStorage.setItem("vehemence_last_played", JSON.stringify(entry)); const prior = JSON.parse(localStorage.getItem("vehemence_game_history") || "[]"); const history = Array.isArray(prior) ? prior : []; localStorage.setItem("vehemence_game_history", JSON.stringify([entry, ...history.filter((item) => item.id !== game.id)].slice(0, 50))); } catch {}
     window.dispatchEvent(new Event("vehemence-game-last-played"));
