@@ -3,12 +3,12 @@
 import { useState } from "react";
 
 const movies = [
-  { id: "movie-1", title: "Movie 1", src: "https://fembed.co/embed/G1iHDR_zy3-ts" },
-  { id: "movie-2", title: "Movie 2", src: "https://fembed.co/embed/W3cisxy_Pk-s3" },
-  { id: "movie-3", title: "Movie 3", src: "https://fembed.co/embed/V1-GZM_PZf2em" },
-  { id: "movie-4", title: "Movie 4", src: "https://fembed.co/embed/tAH-19Ez_9NkK" },
-  { id: "movie-5", title: "Movie 5", src: "https://fembed.co/embed/Cz_bWDK8-6Av2" },
-  { id: "movie-6", title: "Movie 6", src: "https://fembed.co/embed/nQH2i-V_7Uhfn" }
+  { id: "movie-1", title: "The Odyssey", src: "https://fembed.co/embed/G1iHDR_zy3-ts" },
+  { id: "movie-2", title: "Mortal Kombat II", src: "https://fembed.co/embed/W3cisxy_Pk-s3" },
+  { id: "movie-3", title: "Michael", src: "https://fembed.co/embed/V1-GZM_PZf2em" },
+  { id: "movie-4", title: "Obsession", src: "https://fembed.co/embed/tAH-19Ez_9NkK" },
+  { id: "movie-5", title: "Backrooms", src: "https://fembed.co/embed/Cz_bWDK8-6Av2" },
+  { id: "movie-6", title: "Minecraft", src: "https://fembed.co/embed/nQH2i-V_7Uhfn" }
 ];
 
 export default function MoviesClient() {
