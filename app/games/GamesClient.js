@@ -11,13 +11,6 @@ const games = [
     playUrl: "/games/2048/index.html"
   },
   {
-    id: "eaglercraft",
-    name: "Eaglercraft 1.20",
-    category: "Sandbox",
-    description: "A locally hosted browser Minecraft client.",
-    playUrl: "/games/eaglercraft/index.html"
-  },
-  {
     id: "open-snake",
     name: "Snake",
     category: "Classic",
@@ -30,20 +23,6 @@ const games = [
     category: "Arcade",
     description: "The classic brick-breaker game, using upstream open-source code.",
     playUrl: "/games/classic-breakout/index.html"
-  },
-  {
-    id: "space-invaders",
-    name: "Space Invaders",
-    category: "Arcade",
-    description: "The classic alien-wave arcade game, using upstream open-source code.",
-    playUrl: "/games/space-invaders/index.html"
-  },
-  {
-    id: "asteroids",
-    name: "Asteroids",
-    category: "Arcade",
-    description: "Pilot through an asteroid field in this classic arcade game.",
-    playUrl: "/games/asteroids/index.html"
   }
 ];
 
