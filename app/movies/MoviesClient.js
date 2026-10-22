@@ -8,7 +8,17 @@ const movies = [
   { id: "movie-3", title: "Michael", src: "https://fembed.co/embed/V1-GZM_PZf2em" },
   { id: "movie-4", title: "Obsession", src: "https://fembed.co/embed/tAH-19Ez_9NkK" },
   { id: "movie-5", title: "Backrooms", src: "https://fembed.co/embed/Cz_bWDK8-6Av2" },
-  { id: "movie-6", title: "Minecraft", src: "https://fembed.co/embed/nQH2i-V_7Uhfn" }
+  { id: "movie-6", title: "Minecraft", src: "https://fembed.co/embed/nQH2i-V_7Uhfn" },
+  { id: "movie-7", title: "The Dark Knight", src: "https://fembed.co/embed/IbUzL-YQ_rSHQ" },
+  { id: "movie-8", title: "Spider-Man: Brand New Day", src: "https://fembed.co/embed/Le-Tzbs_rZ2mb" },
+  { id: "movie-9", title: "The Super Mario Bros. Movie", src: "https://fembed.co/embed/u2U_PQKz-0X8E" },
+  { id: "movie-10", title: "Avengers: Endgame", src: "https://fembed.co/embed/hzrH_M4-1GuJb" },
+  { id: "movie-11", title: "Max", src: "https://fembed.co/embed/4xnm6-rrwU_Ks" },
+  { id: "movie-12", title: "Paul Blart: Mall Cop 2", src: "https://fembed.co/embed/22Oc_RM3-EYX3" },
+  { id: "movie-13", title: "Street Fighter", src: "https://fembed.co/embed/db54_Qqe3-epd" },
+  { id: "movie-14", title: "Super Mario Galaxy", src: "https://fembed.co/embed/xxa3p-HY1d_e7" },
+  { id: "movie-15", title: "Top Gun: Maverick", src: "https://fembed.co/embed/qNe_gpny-m7PM" },
+  { id: "movie-16", title: "Holes", src: "https://fembed.co/embed/kaV-4mhXw_ILS" }
 ];
 
 export default function MoviesClient() {
