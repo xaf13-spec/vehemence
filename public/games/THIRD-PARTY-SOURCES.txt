@@ -1,0 +1,11 @@
+Third-party game page sources
+==============================
+
+The HTML wrapper pages in this folder were copied from:
+https://github.com/moto-x3m-winter/moto-x3m-winter.github.io
+
+Original source pages include author/publisher metadata. These pages are wrappers; several load the actual game from a separate external host inside an iframe. The actual game code may not be part of that repository.
+
+Original game pages and their embedded game hosts remain third-party content. No claim is made that those games are owned by Vehemence or licensed for redistribution. Check each upstream project's license and the embedded game's terms before redistributing or modifying its assets.
+
+Do not remove upstream attribution or license notices when present.
