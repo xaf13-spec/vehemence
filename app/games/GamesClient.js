@@ -11,6 +11,13 @@ const games = [
     playUrl: "/games/2048/index.html"
   },
   {
+    id: "eaglercraft-26-2",
+    name: "Eaglercraft 26.2",
+    category: "Sandbox",
+    description: "Play the Eaglercraft 26.2 browser client.",
+    playUrl: "https://vehemence.neocities.org/eaglercraft26-2"
+  },
+  {
     id: "open-snake",
     name: "Snake",
     category: "Classic",
