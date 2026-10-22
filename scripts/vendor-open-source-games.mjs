@@ -126,7 +126,7 @@ async function vendorCookieClicker() {
     const extracted = join(work, "source");
     await mkdir(extracted, { recursive: true });
     await fetchToFile(
-      \`https://codeload.github.com/\${source.repository}/tar.gz/\${source.revision}\`,
+      `https://codeload.github.com/${source.repository}/tar.gz/${source.revision}`,
       archive
     );
     execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
@@ -139,18 +139,18 @@ async function vendorCookieClicker() {
     const { readFile } = await import("node:fs/promises");
     const indexPath = join(outputDir, "index.html");
     let html = await readFile(indexPath, "utf8");
-    html = html.replace(/<script[^>]*cookieconsent_options[\\s\\S]*?<\\/script>\\s*<script[^>]*cookieconsent\\.min\\.js[^>]*><\\/script>/i, "");
-    html = html.replace(/<!-- Facebook Pixel Code -->[\\s\\S]*?<!-- end code -->/i, "");
-    html = html.replace(/<script[^>]*pagead\\.googlesyndication\\.com[^>]*><\\/script>/i, "");
+    html = html.replace(/<script[^>]*cookieconsent_options[\s\S]*?<\/script>\s*<script[^>]*cookieconsent\.min\.js[^>]*><\/script>/i, "");
+    html = html.replace(/<!-- Facebook Pixel Code -->[\s\S]*?<!-- end code -->/i, "");
+    html = html.replace(/<script[^>]*pagead\.googlesyndication\.com[^>]*><\/script>/i, "");
     await writeFile(indexPath, html, "utf8");
     await writeFile(join(outputDir, "PROVENANCE.md"), [
       "# Cookie Clicker source provenance", "",
       "- Upstream source repository: https://github.com/xaf13-spec/Cookie-Clicker-Source-Code",
-      \`- Pinned source revision: \${source.revision}\`,
+      `- Pinned source revision: ${source.revision}`,
       "- Original game code, graphics, README, and copyright notice are retained.",
       "- The source is fetched during the Vehemence build and served from Vehemence's own static game path.",
       "- Cookie-consent, Facebook Pixel, and Google ad-loader snippets are removed; gameplay code and assets are otherwise retained.", ""
-    ].join("\\n"), "utf8");
+    ].join("\n"), "utf8");
   } finally {
     await rm(work, { recursive: true, force: true });
   }
