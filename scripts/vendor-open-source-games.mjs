@@ -88,10 +88,8 @@ async function vendorLibreArcade() {
       }
 
       const indexPath = join(outputDir, "index.html");
-      let html = await fetchText(`file://${indexPath}`).catch(async () => null);
-      // Local files are read through Node's filesystem below; fetch is intentionally not used for file URLs.
       const { readFile } = await import("node:fs/promises");
-      html = await readFile(indexPath, "utf8");
+      let html = await readFile(indexPath, "utf8");
       html = html.replace(/<script\b(?=[^>]*(?:goatcounter|gc\.zgo\.at|google-analytics|googletagmanager))[^>]*>[\s\S]*?<\/script\s*>/gi, "");
       html = html.replace(/<a\b(?=[^>]*href=["'][^"']*(?:github\.com\/linkingtechnologies\/libre-arcade|linkingtechnologies\.github\.io\/libre-arcade)[^"']*["'])[^>]*>[\s\S]*?<\/a>/gi, "");
       await writeFile(indexPath, html, "utf8");
@@ -123,7 +121,7 @@ async function vendor2048() {
     const extracted = join(work, "source");
     await mkdir(extracted, { recursive: true });
     await fetchToFile(
-      "https://codeload.github.com/gabrielecirulli/2048/tar.gz/refs/heads/master",
+      "https://codeload.github.com/gabrielecirulli/2048/tar.gz/478b6ec346e3787f589e4af751378d06ded4cbbc",
       archive
     );
     execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
@@ -134,9 +132,7 @@ async function vendor2048() {
     for (const name of ["js", "style", "meta", "favicon.ico", "LICENSE.txt", "README.md"]) {
       try { await cp(join(extracted, name), join(outputDir, name), { recursive: true }); } catch {}
     }
-    const { readFile } = await import("node:fs/promises");
-    const licensePath = join(extracted, "LICENSE.txt");
-    try { await cp(licensePath, join(outputDir, "UPSTREAM_LICENSE.txt")); } catch {}
+    try { await cp(join(extracted, "LICENSE.txt"), join(outputDir, "UPSTREAM_LICENSE.txt")); } catch {}
     await writeFile(join(outputDir, "PROVENANCE.md"), [
       "# 2048 source provenance", "",
       "- Upstream repository: https://github.com/gabrielecirulli/2048",
@@ -147,6 +143,8 @@ async function vendor2048() {
     await rm(work, { recursive: true, force: true });
   }
 }
-\nawait vendor2048();\nawait vendorEaglercraft();
+
+await vendor2048();
+await vendorEaglercraft();
 await vendorLibreArcade();
 console.log("Vendored pinned open-source game code for Vehemence.");
