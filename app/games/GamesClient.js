@@ -29,56 +29,56 @@ const games = [
     name: "Moto X3M",
     category: "Racing",
     description: "Race through obstacle-filled tracks on a stunt bike.",
-    playUrl: "https://sciencemathedu.github.io/motox3m/"
+    playUrl: "/games/moto-x3m.html"
   },
   {
     id: "moto-x3m-winter",
     name: "Moto X3M Winter",
     category: "Racing",
     description: "Race through snowy tracks in this winter stunt-bike game.",
-    playUrl: "https://sciencemathlearning.github.io/motox3mwinter/3kh0-assets-main-motox3m-winter/motox3m-winter/"
+    playUrl: "/games/moto-x3m-winter.html"
   },
   {
     id: "moto-x3m-pool-party",
     name: "Moto X3M Pool Party",
     category: "Racing",
     description: "Take on stunt-bike tracks with a summer pool-party theme.",
-    playUrl: "https://smashkartsonlinegames.github.io/v/moto-x3m-pool-party/"
+    playUrl: "/games/moto-x3m-pool-party.html"
   },
   {
     id: "moto-x3m-spooky-land",
     name: "Moto X3M Spooky Land",
     category: "Racing",
     description: "Race through spooky themed stunt-bike levels.",
-    playUrl: "https://gswitch3.github.io/g/moto-x3m-spooky-land/"
+    playUrl: "/games/moto-x3m-spooky-land.html"
   },
   {
     id: "monkey-mart",
     name: "Monkey Mart",
     category: "Simulation",
     description: "Run a busy little supermarket as a monkey.",
-    playUrl: "https://jasongamesdev.github.io/monkey-mart/"
+    playUrl: "/games/monkey-mart.html"
   },
   {
     id: "run-3",
     name: "Run 3",
     category: "Platformer",
     description: "Run and jump through twisting tunnels in space.",
-    playUrl: "https://en.gameslol.net/data/run-3/index.html"
+    playUrl: "/games/run-3.html"
   },
   {
     id: "tetris",
     name: "Tetris",
     category: "Puzzle",
     description: "Fit falling blocks together to clear lines.",
-    playUrl: "https://games.coolgames.com/tetris-lottery/en/3.2/index.html"
+    playUrl: "/games/tetris.html"
   },
   {
     id: "bubble-shooter",
     name: "Bubble Shooter",
     category: "Puzzle",
     description: "Match colorful bubbles to clear the board.",
-    playUrl: "https://cdn.bubbleshooter.net/games/bubble-shooter/"
+    playUrl: "/games/bubble-shooter.html"
   },
   {
     id: "open-snake",
