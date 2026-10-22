@@ -22,7 +22,7 @@ const games = [
     name: "Cookie Clicker",
     category: "Idle",
     description: "Grow your cookie empire in the classic incremental game.",
-    playUrl: "https://ozh.github.io/cookieclicker/"
+    playUrl: "/games/cookie-clicker/index.html"
   },
   {
     id: "moto-x3m",

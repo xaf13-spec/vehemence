@@ -114,6 +114,48 @@ async function vendorLibreArcade() {
 }
 
 
+
+async function vendorCookieClicker() {
+  const source = {
+    repository: "xaf13-spec/Cookie-Clicker-Source-Code",
+    revision: "9a61267fa1586f1df7e3a8138ee4ff6a0ba164b2",
+  };
+  const work = await mkdtemp(join(tmpdir(), "vehemence-cookie-clicker-"));
+  try {
+    const archive = join(work, "source.tar.gz");
+    const extracted = join(work, "source");
+    await mkdir(extracted, { recursive: true });
+    await fetchToFile(
+      \`https://codeload.github.com/\${source.repository}/tar.gz/\${source.revision}\`,
+      archive
+    );
+    execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
+    const outputDir = join(root, "public", "games", "cookie-clicker");
+    await rm(outputDir, { recursive: true, force: true });
+    await mkdir(outputDir, { recursive: true });
+    await cp(extracted, outputDir, { recursive: true });
+    await rm(join(outputDir, "img", "Thumbs.db"), { force: true });
+
+    const { readFile } = await import("node:fs/promises");
+    const indexPath = join(outputDir, "index.html");
+    let html = await readFile(indexPath, "utf8");
+    html = html.replace(/<script[^>]*cookieconsent_options[\\s\\S]*?<\\/script>\\s*<script[^>]*cookieconsent\\.min\\.js[^>]*><\\/script>/i, "");
+    html = html.replace(/<!-- Facebook Pixel Code -->[\\s\\S]*?<!-- end code -->/i, "");
+    html = html.replace(/<script[^>]*pagead\\.googlesyndication\\.com[^>]*><\\/script>/i, "");
+    await writeFile(indexPath, html, "utf8");
+    await writeFile(join(outputDir, "PROVENANCE.md"), [
+      "# Cookie Clicker source provenance", "",
+      "- Upstream source repository: https://github.com/xaf13-spec/Cookie-Clicker-Source-Code",
+      \`- Pinned source revision: \${source.revision}\`,
+      "- Original game code, graphics, README, and copyright notice are retained.",
+      "- The source is fetched during the Vehemence build and served from Vehemence's own static game path.",
+      "- Cookie-consent, Facebook Pixel, and Google ad-loader snippets are removed; gameplay code and assets are otherwise retained.", ""
+    ].join("\\n"), "utf8");
+  } finally {
+    await rm(work, { recursive: true, force: true });
+  }
+}
+
 async function vendor2048() {
   const work = await mkdtemp(join(tmpdir(), "vehemence-2048-"));
   try {
@@ -144,6 +186,7 @@ async function vendor2048() {
   }
 }
 
+await vendorCookieClicker();
 await vendor2048();
 await vendorEaglercraft();
 await vendorLibreArcade();
