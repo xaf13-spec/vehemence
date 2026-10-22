@@ -137,6 +137,13 @@ async function vendorCookieClicker() {
     await rm(join(outputDir, "img", "Thumbs.db"), { force: true });
 
     const { readFile } = await import("node:fs/promises");
+    const mainJsPath = join(outputDir, "main.js");
+    let mainJs = await readFile(mainJsPath, "utf8");
+    const iframeGuard = /if\s*\(top\s*!=\s*self\)\s*Game\.ErrorFrame\(\);\s*else\s*\{/;
+    if (!iframeGuard.test(mainJs)) throw new Error("Cookie Clicker iframe error guard was not found; refusing to patch an unexpected source version.");
+    mainJs = mainJs.replace(iframeGuard, "{");
+    await writeFile(mainJsPath, mainJs, "utf8");
+
     const indexPath = join(outputDir, "index.html");
     let html = await readFile(indexPath, "utf8");
     html = html.replace(/<script[^>]*cookieconsent_options[\s\S]*?<\/script>\s*<script[^>]*cookieconsent\.min\.js[^>]*><\/script>/i, "");
