@@ -5,8 +5,8 @@ import OwnerPanel from "./OwnerPanel";
 import { isOwnerAccount } from "./owner-actions";
 
 const defaultNotifications = [{ id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }];
-const navItems = [["/", "Home"], ["/games", "Games"], ["/movies", "Movies / TV Shows"], ["/browser", "Browser"], ["/soundboard", "Soundboard"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
-const commandItems = navItems.map(([path, label]) => ({ id: path, label, detail: `Go to ${label}`, path, icon: ({ Home: "⌂", Games: "▦", "Movies / TV Shows": "▶", Browser: "◫", Soundboard: "♫", Marketplace: "◇", Profile: "◎", Friends: "♧", Settings: "⚙", Notifications: "◌" })[label] }));
+const navItems = [["/", "Home"], ["/games", "Games"], ["/movies", "Movies / TV Shows"], ["/browser", "Browser"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
+const commandItems = navItems.map(([path, label]) => ({ id: path, label, detail: `Go to ${label}`, path, icon: ({ Home: "⌂", Games: "▦", "Movies / TV Shows": "▶", Browser: "◫", Marketplace: "◇", Profile: "◎", Friends: "♧", Settings: "⚙", Notifications: "◌" })[label] }));
 
 export default function Navbar({ activePath = "/", onNavigate }) {
   const [unread, setUnread] = useState(0);
