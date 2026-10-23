@@ -18,7 +18,8 @@ const movies = [
   { id: "movie-13", title: "Street Fighter", src: "https://fembed.co/embed/db54_Qqe3-epd" },
   { id: "movie-14", title: "Super Mario Galaxy", src: "https://fembed.co/embed/xxa3p-HY1d_e7" },
   { id: "movie-15", title: "Top Gun: Maverick", src: "https://fembed.co/embed/qNe_gpny-m7PM" },
-  { id: "movie-16", title: "Holes", src: "https://fembed.co/embed/kaV-4mhXw_ILS" }
+  { id: "movie-16", title: "Holes", src: "https://fembed.co/embed/kaV-4mhXw_ILS" },
+  { id: "movie-17", title: "Resident Evil", src: "https://fembed.co/embed/Gg5xp_t-5qJa4" }
 ];
 
 const shows = [
