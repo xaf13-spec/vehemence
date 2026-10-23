@@ -18,7 +18,9 @@ const movies = [
   { id: "movie-13", title: "Street Fighter", src: "https://fembed.co/embed/db54_Qqe3-epd" },
   { id: "movie-14", title: "Super Mario Galaxy", src: "https://fembed.co/embed/xxa3p-HY1d_e7" },
   { id: "movie-15", title: "Top Gun: Maverick", src: "https://fembed.co/embed/qNe_gpny-m7PM" },
-  { id: "movie-16", title: "Holes", src: "https://fembed.co/embed/kaV-4mhXw_ILS" }
+  { id: "movie-16", title: "Holes", src: "https://fembed.co/embed/kaV-4mhXw_ILS" },
+  { id: "simpsons-s1-e4", title: "The Simpsons — S1 E4: There's No Disgrace Like Home", src: "https://fembed.co/embed/Mle0_JP4n-Wyx" },
+  { id: "south-park-s1-e6", title: "South Park — S1 E6: Death", src: "https://fembed.co/embed/3ToPvuN-h_Qp9" }
 ];
 
 export default function MoviesClient() {
@@ -27,8 +29,8 @@ export default function MoviesClient() {
   return (
     <main style={{ maxWidth: 1180, margin: "0 auto", padding: "34px 24px 60px", color: "var(--text-primary, #f4f2ff)" }}>
       <p style={{ color: "#a99aff", fontSize: 11, fontWeight: 800, letterSpacing: ".18em" }}>VEHEMENCE · WATCH</p>
-      <h1 style={{ fontSize: "clamp(30px, 5vw, 46px)", margin: "8px 0" }}>Movies</h1>
-      <p style={{ color: "var(--text-secondary, #a6a3b5)", marginBottom: 24 }}>Choose a movie to play it here.</p>
+      <h1 style={{ fontSize: "clamp(30px, 5vw, 46px)", margin: "8px 0" }}>Movies / TV Shows</h1>
+      <p style={{ color: "var(--text-secondary, #a6a3b5)", marginBottom: 24 }}>Choose a movie or TV episode to play it here.</p>
       {selected && <section style={{ border: "1px solid var(--border-color, rgba(255,255,255,.12))", borderRadius: 16, overflow: "hidden", background: "#08080d", marginBottom: 28 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "14px 18px" }}>
           <strong>{selected.title}</strong>
