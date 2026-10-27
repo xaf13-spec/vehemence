@@ -17,7 +17,7 @@ export default async function Rules() {
           <p>• Do not leak private Vehemence information, documents, links, or internal information to unauthorized people.</p>
           <div className="rules-bottom">
             <p>{user ? "You are already signed in. You can continue to Vehemence." : "By continuing, you agree to follow the Vehemence rules."}</p>
-            <a href={user ? "/" : "/signup"} className="primary-button">
+            <a href={user ? "/" : "/signup?rules=accepted"} className="primary-button">
               {user ? "Continue to Vehemence" : "I Agree"}
             </a>
           </div>
