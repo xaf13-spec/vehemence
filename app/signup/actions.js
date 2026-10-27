@@ -19,7 +19,9 @@ export async function signup(formData) {
     const username = formData.get("username")?.toString().trim();
     const password = formData.get("password")?.toString();
     const confirmPassword = formData.get("confirmPassword")?.toString();
+    const rulesAccepted = formData.get("rulesAccepted")?.toString() === "accepted";
 
+    if (!rulesAccepted) return { error: "You must read and accept the Vehemence rules before creating an account." };
     if (!username || !password || !confirmPassword) return { error: "Please fill in every field." };
     if (password !== confirmPassword) return { error: "Passwords do not match." };
     if (username.length < 3) return { error: "Username must be at least 3 characters." };
