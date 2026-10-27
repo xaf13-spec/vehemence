@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { signup } from "./actions";
 
 export default function Signup() {
-  const searchParams = useSearchParams();
-  const rulesAccepted = searchParams.get("rules") === "accepted";
+  const [rulesAccepted, setRulesAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!rulesAccepted) window.location.replace("/rules");
-  }, [rulesAccepted]);
+    const accepted = new URLSearchParams(window.location.search).get("rules") === "accepted";
+    if (accepted) setRulesAccepted(true);
+    else window.location.replace("/rules");
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
