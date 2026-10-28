@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import OwnerPanel from "./OwnerPanel";
 import { isOwnerAccount } from "./owner-actions";
 
-const defaultNotifications = [{ id: "welcome", title: "Welcome to Vehemence", text: "Your notification center is ready.", type: "System", read: false }];
+const defaultNotifications = [{ id: "welcome", title: "Welcome", text: "Your notification center is ready.", type: "System", read: false }];
 const navItems = [["/", "Home"], ["/games", "Games"], ["/movies", "Movies / TV Shows"], ["/browser", "Browser"], ["/marketplace", "Marketplace"], ["/profile", "Profile"], ["/friends", "Friends"], ["/settings", "Settings"], ["/notifications", "Notifications"]];
 const commandItems = navItems.map(([path, label]) => ({ id: path, label, detail: `Go to ${label}`, path, icon: ({ Home: "⌂", Games: "▦", "Movies / TV Shows": "▶", Browser: "◫", Marketplace: "◇", Profile: "◎", Friends: "♧", Settings: "⚙", Notifications: "◌" })[label] }));
 
@@ -17,18 +17,17 @@ export default function Navbar({ activePath = "/", onNavigate }) {
   const [commandIndex, setCommandIndex] = useState(0);
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const [brand, setBrand] = useState({ preset: "Vehemence", name: "Vehemence", logoUrl: "", font: "Japanese Serif" });
+  
   const commandInput = useRef(null);
 
   useEffect(() => {
     const updateBrand = () => {
-      const preset = localStorage.getItem("vehemence_brand_preset") || "Vehemence";
-      const logoUrl = localStorage.getItem("vehemence_brand_logo_url") || "";
-      setBrand({ preset, name: "Vehemence", logoUrl: "", font: "Display Gothic" });
+      const preset = "Neutral";
+      const logoUrl = "";
       let favicon = document.querySelector('link[rel="icon"]');
       if (!favicon) { favicon = document.createElement("link"); favicon.rel = "icon"; document.head.appendChild(favicon); }
       const vehemenceLogo = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%273%27 y=%273%27 width=%2758%27 height=%2758%27 rx=%2717%27 fill=%27%230d0d14%27/%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E";
-      favicon.href = logoUrl || (preset === "Google Classroom" ? "https://www.gstatic.com/classroom/logo_square_rounded.svg" : preset === "Khan Academy" ? "https://cdn.kastatic.org/images/khan-logo-vertical-transparent.png" : preset === "Custom" ? "" : vehemenceLogo);
+      favicon.href = "data:,";
     };
     updateBrand();
     window.addEventListener("vehemence-brand-changed", updateBrand);
@@ -88,7 +87,7 @@ export default function Navbar({ activePath = "/", onNavigate }) {
 
   return <>
     <nav className={`navbar ${side ? "navbar-side" : ""}`}>
-      <a href="/" className="logo brand-logo brand-font-display-gothic" onClick={(event) => handle(event, "/")} aria-label="Vehemence"><span className="brand-logo-mark brand-vehemence"><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect x=%273%27 y=%273%27 width=%2758%27 height=%2758%27 rx=%2717%27 fill=%27%230d0d14%27/%3E%3Cpath fill=%27%23a99aff%27 d=%27M8 9h12l12 24L44 9h12L32 56z%27/%3E%3Cpath fill=%27%23fff%27 d=%27M24 9h8L20 34h-8z%27/%3E%3C/svg%3E" alt="" /></span><span className="brand-logo-name">Vehemence</span></a>
+      <a href="/" className="logo brand-logo brand-font-display-gothic" onClick={(event) => handle(event, "/")} aria-label="Home"><span className="brand-logo-name">home</span></a>
       <div className="nav-links">
         {navItems.filter(([href]) => href !== "/notifications").map(([href, label]) => { const active = activePath === href; return <a href={href} className={`nav-link ${active ? "active" : ""}`} key={href} onClick={(event) => handle(event, href)} aria-current={active ? "page" : undefined}><span>{label}</span>{active && <span className="nav-active-bubble" aria-hidden="true" />}</a>; })}
       </div>
@@ -101,14 +100,14 @@ export default function Navbar({ activePath = "/", onNavigate }) {
     </nav>
     {ownerOpen && <OwnerPanel onClose={() => setOwnerOpen(false)} />}
     {commandOpen && <div className="command-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setCommandOpen(false); }}>
-      <section className="command-panel" role="dialog" aria-modal="true" aria-label="Vehemence command menu">
+      <section className="command-panel" role="dialog" aria-modal="true" aria-label="Command menu">
         <div className="command-search-row"><span aria-hidden="true">⌕</span><input ref={commandInput} value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "ArrowDown") { event.preventDefault(); setCommandIndex((index) => Math.min(index + 1, Math.max(0, filteredCommands.length - 1))); } else if (event.key === "ArrowUp") { event.preventDefault(); setCommandIndex((index) => Math.max(0, index - 1)); } else if (event.key === "Enter") { event.preventDefault(); runCommand(filteredCommands[commandIndex]); } }} placeholder="Search pages and actions..." aria-label="Search commands" /><kbd>ESC</kbd></div>
         <div className="command-section-label">{commandQuery ? "MATCHING DESTINATIONS" : "QUICK NAVIGATION"}</div>
         <div className="command-results">
           {filteredCommands.map((item) => <button type="button" className={`command-result ${activePath === item.path ? "is-current" : ""} ${filteredCommands[commandIndex]?.id === item.id ? "is-selected" : ""}`} key={item.id} onMouseEnter={() => setCommandIndex(filteredCommands.findIndex((candidate) => candidate.id === item.id))} onClick={() => runCommand(item)}><span className="command-result-icon">{item.icon}</span><span className="command-result-copy"><strong>{item.label}</strong></span>{activePath === item.path ? <span className="command-current">CURRENT</span> : <span className="command-enter">↵</span>}</button>)}
           {filteredCommands.length === 0 && <div className="command-empty"><strong>No matching destination</strong></div>}
         </div>
-        <footer className="command-footer"><span><kbd>↵</kbd> Open destination</span><span><kbd>ESC</kbd> Close menu</span><span className="command-brand">VEHEMENCE / COMMAND</span></footer>
+        <footer className="command-footer"><span><kbd>↵</kbd> Open destination</span><span><kbd>ESC</kbd> Close menu</span><span className="command-brand">COMMAND MENU</span></footer>
       </section>
     </div>}
   </>;
