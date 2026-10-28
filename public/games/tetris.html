@@ -1,236 +1,70 @@
-<!DOCTYPE html>
-<html lang="en-US">
-
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <meta http-equiv="content-language" content="en">
-    <meta name="external" content="true">
-    <meta name="distribution" content="Global">
-    <meta http-equiv="audience" content="General">
-    <link rel="icon" href="rs/imgs/block-blast.png">
-    <title>Tetris - Block Blast</title>
-    <meta name="keywords" content="tetris">
-    <meta name="news_keywords" content="tetris">
-    <meta name="description" content="Tetris - Block Blast">
-    <link rel="stylesheet" type="text/css" href="rs/css/all.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com/">
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tetris</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0d15;--panel:#121624;--line:#272d42;--text:#f3f5ff;--muted:#9ca6c2;--accent:#a78bfa}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#1a1d35 0%,var(--bg) 55%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);display:grid;place-items:center;padding:20px}
+main{width:min(760px,100%)}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{font-size:clamp(26px,5vw,38px);margin:0;letter-spacing:-1.5px}header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+button{font:inherit;color:var(--text);background:#20263a;border:1px solid #343c57;border-radius:10px;padding:10px 14px;cursor:pointer}button:hover{background:#2a3150}button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:16px;align-items:start}.board-wrap{background:#080a11;border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;justify-content:center;position:relative}
+canvas{display:block;width:min(100%,300px);height:auto;image-rendering:pixelated;border-radius:8px}.side{display:grid;gap:12px}.panel{background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);border-radius:14px;padding:14px}.label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}.value{font-size:27px;font-weight:750;margin-top:4px;font-variant-numeric:tabular-nums}.next-canvas{width:100%;max-width:140px;margin:8px auto 0}.controls{display:grid;gap:8px}.controls p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.controls strong{color:var(--text);font-weight:600}.mobile-controls{display:none;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.mobile-controls button{padding:13px 0;font-size:18px}.overlay{position:absolute;inset:12px;background:#080a11dc;display:grid;place-items:center;text-align:center;border-radius:8px;padding:20px}.overlay[hidden]{display:none}.overlay h2{margin:0 0 8px;font-size:26px}.overlay p{margin:0 0 16px;color:var(--muted)}footer{color:var(--muted);font-size:12px;text-align:center;margin-top:14px}
+@media(max-width:560px){body{padding:12px}.layout{grid-template-columns:minmax(0,1fr) 104px;gap:8px}.board-wrap{padding:6px}.side{gap:8px}.panel{padding:9px}.value{font-size:20px}.label{font-size:9px;letter-spacing:1px}.controls{display:none}.mobile-controls{display:grid}.next-canvas{width:100%}header p{font-size:12px}header button{padding:8px 10px;font-size:12px}}
+</style>
 </head>
-
-<body><!--MENU-->
-<header id="header">
-    <div class="container">
-        <div class="row">
-            <div class="p-r d-flex sp al header-bar">
-                <div class="bar-logo">
-                    <a class="logo-text" href="index.html">Block Blast</a>
-                </div>
-                <nav class="navigation">
-                    <ul>
-                                                        <li>
-                                <a class="menu-link" href="motox3m.html">
-                                    <span class="text-menu-link">Moto x3m</span>
-                                </a>
-                            </li>
-                                                    <li>
-                                <a class="menu-link" href="motox3m2.html">
-                                    <span class="text-menu-link">Moto x3m 2</span>
-                                </a>
-                            </li>
-                                            </ul>
-                </nav>
-                <div class="center-box merge_icon icon-menu-mobile">
-                    <svg fill="#555" height="24" viewBox="0 -21 384 384" width="24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="m362.667969 0h-341.335938c-11.753906 0-21.332031 9.578125-21.332031 21.332031v42.667969c0 11.753906 9.578125 21.332031 21.332031 21.332031h341.335938c11.753906 0 21.332031-9.578125 21.332031-21.332031v-42.667969c0-11.753906-9.578125-21.332031-21.332031-21.332031zm0 0">
-                        </path>
-                        <path d="m362.667969 128h-341.335938c-11.753906 0-21.332031 9.578125-21.332031 21.332031v42.667969c0 11.753906 9.578125 21.332031 21.332031 21.332031h341.335938c11.753906 0 21.332031-9.578125 21.332031-21.332031v-42.667969c0-11.753906-9.578125-21.332031-21.332031-21.332031zm0 0">
-                        </path>
-                        <path d="m362.667969 256h-341.335938c-11.753906 0-21.332031 9.578125-21.332031 21.332031v42.667969c0 11.753906 9.578125 21.332031 21.332031 21.332031h341.335938c11.753906 0 21.332031-9.578125 21.332031-21.332031v-42.667969c0-11.753906-9.578125-21.332031-21.332031-21.332031zm0 0">
-                        </path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-<!--END MENU-->
-<!--Mobil MENU-->
-<div class="mobile-dropdown" id="mobile-dropdown">
-    <div class="row">
-        <nav class="nav-mobile-controler">
-            <ul>
-                                         <li>
-                                <a class="menu-link" href="motox3m.html">
-                                    <span class="text-menu-link">Moto x3m</span>
-                                </a>
-                            </li>
-                                                    <li>
-                                <a class="menu-link" href="motox3m2.html">
-                                    <span class="text-menu-link">Moto x3m 2</span>
-                                </a>
-                            </li>
-                            </ul>
-        </nav>
-    </div>
+<body>
+<main>
+<header><div><h1>tetris</h1><p>fit the pieces. clear the lines.</p></div><button id="pauseBtn" type="button">pause</button></header>
+<div class="layout">
+<div class="board-wrap"><canvas id="board" width="300" height="600" aria-label="Tetris playfield"></canvas><div class="overlay" id="overlay"><div><h2 id="overlayTitle">ready?</h2><p id="overlayText">use the arrow keys to play</p><button id="startBtn" type="button">start game</button></div></div></div>
+<aside class="side">
+<div class="panel"><div class="label">score</div><div class="value" id="score">0</div></div>
+<div class="panel"><div class="label">lines</div><div class="value" id="lines">0</div></div>
+<div class="panel"><div class="label">level</div><div class="value" id="level">1</div></div>
+<div class="panel"><div class="label">next</div><canvas id="next" class="next-canvas" width="140" height="100" aria-label="Next piece"></canvas></div>
+<div class="panel controls"><div class="label">controls</div><p><strong>← →</strong> move<br><strong>↑ / X</strong> rotate<br><strong>↓</strong> soft drop<br><strong>space</strong> hard drop<br><strong>P / Esc</strong> pause</p></div>
+</aside>
 </div>
-<!--END Mobile menu--><!--GAME PLAY-->
-<div id="game-page" class="main">
-    <div class="container">
-
-        <div class="row">
-            <div class="frame-box-game">
-                <iframe title="Tetris" id="iframehtml5" class="d-block" width="100%" height="600px" target="_parent" src="https://games.coolgames.com/tetris-lottery/en/3.2/index.html" frameborder="0" border="0" scrolling="no" allowfullscreen=""></iframe>
-                <div class="header-game">
-                    <div class="box-header">
-                        <h1>Tetris</h1>
-                        <div class="header-game-extend">
-                            <span class="us-expand" id="half-expand" onclick="theaterMode()">
-                                <svg class="scale-anim" width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--gis" preserveAspectRatio="xMidYMid meet">
-                                    <path d="M8.5 22.5A3.5 3.5 0 0 0 5 26v48a3.5 3.5 0 0 0 3.5 3.5h83A3.5 3.5 0 0 0 95 74V26a3.5 3.5 0 0 0-3.5-3.5h-83zm3.5 7h76v41H12v-41z">
-                                    </path>
-                                </svg>
-                            </span>
-                            <span class="expand-btn" id="expand">
-                                <svg class="scale-anim" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M3,15 L3.11662113,15.0067277 C3.57570299,15.0600494 3.93995063,15.424297 3.99327227,15.8833789 L4,16 L4,20 L8,20 L8.11662113,20.0067277 C8.61395981,20.0644928 9,20.4871642 9,21 C9,21.5128358 8.61395981,21.9355072 8.11662113,21.9932723 L8,22 L3,22 L2.88337887,21.9932723 C2.42429701,21.9399506 2.06004937,21.575703 2.00672773,21.1166211 L2,21 L2,16 L2.00672773,15.8833789 C2.06004937,15.424297 2.42429701,15.0600494 2.88337887,15.0067277 L3,15 Z M21,15 C21.5128358,15 21.9355072,15.3860402 21.9932723,15.8833789 L22,16 L22,21 C22,21.5128358 21.6139598,21.9355072 21.1166211,21.9932723 L21,22 L16,22 C15.4477153,22 15,21.5522847 15,21 C15,20.4871642 15.3860402,20.0644928 15.8833789,20.0067277 L16,20 L20,20 L20,16 C20,15.4871642 20.3860402,15.0644928 20.8833789,15.0067277 L21,15 Z M8,2 C8.55228475,2 9,2.44771525 9,3 C9,3.51283584 8.61395981,3.93550716 8.11662113,3.99327227 L8,4 L4,4 L4,8 C4,8.51283584 3.61395981,8.93550716 3.11662113,8.99327227 L3,9 C2.48716416,9 2.06449284,8.61395981 2.00672773,8.11662113 L2,8 L2,3 C2,2.48716416 2.38604019,2.06449284 2.88337887,2.00672773 L3,2 L8,2 Z M21,2 L21.1166211,2.00672773 C21.575703,2.06004937 21.9399506,2.42429701 21.9932723,2.88337887 L22,3 L22,8 L21.9932723,8.11662113 C21.9399506,8.57570299 21.575703,8.93995063 21.1166211,8.99327227 L21,9 L20.8833789,8.99327227 C20.424297,8.93995063 20.0600494,8.57570299 20.0067277,8.11662113 L20,8 L20,4 L16,4 L15.8833789,3.99327227 C15.3860402,3.93550716 15,3.51283584 15,3 C15,2.48716416 15.3860402,2.06449284 15.8833789,2.00672773 L16,2 L21,2 Z" />
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <span class="exit-fullscreen hidden" id="_exit_full_screen">
-                    <svg fill="#fff" width="24" height="24" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512.001 512.001" style="enable-background: new 0 0 512.001 512.001;">
-                        <g>
-                            <g>
-                                <path d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z">
-                                </path>
-                            </g>
-                        </g>
-                    </svg>
-                </span>
-            </div>
-        </div>
-        <br />
-
-      <div class="row">
-            <div class="uk-grid-clayover">
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="motox3m.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/motox3m.png" title="Moto x3m" alt="moto x3m" />
-                                <span class="text-overflow uk-game-title">Moto x3m</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="motox3m2html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/motox3m2.png" title="Moto x3m 2" alt="Moto x3m 2" />
-                                <span class="text-overflow uk-game-title">Moto x3m 2</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="motox3m3.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/motox3m3.png" title="Moto x3m unblocked" alt="Moto x3m unblocked" />
-                                <span class="text-overflow uk-game-title">Moto x3m unblocked</span>
-                                                            </div>
-                        </a>
-                      </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="motox3mpool.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/motox3mpool.png" title="Moto x3m pool" alt="Moto x3m pool" />
-                                <span class="text-overflow uk-game-title">Moto x3m pool</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="moto3mspooky.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/moto3mspooky.png" title="Moto x3m spooky" alt="Moto x3m Spooky" />
-                                <span class="text-overflow uk-game-title">Moto x3m spooky</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="motox3mwinter.png">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/motox3mwinter.png" title="Moto x3m winter" alt="Moto x3m winter" />
-                                <span class="text-overflow uk-game-title">Moto x3m winter</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="monkeymart.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/monkeymart.png" title="Monkey mart" alt="Monkey mart" />
-                                <span class="text-overflow uk-game-title">Monkey mart</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="run3.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/run3.png" title="Run 3" alt="Run 3" />
-                                <span class="text-overflow uk-game-title">Run 3</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="tetris.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/tetris.png" title="Tetris" alt="Tetris" />
-                                <span class="text-overflow uk-game-title">Tetris</span>
-                                                            </div>
-                        </a>
-                    </div>
-                                    <div class="uk-grid-game">
-													<a class="uk-game-link" href="bubble-shooter.html">
-						                            <div class="uk-wrap-image">
-                                <img width="95" height="95" src="rs/imgs/bubble-shooter.png" title="Bubble Shooter" alt="Bubble Shooter" />
-                                <span class="text-overflow uk-game-title">Bubble Shooter</span>
-                                                            </div>
-                        </a>
-                    </div>
-                            </div>
-        </div>
-
-        <br />
-        <div class="uk-p10">
-            <div class="row">
-                <div class="frame-box-game">
-                    <div class="text-area">
-                        <div class="d-flex us-game-info">
-                            <div class="bread-crumb">
-                                <div class="overwrite-breadcumb">
-                                    <div class="d-flex al sp bread-crumb-list">
-                                        <div class="d-flex al sp">
-                                            <a class="bread-crumb-item" href="index.html">Home</a>
-                                            <span class="bread-crumb-item bread-after">Tetris</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-area--content">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!--END GAME PLAY--><footer>
-    <script src="rs/js/jquery-3.4.1.min.js"></script>
-    <script src="rs/js/footer.js"></script>
-</footer>
+<div class="mobile-controls"><button data-action="left" aria-label="Move left">←</button><button data-action="rotate" aria-label="Rotate">↻</button><button data-action="down" aria-label="Soft drop">↓</button><button data-action="right" aria-label="Move right">→</button></div>
+<footer>keyboard or touch controls · no downloads</footer>
+</main>
+<script>
+(() => {
+const COLS=10,ROWS=20,SIZE=30;
+const COLORS={I:"#55d9e8",O:"#f6d365",T:"#b69cff",S:"#6ee7a8",Z:"#ff7d9c",J:"#76a7ff",L:"#ffb36b"};
+const SHAPES={
+I:[[1,1,1,1]],O:[[1,1],[1,1]],T:[[0,1,0],[1,1,1]],S:[[0,1,1],[1,1,0]],Z:[[1,1,0],[0,1,1]],J:[[1,0,0],[1,1,1]],L:[[0,0,1],[1,1,1]]
+};
+const boardCanvas=document.getElementById("board"),ctx=boardCanvas.getContext("2d"),nextCanvas=document.getElementById("next"),nctx=nextCanvas.getContext("2d");
+const overlay=document.getElementById("overlay"),overlayTitle=document.getElementById("overlayTitle"),overlayText=document.getElementById("overlayText");
+let grid, piece, nextType, score, lines, level, running=false, paused=false, over=false, last=0, dropTimer=0, raf=0;
+function newGrid(){return Array.from({length:ROWS},()=>Array(COLS).fill(""))}
+function randomType(){return Object.keys(SHAPES)[Math.floor(Math.random()*7)]}
+function copyShape(type){return SHAPES[type].map(row=>row.slice())}
+function spawn(){const type=nextType||randomType();nextType=randomType();piece={type,shape:copyShape(type),x:Math.floor((COLS-SHAPES[type][0].length)/2),y:0};drawNext();if(collides(piece.x,piece.y,piece.shape)){over=true;running=false;showOverlay("game over","final score: "+score,"play again")}}
+function collides(x,y,shape){for(let r=0;r<shape.length;r++)for(let c=0;c<shape[r].length;c++)if(shape[r][c]){const nx=x+c,ny=y+r;if(nx<0||nx>=COLS||ny>=ROWS||(ny>=0&&grid[ny][nx]))return true}return false}
+function lock(){piece.shape.forEach((row,r)=>row.forEach((v,c)=>{if(v&&piece.y+r>=0)grid[piece.y+r][piece.x+c]=piece.type}));let cleared=0;for(let r=ROWS-1;r>=0;r--){if(grid[r].every(Boolean)){grid.splice(r,1);grid.unshift(Array(COLS).fill(""));cleared++;r++}}if(cleared){score+=([0,100,300,500,800][cleared]||800)*level;lines+=cleared;level=Math.floor(lines/10)+1;updateStats()}spawn()}
+function rotate(shape){return shape[0].map((_,i)=>shape.map(row=>row[i]).reverse())}
+function move(dx,dy){if(!running||paused||over)return false;if(!collides(piece.x+dx,piece.y+dy,piece.shape)){piece.x+=dx;piece.y+=dy;return true}if(dy===1)lock();return false}
+function hardDrop(){if(!running||paused||over)return;let d=0;while(!collides(piece.x,piece.y+1,piece.shape)){piece.y++;d++}score+=d*2;updateStats();lock()}
+function turn(){if(!running||paused||over)return;const rotated=rotate(piece.shape);for(const offset of [0,-1,1,-2,2])if(!collides(piece.x+offset,piece.y,rotated)){piece.x+=offset;piece.shape=rotated;break}}
+function cell(g,x,y,color,alpha=1){g.globalAlpha=alpha;g.fillStyle=color;g.fillRect(x+1,y+1,SIZE-2,SIZE-2);g.fillStyle="rgba(255,255,255,.17)";g.fillRect(x+3,y+3,SIZE-6,3);g.globalAlpha=1}
+function draw(){ctx.clearRect(0,0,300,600);ctx.fillStyle="#0b0e18";ctx.fillRect(0,0,300,600);ctx.strokeStyle="#1b2030";ctx.lineWidth=1;for(let x=0;x<=COLS;x++){ctx.beginPath();ctx.moveTo(x*SIZE+.5,0);ctx.lineTo(x*SIZE+.5,600);ctx.stroke()}for(let y=0;y<=ROWS;y++){ctx.beginPath();ctx.moveTo(0,y*SIZE+.5);ctx.lineTo(300,y*SIZE+.5);ctx.stroke()}grid.forEach((row,y)=>row.forEach((v,x)=>{if(v)cell(ctx,x*SIZE,y*SIZE,COLORS[v])}));if(piece){piece.shape.forEach((row,r)=>row.forEach((v,c)=>{if(v){const x=piece.x+c,y=piece.y+r;if(y>=0)cell(ctx,x*SIZE,y*SIZE,COLORS[piece.type]);}}));let gy=piece.y;while(!collides(piece.x,gy+1,piece.shape))gy++;if(gy!==piece.y)piece.shape.forEach((row,r)=>row.forEach((v,c)=>{if(v&&gy+r>=0)cell(ctx,(piece.x+c)*SIZE,(gy+r)*SIZE,COLORS[piece.type],.22)}))}
+}
+function drawNext(){nctx.clearRect(0,0,140,100);if(!nextType)return;const s=copyShape(nextType),size=22,w=s[0].length*size,h=s.length*size,ox=(140-w)/2,oy=(100-h)/2;s.forEach((row,y)=>row.forEach((v,x)=>{if(v){nctx.fillStyle=COLORS[nextType];nctx.fillRect(ox+x*size+1,oy+y*size+1,size-3,size-3);nctx.fillStyle="rgba(255,255,255,.2)";nctx.fillRect(ox+x*size+3,oy+y*size+3,size-7,3)}}))}
+function updateStats(){document.getElementById("score").textContent=score;document.getElementById("lines").textContent=lines;document.getElementById("level").textContent=level}
+function showOverlay(title,sub,button){overlayTitle.textContent=title;overlayText.textContent=sub;document.getElementById("startBtn").textContent=button;overlay.hidden=false}
+function start(){cancelAnimationFrame(raf);grid=newGrid();score=0;lines=0;level=1;over=false;paused=false;running=true;nextType=randomType();updateStats();spawn();overlay.hidden=true;last=0;dropTimer=0;raf=requestAnimationFrame(loop)}
+function togglePause(){if(over||!grid)return;if(!running){return}paused=!paused;if(paused)showOverlay("paused","take your time","resume");else{overlay.hidden=true;last=0;raf=requestAnimationFrame(loop)}document.getElementById("pauseBtn").textContent=paused?"resume":"pause"}
+function loop(time){if(!running||paused)return;const dt=last?time-last:0;last=time;dropTimer+=dt;if(dropTimer>Math.max(90,750-(level-1)*55)){move(0,1);dropTimer=0}draw();raf=requestAnimationFrame(loop)}
+document.getElementById("startBtn").addEventListener("click",()=>{if(paused&&!over){paused=false;overlay.hidden=true;document.getElementById("pauseBtn").textContent="pause";last=0;raf=requestAnimationFrame(loop)}else start()});
+document.getElementById("pauseBtn").addEventListener("click",togglePause);
+document.addEventListener("keydown",e=>{const k=e.key.toLowerCase();if(["arrowleft","arrowright","arrowdown","arrowup"," "].includes(k))e.preventDefault();if(k==="p"||k==="escape"){togglePause();return}if(!running||paused||over)return;if(k==="arrowleft")move(-1,0);else if(k==="arrowright")move(1,0);else if(k==="arrowdown"){if(move(0,1)){score++;updateStats()}}else if(k==="arrowup"||k==="x")turn();else if(k===" " )hardDrop();draw()});
+document.querySelectorAll("[data-action]").forEach(b=>{const act=()=>{if(b.dataset.action==="left")move(-1,0);if(b.dataset.action==="right")move(1,0);if(b.dataset.action==="down"){if(move(0,1)){score++;updateStats()}}if(b.dataset.action==="rotate")turn();draw()};b.addEventListener("click",act);b.addEventListener("touchstart",e=>{e.preventDefault();act()},{passive:false})});
+grid=newGrid();draw();drawNext();showOverlay("ready?","use the arrow keys to play","start game");
+})();
+</script>
 </body>
-
-<!-- Mirrored from blockblastonline.github.io/tetris by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 25 May 2025 14:23:05 GMT -->
 </html>
