@@ -18,6 +18,13 @@ const games = [
     playUrl: "https://vehemence.neocities.org/eaglercraft26-2"
   },
   {
+    id: "retro-bowl",
+    name: "Retro Bowl",
+    category: "Sports",
+    description: "Build your team and lead it through a retro football season.",
+    playUrl: "/games/retro-bowl/index.html"
+  },
+  {
     id: "cookie-clicker",
     name: "Cookie Clicker",
     category: "Idle",
@@ -101,7 +108,7 @@ const categories = ["All", ...new Set(games.map((game) => game.category))];
 const symbols = {
   "pacman": "◉", "2048": "▦", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
   "battleship": "▤", "block-drop": "▦", "breakout": "▥", "bubble-shooter": "◌",
-  "connect-four": "⊞", "cookie-clicker": "🍪", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
+  "connect-four": "⊞", "cookie-clicker": "🍪", "retro-bowl": "🏈", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
   "gem-match": "◆", "helix-drop": "◉", "lights-out": "✦", "maze-muncher": "⌘",
   "memory-match": "▧", "moto-x3m": "🏍", "moto-x3m-winter": "🏍", "moto-x3m-pool-party": "🏍", "moto-x3m-spooky-land": "🏍", "monkey-mart": "🐒", "run-3": "🏃", "tetris": "▦", "merge-drop": "◉", "minesweeper": "▦", "paddle-duel": "◉",
   "piano-tap": "▥", "reversi": "◉", "slide-puzzle": "▦", "snake": "〰",

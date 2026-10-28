@@ -193,8 +193,51 @@ async function vendor2048() {
   }
 }
 
+
+async function vendorRetroBowl() {
+  const source = {
+    repository: "8bitCAP/Retro-Bowl",
+    revision: "c3e91e0ac791367d9b1bd4ede3a2ad686d1e3b1e",
+  };
+  const work = await mkdtemp(join(tmpdir(), "vehemence-retro-bowl-"));
+  try {
+    const archive = join(work, "source.tar.gz");
+    const extracted = join(work, "source");
+    await mkdir(extracted, { recursive: true });
+    await fetchToFile(
+      `https://codeload.github.com/${source.repository}/tar.gz/${source.revision}`,
+      archive
+    );
+    execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
+    const upstreamGameDir = join(extracted, "rb");
+    const outputDir = join(root, "public", "games", "retro-bowl");
+    await rm(outputDir, { recursive: true, force: true });
+    await mkdir(outputDir, { recursive: true });
+    await cp(upstreamGameDir, outputDir, { recursive: true });
+
+    // Use the actual GameMaker entry point directly so every asset URL is relative
+    // to /games/retro-bowl/ rather than the upstream wrapper's root-absolute /rb path.
+    const indexPath = join(outputDir, "index.html");
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(indexPath, "utf8");
+    if (!html.includes("html5game/RetroBowl.js") || !html.includes("GameMaker_Init")) {
+      throw new Error("Retro Bowl entry point did not match the expected upstream layout.");
+    }
+    await writeFile(join(outputDir, "PROVENANCE.md"), [
+      "# Retro Bowl source provenance", "",
+      `- Source repository: https://github.com/${source.repository}`,
+      `- Pinned source revision: ${source.revision}`,
+      "- The upstream rb/ game directory is copied into this site's static game directory at build time.",
+      "- The upstream repository does not include a license file; confirm you have permission to host and redistribute these files before publishing.", ""
+    ].join("\\n"), "utf8");
+  } finally {
+    await rm(work, { recursive: true, force: true });
+  }
+}
+
+await vendorRetroBowl();
 await vendorCookieClicker();
 await vendor2048();
 await vendorEaglercraft();
 await vendorLibreArcade();
-console.log("Vendored pinned open-source game code for Vehemence.");
+console.log("Vendored pinned game assets for Vehemence.");
