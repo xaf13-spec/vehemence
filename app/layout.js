@@ -22,7 +22,7 @@ import BrowserCustomization from "./components/BrowserCustomization";
 import AppShell from "./components/AppShell";
 import { getCurrentUser } from "../lib/auth";
 
-export const metadata = { title: "Home", description: "Games, community, and more." };
+export const metadata = { title: "Google Classroom", description: "Games, community, and more." };
 
 export default async function RootLayout({ children }) {
   const user = await getCurrentUser();
