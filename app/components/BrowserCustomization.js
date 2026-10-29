@@ -23,7 +23,7 @@ function applySettings() {
   root.setAttribute("data-animations", animations);
   root.setAttribute("data-blur", blur);
   root.setAttribute("data-background-effects", background);
-  document.title = "Vehemence";
+  document.title = "Google Classroom";
 }
 
 export default function BrowserCustomization() {
