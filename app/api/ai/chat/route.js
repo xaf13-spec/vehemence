@@ -44,43 +44,86 @@ export async function POST(request) {
     role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }]
   }));
 
-  let response;
+  let upstream;
   try {
-    response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent", {
+    upstream = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse", {
       method: "POST",
       headers: { "x-goog-api-key": process.env.GEMINI_API_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: "You are Vehemence AI. Be direct, natural, and concise. Answer the exact question first. For simple questions or calculations, give only the answer and at most one short explanation. Do not invent alternate interpretations unless the wording is genuinely ambiguous. Avoid unnecessary introductions, repeated wording, numbered lists for simple answers, and excessive detail. Use clean readable Markdown only when it helps." }] },
+        systemInstruction: { parts: [{ text: "You are Vehemence AI. Be direct, natural, and concise. Answer the exact question first. For simple questions or calculations, give only the answer. Avoid unnecessary introductions, repeated wording, and excessive detail." }] },
         contents,
         generationConfig: { maxOutputTokens: 512, thinkingConfig: { thinkingLevel: "LOW" } }
       }),
-      signal: AbortSignal.timeout(45000)
+      signal: AbortSignal.timeout(50000)
     });
   } catch (error) {
-    console.error("Gemini request failed:", error);
-    return NextResponse.json({ error: "Gemini took too long to respond. Please try again." }, { status: 504 });
+    console.error("Gemini connection failed:", error);
+    return NextResponse.json({ error: "Gemini could not connect in time. Please try again." }, { status: 504 });
   }
 
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    console.error("Gemini API error:", response.status, JSON.stringify(payload).slice(0, 600));
-    const message = response.status === 429
+  if (!upstream.ok) {
+    const payload = await upstream.json().catch(() => ({}));
+    console.error("Gemini API error:", upstream.status, JSON.stringify(payload).slice(0, 600));
+    const message = upstream.status === 429
       ? "Gemini's free usage limit has been reached. Try again later."
-      : response.status === 400 || response.status === 403
+      : upstream.status === 400 || upstream.status === 403
         ? "Gemini rejected the API key or request. Check the key in Vercel."
         : "Gemini could not complete that request.";
-    return NextResponse.json({ error: message }, { status: response.status === 429 ? 429 : 502 });
+    return NextResponse.json({ error: message }, { status: upstream.status === 429 ? 429 : 502 });
   }
 
-  const answer = (payload.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("").trim();
-  if (!answer) return NextResponse.json({ error: "Gemini returned an empty response. Please try again." }, { status: 502 });
-
-  const { error: assistantSaveError } = await db.from("ai_messages").insert({
-    conversation_id: conversationId, owner_id: user.id, role: "assistant", content: answer
+  const output = new ReadableStream({
+    async start(controller) {
+      const reader = upstream.body.getReader();
+      const decoder = new TextDecoder();
+      const encoder = new TextEncoder();
+      let buffer = "";
+      let answer = "";
+      const consume = (line) => {
+        if (!line.startsWith("data:")) return;
+        const data = line.slice(5).trim();
+        if (!data || data === "[DONE]") return;
+        try {
+          const event = JSON.parse(data);
+          const chunk = (event.candidates?.[0]?.content?.parts || []).map(part => part.text || "").join("");
+          if (chunk) {
+            answer += chunk;
+            controller.enqueue(encoder.encode(chunk));
+          }
+        } catch (error) {
+          console.error("Gemini stream event parse failed:", error);
+        }
+      };
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+          const lines = buffer.split(/\\r?\\n/);
+          buffer = lines.pop() || "";
+          for (const line of lines) consume(line.trim());
+          if (done) break;
+        }
+        if (buffer.trim()) consume(buffer.trim());
+        if (answer) {
+          const { error } = await db.from("ai_messages").insert({
+            conversation_id: conversationId, owner_id: user.id, role: "assistant", content: answer
+          });
+          if (error) console.error("Could not save Gemini response:", error);
+        } else {
+          controller.enqueue(encoder.encode("Gemini returned an empty response. Please try again."));
+        }
+        controller.close();
+      } catch (error) {
+        console.error("Gemini stream failed:", error);
+        controller.enqueue(encoder.encode(answer ? "\\n[response interrupted]" : "Gemini could not finish that response. Please try again."));
+        controller.close();
+      } finally {
+        reader.releaseLock();
+      }
+    }
   });
-  if (assistantSaveError) console.error("Could not save Gemini response:", assistantSaveError);
 
-  return new Response(answer, {
-    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }
+  return new Response(output, {
+    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store, no-transform", "X-Accel-Buffering": "no" }
   });
 }
