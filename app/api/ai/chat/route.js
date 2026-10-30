@@ -9,7 +9,7 @@ const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_R
 export async function POST(request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Sign in to use Vehemence AI." }, { status: 401 });
-  if (!process.env.OPENAI_API_KEY) return NextResponse.json({ error: "Vehemence AI needs an OpenAI API key. Add OPENAI_API_KEY as a private Vercel environment variable." }, { status: 503 });
+  if (!process.env.GEMINI_API_KEY) return NextResponse.json({ error: "Vehemence AI needs a Gemini API key. Add GEMINI_API_KEY as a private Vercel environment variable." }, { status: 503 });
 
   let body;
   try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid request." }, { status: 400 }); }
@@ -32,22 +32,36 @@ export async function POST(request) {
     await db.from("ai_conversations").update({ updated_at: new Date().toISOString() }).eq("id", conversationId).eq("owner_id", user.id);
   }
 
-  const messages = [...(history || []), { role: "user", content: prompt }];
+  const contents = [...(history || []), { role: "user", content: prompt }].map((message) => ({
+    role: message.role === "assistant" ? "model" : "user",
+    parts: [{ text: message.content }]
+  }));
+
   let upstream;
   try {
-    upstream = await fetch("https://api.openai.com/v1/chat/completions", {
+    upstream = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse", {
       method: "POST",
-      headers: { "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "system", content: "You are Vehemence AI, a helpful general-purpose assistant. Be clear, accurate, and conversational." }, ...messages], stream: true }),
+      headers: { "x-goog-api-key": process.env.GEMINI_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: "You are Vehemence AI, a helpful general-purpose assistant. Be clear, accurate, and conversational." }] },
+        contents,
+        generationConfig: { temperature: 0.7 }
+      }),
       signal: AbortSignal.timeout(60000)
     });
   } catch {
-    return NextResponse.json({ error: "Could not reach the AI service. Please try again." }, { status: 502 });
+    return NextResponse.json({ error: "Could not reach Gemini. Please try again." }, { status: 502 });
   }
   if (!upstream.ok || !upstream.body) {
     const detail = await upstream.text().catch(() => "");
-    console.error("OpenAI request failed:", upstream.status, detail.slice(0, 500));
-    return NextResponse.json({ error: upstream.status === 429 ? "AI is busy or the API quota is exhausted. Try again later." : "The AI service could not complete that request." }, { status: upstream.status === 429 ? 429 : 502 });
+    console.error("Gemini request failed:", upstream.status, detail.slice(0, 500));
+    return NextResponse.json({
+      error: upstream.status === 429
+        ? "Gemini's free usage limit has been reached for now. Try again later."
+        : upstream.status === 400 || upstream.status === 403
+          ? "Gemini rejected the request or API key. Check that your Gemini API key is valid."
+          : "Gemini could not complete that request."
+    }, { status: upstream.status === 429 ? 429 : 502 });
   }
 
   const encoder = new TextEncoder();
@@ -65,19 +79,19 @@ export async function POST(request) {
           const lines = buffer.split("\n");
           buffer = lines.pop() || "";
           for (const line of lines) {
-            if (!line.startsWith("data: ")) continue;
-            const raw = line.slice(6).trim();
-            if (raw === "[DONE]") continue;
+            if (!line.startsWith("data:")) continue;
+            const raw = line.slice(5).trim();
+            if (!raw) continue;
             try {
               const payload = JSON.parse(raw);
-              const part = payload.choices?.[0]?.delta?.content || "";
+              const part = (payload.candidates?.[0]?.content?.parts || []).map((item) => item.text || "").join("");
               if (part) { full += part; controller.enqueue(encoder.encode(part)); }
             } catch {}
           }
         }
         if (full) await db.from("ai_messages").insert({ conversation_id: conversationId, owner_id: user.id, role: "assistant", content: full });
       } catch (error) {
-        console.error("AI stream failed:", error);
+        console.error("Gemini stream failed:", error);
       } finally {
         controller.close();
       }
