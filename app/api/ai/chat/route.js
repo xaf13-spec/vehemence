@@ -52,7 +52,7 @@ export async function POST(request) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: "You are Vehemence AI. Be direct, natural, and concise. Answer the exact question first. For simple questions or calculations, give only the answer and at most one short explanation. Do not invent alternate interpretations unless the wording is genuinely ambiguous. Avoid unnecessary introductions, repeated wording, numbered lists for simple answers, and excessive detail. Use clean readable Markdown only when it helps." }] },
         contents,
-        generationConfig: { temperature: 0.4, maxOutputTokens: 1024 }
+        generationConfig: { maxOutputTokens: 512, thinkingConfig: { thinkingLevel: "LOW" } }
       }),
       signal: AbortSignal.timeout(45000)
     });
