@@ -1,43 +1,21 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
+import { getCurrentUser } from "../../../lib/auth";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "");
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = supabaseUrl && serviceRoleKey
+  ? createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } })
+  : null;
 
-async function getUserFromSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("vehemence_session")?.value;
-
-  if (!token) return null;
-
-  const { data: session } = await supabase
-    .from("sessions")
-    .select("user_id, expires_at")
-    .eq("token", token)
-    .single();
-
-  if (!session || new Date(session.expires_at) <= new Date()) {
-    return null;
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, username")
-    .eq("id", session.user_id)
-    .single();
-
-  return profile || null;
+function unavailable() {
+  return NextResponse.json({ error: "Chat is temporarily unavailable. Please try again later." }, { status: 503 });
 }
 
 export async function GET() {
-  const user = await getUserFromSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Not logged in." }, { status: 401 });
-  }
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Not logged in." }, { status: 401 });
+  if (!supabase) return unavailable();
 
   const { data, error } = await supabase
     .from("chat_messages")
@@ -46,33 +24,41 @@ export async function GET() {
     .limit(100);
 
   if (error) {
+    console.error("Online chat load failed:", error);
     return NextResponse.json({ error: "Could not load chat messages." }, { status: 500 });
   }
 
-  const { data: blockRows } = await supabase.from("user_blocks").select("blocked_id").eq("blocker_id", user.id);
-  const blockedIds = new Set((blockRows || []).map((row) => row.blocked_id));
+  const { data: blockRows, error: blockError } = await supabase
+    .from("user_blocks")
+    .select("blocked_id")
+    .eq("blocker_id", user.id);
 
-  const messages = (data || []).filter((item) => !blockedIds.has(item.user_id)).map((item) => ({
-    id: item.id,
-    userId: item.user_id,
-    username: item.profiles?.username || "Unknown",
-    customStatus: item.profiles?.custom_status || "",
-    message: item.message,
-    createdAt: item.created_at
-  }));
+  if (blockError) {
+    console.error("Online chat block lookup failed:", blockError);
+    return NextResponse.json({ error: "Could not load chat messages." }, { status: 500 });
+  }
+
+  const blockedIds = new Set((blockRows || []).map((row) => row.blocked_id));
+  const messages = (data || [])
+    .filter((item) => !blockedIds.has(item.user_id))
+    .map((item) => ({
+      id: item.id,
+      userId: item.user_id,
+      username: item.profiles?.username || "Unknown",
+      customStatus: item.profiles?.custom_status || "",
+      message: item.message,
+      createdAt: item.created_at
+    }));
 
   return NextResponse.json({ messages, currentUserId: user.id, blockedUserIds: [...blockedIds] });
 }
 
 export async function POST(request) {
-  const user = await getUserFromSession();
-
-  if (!user) {
-    return NextResponse.json({ error: "Not logged in." }, { status: 401 });
-  }
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Not logged in." }, { status: 401 });
+  if (!supabase) return unavailable();
 
   let body;
-
   try {
     body = await request.json();
   } catch {
@@ -80,25 +66,17 @@ export async function POST(request) {
   }
 
   const message = body?.message?.toString().trim();
-
-  if (!message) {
-    return NextResponse.json({ error: "Message cannot be empty." }, { status: 400 });
-  }
-
-  if (message.length > 500) {
-    return NextResponse.json({ error: "Message is too long." }, { status: 400 });
-  }
+  if (!message) return NextResponse.json({ error: "Message cannot be empty." }, { status: 400 });
+  if (message.length > 500) return NextResponse.json({ error: "Message is too long." }, { status: 400 });
 
   const { data, error } = await supabase
     .from("chat_messages")
-    .insert({
-      user_id: user.id,
-      message
-    })
+    .insert({ user_id: user.id, message })
     .select("id, user_id, message, created_at")
     .single();
 
   if (error) {
+    console.error("Online chat send failed:", error);
     return NextResponse.json({ error: "Could not send your message." }, { status: 500 });
   }
 
