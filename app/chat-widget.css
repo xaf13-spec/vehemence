@@ -267,3 +267,31 @@
     height: min(520px, calc(100vh - 110px));
   }
 }
+
+
+/* Keep the message list as the scrollable middle section of the chat panel. */
+.open-voice-card {
+  flex: 0 0 auto;
+  max-height: 42%;
+  overflow-y: auto;
+}
+.chat-messages {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.chat-input-area {
+  flex: 0 0 auto;
+}
+@media (max-width: 600px) {
+  .chat-window {
+    width: min(370px, calc(100vw - 28px));
+    height: min(620px, calc(100dvh - 28px));
+    min-height: 320px;
+  }
+  .open-voice-card {
+    max-height: 38%;
+  }
+}
