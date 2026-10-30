@@ -50,9 +50,9 @@ export async function POST(request) {
       method: "POST",
       headers: { "x-goog-api-key": process.env.GEMINI_API_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: "You are Vehemence AI, a helpful general-purpose assistant. Be clear, accurate, and conversational." }] },
+        systemInstruction: { parts: [{ text: "You are Vehemence AI. Be direct, natural, and concise. Answer the exact question first. For simple questions or calculations, give only the answer and at most one short explanation. Do not invent alternate interpretations unless the wording is genuinely ambiguous. Avoid unnecessary introductions, repeated wording, numbered lists for simple answers, and excessive detail. Use clean readable Markdown only when it helps." }] },
         contents,
-        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+        generationConfig: { temperature: 0.4, maxOutputTokens: 1024 }
       }),
       signal: AbortSignal.timeout(45000)
     });
