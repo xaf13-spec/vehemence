@@ -101,7 +101,7 @@ async function vendorLibreArcade() {
       const indexPath = join(outputDir, "index.html");
       const { readFile } = await import("node:fs/promises");
       let html = await readFile(indexPath, "utf8");
-      html = html.replace(/<script\b(?=[^>]*(?:goatcounter|gc\.zgo\.at|google-analytics|googletagmanager))[^>]*>[\s\S]*?<\/script\s*>/gi, "");
+    html = html.replace(/<script\s+async\s+src=["']https:\/\/www\.googletagmanager\.com\/gtag\/js[^>]*><\/script>\s*<script>[\s\S]*?<\/script>/i, "");
       html = html.replace(/<a\b(?=[^>]*href=["'][^"']*(?:github\.com\/linkingtechnologies\/libre-arcade|linkingtechnologies\.github\.io\/libre-arcade)[^"']*["'])[^>]*>[\s\S]*?<\/a>/gi, "");
       await writeFile(indexPath, html, "utf8");
       await writeFile(
@@ -290,7 +290,7 @@ async function vendorDarkRoom() {
     const indexPath = join(outputDir, "index.html");
     let html = await readFile(indexPath, "utf8");
     html = html.replace(/<script\\s+src=[\"']https:\\/\\/ajax\\.googleapis\\.com\\/ajax\\/libs\\/jquery\\/1\\.10\\.1\\/jquery\\.min\\.js[\"']><\\/script>/i, "");
-    html = html.replace(/<script\\s+async\\s+src=[\"']https:\\/\\/www\\.googletagmanager\\.com\\/gtag\\/js[^>]*><\\/script>\\s*<script>[\\s\\S]*?<\\/script>/i, "");
+    html = html.replace(/<script\s+async\s+src=["']https:\/\/www\.googletagmanager\.com\/gtag\/js[^>]*><\/script>\s*<script>[\s\S]*?<\/script>/i, "");
     await writeFile(indexPath, html, "utf8");
     const license = await fetchText("https://raw.githubusercontent.com/" + source.repository + "/" + source.revision + "/LICENSE.md", 500);
     await writeFile(join(outputDir, "UPSTREAM_LICENSE.md"), license, "utf8");
@@ -301,7 +301,7 @@ async function vendorDarkRoom() {
       "- Original browser game and local assets are served from Vehemence.",
       "- Remote Google Analytics was removed; the bundled local jQuery fallback is retained.",
       "- MPL-2.0 license retained in UPSTREAM_LICENSE.md.", ""
-    ].join("\\n"), "utf8");
+    ].join("\n"), "utf8");
   } finally {
     await rm(work, { recursive: true, force: true });
   }
