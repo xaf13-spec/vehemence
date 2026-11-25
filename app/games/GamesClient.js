@@ -143,6 +143,7 @@ const games = [
   { id: "netris", name: "Netris", category: "Puzzle", description: "A faithful browser port of a classic falling-block puzzle.", playUrl: "/games/netris/index.html" },
   { id: "don-ceferino", name: "Don Ceferino Hazaña", category: "Action", description: "A ball-popping arcade adventure with 30 levels.", playUrl: "/games/don-ceferino/index.html" },
   { id: "psypong3d", name: "PSY PONG 3D", category: "Sports", description: "A 3D pong game against the computer or a second player.", playUrl: "/games/psypong3d/index.html" },
+  { id: "a-dark-room", name: "A Dark Room", category: "Adventure", description: "Start with a fire and build a settlement in this minimalist survival adventure.", playUrl: "/games/a-dark-room/index.html" },
 ];
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
