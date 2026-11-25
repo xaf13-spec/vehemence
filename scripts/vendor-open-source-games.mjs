@@ -247,7 +247,7 @@ async function vendorMashukuiGames() {
           "- The single-file HTML game is copied into Vehemence and served from the local /games/ path.",
           "- The upstream MIT license is retained beside the game.",
           ""
-        ].join("\\n"),
+        ].join("\n"),
         "utf8"
       );
     }
