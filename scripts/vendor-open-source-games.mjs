@@ -289,7 +289,7 @@ async function vendorDarkRoom() {
     const { readFile } = await import("node:fs/promises");
     const indexPath = join(outputDir, "index.html");
     let html = await readFile(indexPath, "utf8");
-    html = html.replace(/<script\\s+src=[\"']https:\\/\\/ajax\\.googleapis\\.com\\/ajax\\/libs\\/jquery\\/1\\.10\\.1\\/jquery\\.min\\.js[\"']><\\/script>/i, "");
+    html = html.replace(/<script\s+src=["']https:\/\/ajax\.googleapis\.com\/ajax\/libs\/jquery\/1\.10\.1\/jquery\.min\.js["']><\/script>/i, "");
     html = html.replace(/<script\s+async\s+src=["']https:\/\/www\.googletagmanager\.com\/gtag\/js[^>]*><\/script>\s*<script>[\s\S]*?<\/script>/i, "");
     await writeFile(indexPath, html, "utf8");
     const license = await fetchText("https://raw.githubusercontent.com/" + source.repository + "/" + source.revision + "/LICENSE.md", 500);
