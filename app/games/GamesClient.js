@@ -130,7 +130,7 @@ const games = [
   { id: "mancala", name: "Mancala", category: "Board", description: "Sow the stones, capture pits and outscore the computer.", playUrl: "/games/mancala/index.html" },
   { id: "rush-hour", name: "Rush Hour", category: "Puzzle", description: "Move the traffic and clear a path for the red car.", playUrl: "/games/rush-hour/index.html" },
   { id: "mahjong-link", name: "Mahjong Link", category: "Puzzle", description: "Match tiles with a path that makes no more than two turns.", playUrl: "/games/mahjong-link/index.html" },
-  { id: "hanoi", name: "Tower of Hanoi", category: "Puzzle", description: "Move the disks to the final peg without breaking the rules.", playUrl: "/games/hanoi/index.html" }
+  { id: "hanoi", name: "Tower of Hanoi", category: "Puzzle", description: "Move the disks to the final peg without breaking the rules.", playUrl: "/games/hanoi/index.html" },
   { id: "hextris", name: "Hextris", category: "Puzzle", description: "A fast-paced hexagonal block-stacking puzzle.", playUrl: "/games/hextris/index.html" },
   { id: "wok", name: "Wok", category: "Arcade", description: "Catch falling balls in a fast arcade challenge.", playUrl: "/games/wok/index.html" },
   { id: "yanoid", name: "Yanoid", category: "Arcade", description: "A classic paddle-and-brick arcade game.", playUrl: "/games/yanoid/index.html" },
