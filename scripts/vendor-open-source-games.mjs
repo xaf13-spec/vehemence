@@ -194,12 +194,25 @@ async function vendor2048() {
 }
 
 
-async function vendorRetroBowl() {
+
+async function vendorMashukuiGames() {
   const source = {
-    repository: "8bitCAP/Retro-Bowl",
-    revision: "c3e91e0ac791367d9b1bd4ede3a2ad686d1e3b1e",
+    repository: "mashukui/web-games",
+    revision: "2770860c6e2b3ab8144a56462d8178fe7e3445c7",
   };
-  const work = await mkdtemp(join(tmpdir(), "vehemence-retro-bowl-"));
+  const selectedGames = [
+    "bowling",
+    "checkers",
+    "gomoku",
+    "hoop-shot",
+    "mini-golf",
+    "penalty-kick",
+    "mancala",
+    "rush-hour",
+    "mahjong-link",
+    "hanoi",
+  ];
+  const work = await mkdtemp(join(tmpdir(), "vehemence-mashukui-games-"));
   try {
     const archive = join(work, "source.tar.gz");
     const extracted = join(work, "source");
@@ -209,35 +222,43 @@ async function vendorRetroBowl() {
       archive
     );
     execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
-    const upstreamGameDir = join(extracted, "rb");
-    const outputDir = join(root, "public", "games", "retro-bowl");
-    await rm(outputDir, { recursive: true, force: true });
-    await mkdir(outputDir, { recursive: true });
-    await cp(upstreamGameDir, outputDir, { recursive: true });
-
-    // Use the actual GameMaker entry point directly so every asset URL is relative
-    // to /games/retro-bowl/ rather than the upstream wrapper's root-absolute /rb path.
-    const indexPath = join(outputDir, "index.html");
+    const license = await fetchText(`https://raw.githubusercontent.com/${source.repository}/${source.revision}/LICENSE`, 500);
     const { readFile } = await import("node:fs/promises");
-    const html = await readFile(indexPath, "utf8");
-    if (!html.includes("html5game/RetroBowl.js") || !html.includes("GameMaker_Init")) {
-      throw new Error("Retro Bowl entry point did not match the expected upstream layout.");
+
+    for (const slug of selectedGames) {
+      const sourceFile = join(extracted, slug, "index.html");
+      const outputDir = join(root, "public", "games", slug);
+      await rm(outputDir, { recursive: true, force: true });
+      await mkdir(outputDir, { recursive: true });
+      await cp(sourceFile, join(outputDir, "index.html"));
+      await writeFile(join(outputDir, "UPSTREAM_LICENSE.txt"), license, "utf8");
+      const html = await readFile(join(outputDir, "index.html"), "utf8");
+      if (!/<canvas|<svg|<button|<main|<body/i.test(html)) {
+        throw new Error(`Unexpected game entry point for ${slug}; refusing to vendor an empty page.`);
+      }
+      await writeFile(
+        join(outputDir, "PROVENANCE.md"),
+        [
+          "# Game source provenance",
+          "",
+          `- Upstream repository: https://github.com/${source.repository}`,
+          `- Pinned upstream commit: ${source.revision}`,
+          `- Upstream game folder: ${slug}/`,
+          "- The single-file HTML game is copied into Vehemence and served from the local /games/ path.",
+          "- The upstream MIT license is retained beside the game.",
+          ""
+        ].join("\\n"),
+        "utf8"
+      );
     }
-    await writeFile(join(outputDir, "PROVENANCE.md"), [
-      "# Retro Bowl source provenance", "",
-      `- Source repository: https://github.com/${source.repository}`,
-      `- Pinned source revision: ${source.revision}`,
-      "- The upstream rb/ game directory is copied into this site's static game directory at build time.",
-      "- The upstream repository does not include a license file; confirm you have permission to host and redistribute these files before publishing.", ""
-    ].join("\\n"), "utf8");
   } finally {
     await rm(work, { recursive: true, force: true });
   }
 }
 
-await vendorRetroBowl();
 await vendorCookieClicker();
 await vendor2048();
 await vendorEaglercraft();
 await vendorLibreArcade();
+await vendorMashukuiGames();
 console.log("Vendored pinned game assets for Vehemence.");
