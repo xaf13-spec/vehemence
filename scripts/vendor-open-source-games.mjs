@@ -267,9 +267,50 @@ async function vendorMashukuiGames() {
   }
 }
 
+async function vendorDarkRoom() {
+  const source = {
+    repository: "doublespeakgames/adarkroom",
+    revision: "1fada4620b6c66bd07bf15a3f1eb8223df8bc1d7",
+  };
+  const work = await mkdtemp(join(tmpdir(), "vehemence-dark-room-"));
+  try {
+    const archive = join(work, "source.tar.gz");
+    const extracted = join(work, "source");
+    const outputDir = join(root, "public", "games", "a-dark-room");
+    await mkdir(extracted, { recursive: true });
+    await fetchToFile(
+      "https://codeload.github.com/" + source.repository + "/tar.gz/" + source.revision,
+      archive
+    );
+    execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
+    await rm(outputDir, { recursive: true, force: true });
+    await mkdir(outputDir, { recursive: true });
+    await cp(extracted, outputDir, { recursive: true });
+    const { readFile } = await import("node:fs/promises");
+    const indexPath = join(outputDir, "index.html");
+    let html = await readFile(indexPath, "utf8");
+    html = html.replace(/<script\\s+src=[\"']https:\\/\\/ajax\\.googleapis\\.com\\/ajax\\/libs\\/jquery\\/1\\.10\\.1\\/jquery\\.min\\.js[\"']><\\/script>/i, "");
+    html = html.replace(/<script\\s+async\\s+src=[\"']https:\\/\\/www\\.googletagmanager\\.com\\/gtag\\/js[^>]*><\\/script>\\s*<script>[\\s\\S]*?<\\/script>/i, "");
+    await writeFile(indexPath, html, "utf8");
+    const license = await fetchText("https://raw.githubusercontent.com/" + source.repository + "/" + source.revision + "/LICENSE.md", 500);
+    await writeFile(join(outputDir, "UPSTREAM_LICENSE.md"), license, "utf8");
+    await writeFile(join(outputDir, "PROVENANCE.md"), [
+      "# A Dark Room source provenance", "",
+      "- Upstream repository: https://github.com/" + source.repository,
+      "- Pinned upstream commit: " + source.revision,
+      "- Original browser game and local assets are served from Vehemence.",
+      "- Remote Google Analytics was removed; the bundled local jQuery fallback is retained.",
+      "- MPL-2.0 license retained in UPSTREAM_LICENSE.md.", ""
+    ].join("\\n"), "utf8");
+  } finally {
+    await rm(work, { recursive: true, force: true });
+  }
+}
+
 await vendorCookieClicker();
 await vendor2048();
 await vendorEaglercraft();
 await vendorLibreArcade();
 await vendorMashukuiGames();
+await vendorDarkRoom();
 console.log("Vendored pinned game assets for Vehemence.");
