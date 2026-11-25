@@ -131,6 +131,18 @@ const games = [
   { id: "rush-hour", name: "Rush Hour", category: "Puzzle", description: "Move the traffic and clear a path for the red car.", playUrl: "/games/rush-hour/index.html" },
   { id: "mahjong-link", name: "Mahjong Link", category: "Puzzle", description: "Match tiles with a path that makes no more than two turns.", playUrl: "/games/mahjong-link/index.html" },
   { id: "hanoi", name: "Tower of Hanoi", category: "Puzzle", description: "Move the disks to the final peg without breaking the rules.", playUrl: "/games/hanoi/index.html" }
+  { id: "hextris", name: "Hextris", category: "Puzzle", description: "A fast-paced hexagonal block-stacking puzzle.", playUrl: "/games/hextris/index.html" },
+  { id: "wok", name: "Wok", category: "Arcade", description: "Catch falling balls in a fast arcade challenge.", playUrl: "/games/wok/index.html" },
+  { id: "yanoid", name: "Yanoid", category: "Arcade", description: "A classic paddle-and-brick arcade game.", playUrl: "/games/yanoid/index.html" },
+  { id: "for-science", name: "For Science!", category: "Puzzle", description: "A turn-based match-three duel.", playUrl: "/games/for-science/index.html" },
+  { id: "the-lost-path", name: "The Lost Path", category: "Puzzle", description: "Find your way through a dark maze before time runs out.", playUrl: "/games/the-lost-path/index.html" },
+  { id: "strider", name: "Strider", category: "Platformer", description: "Climb through a sci-fi facility with jumps and a rifle.", playUrl: "/games/strider/index.html" },
+  { id: "glparchis", name: "glParchis", category: "Board", description: "Play the classic race-and-capture board game against computer players.", playUrl: "/games/glparchis/index.html" },
+  { id: "game-of-the-goose", name: "Game of the Goose", category: "Board", description: "A local multiplayer board race for up to six players.", playUrl: "/games/game-of-the-goose/index.html" },
+  { id: "klondike", name: "Klondike Solitaire", category: "Card", description: "Play classic Klondike solitaire with locally saved progress.", playUrl: "/games/klondike/index.html" },
+  { id: "netris", name: "Netris", category: "Puzzle", description: "A faithful browser port of a classic falling-block puzzle.", playUrl: "/games/netris/index.html" },
+  { id: "don-ceferino", name: "Don Ceferino Hazaña", category: "Action", description: "A ball-popping arcade adventure with 30 levels.", playUrl: "/games/don-ceferino/index.html" },
+  { id: "psypong3d", name: "PSY PONG 3D", category: "Sports", description: "A 3D pong game against the computer or a second player.", playUrl: "/games/psypong3d/index.html" },
 ];
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
