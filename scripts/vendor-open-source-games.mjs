@@ -17,7 +17,35 @@ const selectedGames = [
   ["classic-breakout", "html5-breakout"],
   ["classic-snake", "html5-snake"],
   ["space-invaders", "html5-space-invaders"],
-  ["asteroids", "asteroids-infinity"],
+  ["asteroids", "asteroids-infinity"],  ["hextris", "hextris"],
+  ["wok", "wok"],
+  ["yanoid", "yanoid"],
+  ["for-science", "for-science"],
+  ["the-lost-path", "the-lost-path"],
+  ["glparchis", "glparchis"],
+  ["game-of-the-goose", "game-of-the-goose"],
+  ["klondike", "klondike"],
+  ["netris", "netris"],
+  ["don-ceferino", "don-ceferino"],
+  ["psypong3d", "psypong3d"],
+  ["bubble-train", "bubble-train"],
+  ["nova-pinball", "nova-pinball"],
+  ["comet-pinball", "comet-pinball"],
+  ["oglbricks", "oglbricks"],
+  ["libre-jigsaw", "libre-jigsaw"],
+  ["sliding-tile-puzzle", "sliding-tile-puzzle"],
+  ["spinning-tile-puzzle", "spinning-tile-puzzle"],
+  ["memonix-pair", "memonix-pair"],
+  ["concentration-room", "concentration-room"],
+  ["lawn-mower", "lawn-mower"],
+  ["disk-field", "disk-field"],
+  ["lan-master", "lan-master"],
+  ["highmoon", "highmoon"],
+  ["donkey-bolonkey", "donkey-bolonkey"],
+  ["milcity", "milcity"],
+  ["zooming-secretary", "zooming-secretary"],
+  ["terramancers", "terramancers"],
+  ["bomber", "bomber"],
 ];
 
 async function fetchText(url, minimumLength = 1) {
@@ -90,7 +118,7 @@ async function vendorLibreArcade() {
       const indexPath = join(outputDir, "index.html");
       const { readFile } = await import("node:fs/promises");
       let html = await readFile(indexPath, "utf8");
-      html = html.replace(/<script\b(?=[^>]*(?:goatcounter|gc\.zgo\.at|google-analytics|googletagmanager))[^>]*>[\s\S]*?<\/script\s*>/gi, "");
+    html = html.replace(/<script\s+async\s+src=["']https:\/\/www\.googletagmanager\.com\/gtag\/js[^>]*><\/script>\s*<script>[\s\S]*?<\/script>/i, "");
       html = html.replace(/<a\b(?=[^>]*href=["'][^"']*(?:github\.com\/linkingtechnologies\/libre-arcade|linkingtechnologies\.github\.io\/libre-arcade)[^"']*["'])[^>]*>[\s\S]*?<\/a>/gi, "");
       await writeFile(indexPath, html, "utf8");
       await writeFile(
@@ -194,12 +222,25 @@ async function vendor2048() {
 }
 
 
-async function vendorRetroBowl() {
+
+async function vendorMashukuiGames() {
   const source = {
-    repository: "8bitCAP/Retro-Bowl",
-    revision: "c3e91e0ac791367d9b1bd4ede3a2ad686d1e3b1e",
+    repository: "mashukui/web-games",
+    revision: "2770860c6e2b3ab8144a56462d8178fe7e3445c7",
   };
-  const work = await mkdtemp(join(tmpdir(), "vehemence-retro-bowl-"));
+  const selectedGames = [
+    "bowling",
+    "checkers",
+    "gomoku",
+    "hoop-shot",
+    "mini-golf",
+    "penalty-kick",
+    "mancala",
+    "rush-hour",
+    "mahjong-link",
+    "hanoi",
+  ];
+  const work = await mkdtemp(join(tmpdir(), "vehemence-mashukui-games-"));
   try {
     const archive = join(work, "source.tar.gz");
     const extracted = join(work, "source");
@@ -209,35 +250,84 @@ async function vendorRetroBowl() {
       archive
     );
     execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
-    const upstreamGameDir = join(extracted, "rb");
-    const outputDir = join(root, "public", "games", "retro-bowl");
-    await rm(outputDir, { recursive: true, force: true });
-    await mkdir(outputDir, { recursive: true });
-    await cp(upstreamGameDir, outputDir, { recursive: true });
-
-    // Use the actual GameMaker entry point directly so every asset URL is relative
-    // to /games/retro-bowl/ rather than the upstream wrapper's root-absolute /rb path.
-    const indexPath = join(outputDir, "index.html");
+    const license = await fetchText(`https://raw.githubusercontent.com/${source.repository}/${source.revision}/LICENSE`, 500);
     const { readFile } = await import("node:fs/promises");
-    const html = await readFile(indexPath, "utf8");
-    if (!html.includes("html5game/RetroBowl.js") || !html.includes("GameMaker_Init")) {
-      throw new Error("Retro Bowl entry point did not match the expected upstream layout.");
+
+    for (const slug of selectedGames) {
+      const sourceFile = join(extracted, slug, "index.html");
+      const outputDir = join(root, "public", "games", slug);
+      await rm(outputDir, { recursive: true, force: true });
+      await mkdir(outputDir, { recursive: true });
+      await cp(sourceFile, join(outputDir, "index.html"));
+      await writeFile(join(outputDir, "UPSTREAM_LICENSE.txt"), license, "utf8");
+      const html = await readFile(join(outputDir, "index.html"), "utf8");
+      if (!/<canvas|<svg|<button|<main|<body/i.test(html)) {
+        throw new Error(`Unexpected game entry point for ${slug}; refusing to vendor an empty page.`);
+      }
+      await writeFile(
+        join(outputDir, "PROVENANCE.md"),
+        [
+          "# Game source provenance",
+          "",
+          `- Upstream repository: https://github.com/${source.repository}`,
+          `- Pinned upstream commit: ${source.revision}`,
+          `- Upstream game folder: ${slug}/`,
+          "- The single-file HTML game is copied into Vehemence and served from the local /games/ path.",
+          "- The upstream MIT license is retained beside the game.",
+          ""
+        ].join("\n"),
+        "utf8"
+      );
     }
-    await writeFile(join(outputDir, "PROVENANCE.md"), [
-      "# Retro Bowl source provenance", "",
-      `- Source repository: https://github.com/${source.repository}`,
-      `- Pinned source revision: ${source.revision}`,
-      "- The upstream rb/ game directory is copied into this site's static game directory at build time.",
-      "- The upstream repository does not include a license file; confirm you have permission to host and redistribute these files before publishing.", ""
-    ].join("\\n"), "utf8");
   } finally {
     await rm(work, { recursive: true, force: true });
   }
 }
 
-await vendorRetroBowl();
+async function vendorDarkRoom() {
+  const source = {
+    repository: "doublespeakgames/adarkroom",
+    revision: "1fada4620b6c66bd07bf15a3f1eb8223df8bc1d7",
+  };
+  const work = await mkdtemp(join(tmpdir(), "vehemence-dark-room-"));
+  try {
+    const archive = join(work, "source.tar.gz");
+    const extracted = join(work, "source");
+    const outputDir = join(root, "public", "games", "a-dark-room");
+    await mkdir(extracted, { recursive: true });
+    await fetchToFile(
+      "https://codeload.github.com/" + source.repository + "/tar.gz/" + source.revision,
+      archive
+    );
+    execFileSync("tar", ["-xzf", archive, "-C", extracted, "--strip-components=1"], { stdio: "inherit" });
+    await rm(outputDir, { recursive: true, force: true });
+    await mkdir(outputDir, { recursive: true });
+    await cp(extracted, outputDir, { recursive: true });
+    const { readFile } = await import("node:fs/promises");
+    const indexPath = join(outputDir, "index.html");
+    let html = await readFile(indexPath, "utf8");
+    html = html.replace(/<script\s+src=["']https:\/\/ajax\.googleapis\.com\/ajax\/libs\/jquery\/1\.10\.1\/jquery\.min\.js["']><\/script>/i, "");
+    html = html.replace(/<script\s+async\s+src=["']https:\/\/www\.googletagmanager\.com\/gtag\/js[^>]*><\/script>\s*<script>[\s\S]*?<\/script>/i, "");
+    await writeFile(indexPath, html, "utf8");
+    const license = await fetchText("https://raw.githubusercontent.com/" + source.repository + "/" + source.revision + "/LICENSE.md", 500);
+    await writeFile(join(outputDir, "UPSTREAM_LICENSE.md"), license, "utf8");
+    await writeFile(join(outputDir, "PROVENANCE.md"), [
+      "# A Dark Room source provenance", "",
+      "- Upstream repository: https://github.com/" + source.repository,
+      "- Pinned upstream commit: " + source.revision,
+      "- Original browser game and local assets are served from Vehemence.",
+      "- Remote Google Analytics was removed; the bundled local jQuery fallback is retained.",
+      "- MPL-2.0 license retained in UPSTREAM_LICENSE.md.", ""
+    ].join("\n"), "utf8");
+  } finally {
+    await rm(work, { recursive: true, force: true });
+  }
+}
+
 await vendorCookieClicker();
 await vendor2048();
 await vendorEaglercraft();
 await vendorLibreArcade();
+await vendorMashukuiGames();
+await vendorDarkRoom();
 console.log("Vendored pinned game assets for Vehemence.");

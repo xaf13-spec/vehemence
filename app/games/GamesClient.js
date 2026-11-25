@@ -15,14 +15,7 @@ const games = [
     name: "Eaglercraft 26.2",
     category: "Sandbox",
     description: "Play the Eaglercraft 26.2 browser client.",
-    playUrl: "https://vehemence.neocities.org/eaglercraft26-2"
-  },
-  {
-    id: "retro-bowl",
-    name: "Retro Bowl",
-    category: "Sports",
-    description: "Build your team and lead it through a retro football season.",
-    playUrl: "/games/retro-bowl/index.html"
+    playUrl: "/games/eaglercraft/index.html"
   },
   {
     id: "cookie-clicker",
@@ -100,13 +93,80 @@ const games = [
     category: "Arcade",
     description: "The classic brick-breaker game, using upstream open-source code.",
     playUrl: "/games/classic-breakout/index.html"
-  }
+  },
+  { id: "air-hockey", name: "Air Hockey", category: "Sports", description: "Play table hockey against the computer.", playUrl: "/games/air-hockey/index.html" },
+  { id: "battleship", name: "Battleship", category: "Board", description: "Place your fleet and hunt the computer's hidden ships.", playUrl: "/games/battleship/index.html" },
+  { id: "block-drop", name: "Block Drop", category: "Puzzle", description: "Fit falling blocks and clear the board.", playUrl: "/games/block-drop/index.html" },
+  { id: "click-circle", name: "Click Circle", category: "Arcade", description: "Test your speed and accuracy against the clock.", playUrl: "/games/click-circle/index.html" },
+  { id: "connect-four", name: "Connect Four", category: "Board", description: "Line up four pieces before the computer does.", playUrl: "/games/connect-four/index.html" },
+  { id: "cross-road", name: "Cross Road", category: "Arcade", description: "Dodge traffic and see how far you can get.", playUrl: "/games/cross-road/index.html" },
+  { id: "dino-run", name: "Dino Run", category: "Arcade", description: "Jump over obstacles in an endless runner.", playUrl: "/games/dino-run/index.html" },
+  { id: "fruit-slice", name: "Fruit Slice", category: "Arcade", description: "Slice flying fruit and avoid the hazards.", playUrl: "/games/fruit-slice/index.html" },
+  { id: "gem-match", name: "Gem Match", category: "Puzzle", description: "Match gems and chain together combos.", playUrl: "/games/gem-match/index.html" },
+  { id: "helix-drop", name: "Helix Drop", category: "Arcade", description: "Rotate the tower and guide the ball through gaps.", playUrl: "/games/helix-drop/index.html" },
+  { id: "lights-out", name: "Lights Out", category: "Puzzle", description: "Turn off every light with the fewest moves.", playUrl: "/games/lights-out/index.html" },
+  { id: "maze-muncher", name: "Maze Muncher", category: "Arcade", description: "Clear the maze while avoiding the ghosts.", playUrl: "/games/maze-muncher/index.html" },
+  { id: "memory-match", name: "Memory Match", category: "Puzzle", description: "Flip cards and find every matching pair.", playUrl: "/games/memory-match/index.html" },
+  { id: "merge-drop", name: "Merge Drop", category: "Puzzle", description: "Drop matching pieces together to make bigger ones.", playUrl: "/games/merge-drop/index.html" },
+  { id: "minesweeper", name: "Minesweeper", category: "Puzzle", description: "Clear the grid without hitting a mine.", playUrl: "/games/minesweeper/index.html" },
+  { id: "pacman", name: "Pac-Man", category: "Arcade", description: "Clear the maze, collect dots and avoid ghosts.", playUrl: "/games/pacman/index.html" },
+  { id: "paddle-duel", name: "Paddle Duel", category: "Sports", description: "Play a fast paddle match against the computer.", playUrl: "/games/paddle-duel/index.html" },
+  { id: "piano-tap", name: "Piano Tap", category: "Music", description: "Hit the keys in time and keep the streak alive.", playUrl: "/games/piano-tap/index.html" },
+  { id: "reversi", name: "Reversi", category: "Board", description: "Flip your opponent's pieces and control the board.", playUrl: "/games/reversi/index.html" },
+  { id: "slide-puzzle", name: "Slide Puzzle", category: "Puzzle", description: "Put the numbered tiles back in order.", playUrl: "/games/slide-puzzle/index.html" },
+  { id: "sokoban", name: "Sokoban", category: "Puzzle", description: "Push every crate onto its target.", playUrl: "/games/sokoban/index.html" },
+  { id: "stack-tower", name: "Stack Tower", category: "Arcade", description: "Stack blocks as accurately and as high as you can.", playUrl: "/games/stack-tower/index.html" },
+  { id: "star-defender", name: "Star Defender", category: "Shooter", description: "Take on waves of enemies in a space shooter.", playUrl: "/games/star-defender/index.html" },
+  { id: "sudoku", name: "Sudoku", category: "Puzzle", description: "Fill the grid without repeating numbers.", playUrl: "/games/sudoku/index.html" },
+  { id: "tic-tac-toe", name: "Tic Tac Toe", category: "Board", description: "Play the classic against the computer or a friend.", playUrl: "/games/tic-tac-toe/index.html" },
+  { id: "water-sort", name: "Water Sort", category: "Puzzle", description: "Sort the colored liquid into matching tubes.", playUrl: "/games/water-sort/index.html" },
+  { id: "whack-a-mole", name: "Whack-a-Mole", category: "Arcade", description: "Test your reflexes and hit the moles before time runs out.", playUrl: "/games/whack-a-mole/index.html" },
+  { id: "bowling", name: "Bowling", category: "Sports", description: "Line up your shot, add spin and chase a perfect game.", playUrl: "/games/bowling/index.html" },
+  { id: "checkers", name: "Checkers", category: "Board", description: "Capture pieces and crown your kings against the computer.", playUrl: "/games/checkers/index.html" },
+  { id: "gomoku", name: "Gomoku", category: "Board", description: "Get five in a row before your opponent.", playUrl: "/games/gomoku/index.html" },
+  { id: "hoop-shot", name: "Hoop Shot", category: "Sports", description: "Take timed basketball shots and build a scoring streak.", playUrl: "/games/hoop-shot/index.html" },
+  { id: "mini-golf", name: "Mini Golf", category: "Sports", description: "Play nine holes and putt around obstacles.", playUrl: "/games/mini-golf/index.html" },
+  { id: "penalty-kick", name: "Penalty Kick", category: "Sports", description: "Take penalty shots and try to beat the keeper.", playUrl: "/games/penalty-kick/index.html" },
+  { id: "mancala", name: "Mancala", category: "Board", description: "Sow the stones, capture pits and outscore the computer.", playUrl: "/games/mancala/index.html" },
+  { id: "rush-hour", name: "Rush Hour", category: "Puzzle", description: "Move the traffic and clear a path for the red car.", playUrl: "/games/rush-hour/index.html" },
+  { id: "mahjong-link", name: "Mahjong Link", category: "Puzzle", description: "Match tiles with a path that makes no more than two turns.", playUrl: "/games/mahjong-link/index.html" },
+  { id: "hanoi", name: "Tower of Hanoi", category: "Puzzle", description: "Move the disks to the final peg without breaking the rules.", playUrl: "/games/hanoi/index.html" },
+  { id: "hextris", name: "Hextris", category: "Puzzle", description: "A fast-paced hexagonal block-stacking puzzle.", playUrl: "/games/hextris/index.html" },
+  { id: "wok", name: "Wok", category: "Arcade", description: "Catch falling balls in a fast arcade challenge.", playUrl: "/games/wok/index.html" },
+  { id: "yanoid", name: "Yanoid", category: "Arcade", description: "A classic paddle-and-brick arcade game.", playUrl: "/games/yanoid/index.html" },
+  { id: "for-science", name: "For Science!", category: "Puzzle", description: "A turn-based match-three duel.", playUrl: "/games/for-science/index.html" },
+  { id: "the-lost-path", name: "The Lost Path", category: "Puzzle", description: "Find your way through a dark maze before time runs out.", playUrl: "/games/the-lost-path/index.html" },
+  { id: "glparchis", name: "glParchis", category: "Board", description: "Play the classic race-and-capture board game against computer players.", playUrl: "/games/glparchis/index.html" },
+  { id: "game-of-the-goose", name: "Game of the Goose", category: "Board", description: "A local multiplayer board race for up to six players.", playUrl: "/games/game-of-the-goose/index.html" },
+  { id: "klondike", name: "Klondike Solitaire", category: "Card", description: "Play classic Klondike solitaire with locally saved progress.", playUrl: "/games/klondike/index.html" },
+  { id: "netris", name: "Netris", category: "Puzzle", description: "A faithful browser port of a classic falling-block puzzle.", playUrl: "/games/netris/index.html" },
+  { id: "don-ceferino", name: "Don Ceferino Hazaña", category: "Action", description: "A ball-popping arcade adventure with 30 levels.", playUrl: "/games/don-ceferino/index.html" },
+  { id: "psypong3d", name: "PSY PONG 3D", category: "Sports", description: "A 3D pong game against the computer or a second player.", playUrl: "/games/psypong3d/index.html" },
+  { id: "a-dark-room", name: "A Dark Room", category: "Adventure", description: "Start with a fire and build a settlement in this minimalist survival adventure.", playUrl: "/games/a-dark-room/index.html" },
+  { id: "bubble-train", name: "Bubble Train", category: "Puzzle", description: "Pop bubbles and work through 61 levels of color-matching challenges.", playUrl: "/games/bubble-train/index.html" },
+  { id: "nova-pinball", name: "Nova Pinball", category: "Arcade", description: "Play a multi-stage space pinball table with missions and six-ball action.", playUrl: "/games/nova-pinball/index.html" },
+  { id: "comet-pinball", name: "Comet Pinball", category: "Arcade", description: "Play a physics-based pinball table with bumpers, slingshots and obstacles.", playUrl: "/games/comet-pinball/index.html" },
+  { id: "oglbricks", name: "OGLBricks", category: "Puzzle", description: "A falling-block puzzle with adjustable board sizes and lots of piece shapes.", playUrl: "/games/oglbricks/index.html" },
+  { id: "libre-jigsaw", name: "Libre Jigsaw", category: "Puzzle", description: "Build photo jigsaw puzzles with square or hexagonal pieces.", playUrl: "/games/libre-jigsaw/index.html" },
+  { id: "sliding-tile-puzzle", name: "Sliding Tile Puzzle", category: "Puzzle", description: "Slide numbered tiles into the right order on a 3×3, 4×4 or 5×5 board.", playUrl: "/games/sliding-tile-puzzle/index.html" },
+  { id: "spinning-tile-puzzle", name: "Spinning Tile Puzzle", category: "Puzzle", description: "Rotate groups of hexagonal tiles to put the board back together.", playUrl: "/games/spinning-tile-puzzle/index.html" },
+  { id: "memonix-pair", name: "Memonix: Pair", category: "Puzzle", description: "Test your memory by finding matching pairs across several difficulty levels.", playUrl: "/games/memonix-pair/index.html" },
+  { id: "concentration-room", name: "Concentration Room", category: "Puzzle", description: "Play a card-matching memory game with solo, versus and story modes.", playUrl: "/games/concentration-room/index.html" },
+  { id: "lawn-mower", name: "Lawn Mower", category: "Arcade", description: "Mow each lawn, collect fuel and avoid obstacles across ten stages.", playUrl: "/games/lawn-mower/index.html" },
+  { id: "disk-field", name: "Disk Field", category: "Puzzle", description: "Rotate a field of forces to guide a disk into its target.", playUrl: "/games/disk-field/index.html" },
+  { id: "lan-master", name: "Lan Master", category: "Puzzle", description: "Solve cable-routing puzzles across 50 levels.", playUrl: "/games/lan-master/index.html" },
+  { id: "highmoon", name: "HighMoon", category: "Strategy", description: "Take turns in a space-artillery duel against a computer opponent.", playUrl: "/games/highmoon/index.html" },
+  { id: "donkey-bolonkey", name: "Donkey Bolonkey", category: "Puzzle", description: "Match colors and clear the board in this classic puzzle game.", playUrl: "/games/donkey-bolonkey/index.html" },
+  { id: "milcity", name: "MilCity", category: "Strategy", description: "Build up a city and defend it in a turn-based strategy challenge.", playUrl: "/games/milcity/index.html" },
+  { id: "zooming-secretary", name: "Zooming Secretary", category: "Arcade", description: "Climb, use ladders and navigate a multi-floor telephone-themed challenge.", playUrl: "/games/zooming-secretary/index.html" },
+  { id: "terramancers", name: "Terramancers", category: "Strategy", description: "Capture tiles in a real-time Reversi-style strategy game.", playUrl: "/games/terramancers/index.html" },
+  { id: "bomber", name: "Bomber", category: "Arcade", description: "Fly over a city and drop bombs in a quick one-button arcade game.", playUrl: "/games/bomber/index.html" },
 ];
 
 const categories = ["All", ...new Set(games.map((game) => game.category))];
 
 const symbols = {
-  "pacman": "◉", "2048": "▦", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
+  "pacman": "◉", "2048": "▦", "bowling": "🎳", "checkers": "🔵", "gomoku": "⚫", "hoop-shot": "🏀", "mini-golf": "⛳", "penalty-kick": "⚽", "mancala": "🫘", "rush-hour": "🚗", "mahjong-link": "🀄", "hanoi": "🗼", "air-hockey": "◉", "ant-flap": "✳", "ant-jump": "↗",
   "battleship": "▤", "block-drop": "▦", "breakout": "▥", "bubble-shooter": "◌",
   "connect-four": "⊞", "cookie-clicker": "🍪", "retro-bowl": "🏈", "cross-road": "↗", "dino-run": "♞", "fruit-slice": "✳",
   "gem-match": "◆", "helix-drop": "◉", "lights-out": "✦", "maze-muncher": "⌘",
@@ -144,11 +204,6 @@ export default function GamesClient() {
   ), [query, category]);
 
   function playGame(game) {
-    if (game.id === "cookie-clicker") {
-      try { const entry = { name: game.name, type: "game", id: game.id, playedAt: new Date().toISOString() }; localStorage.setItem("vehemence_last_played", JSON.stringify(entry)); const prior = JSON.parse(localStorage.getItem("vehemence_game_history") || "[]"); const history = Array.isArray(prior) ? prior : []; localStorage.setItem("vehemence_game_history", JSON.stringify([entry, ...history.filter((item) => item.id !== game.id)].slice(0, 50))); } catch {}
-      window.open(game.playUrl, "_blank", "noopener,noreferrer");
-      return;
-    }
     setSelectedGame(game);
     try { const entry = { name: game.name, type: "game", id: game.id, playedAt: new Date().toISOString() }; localStorage.setItem("vehemence_last_played", JSON.stringify(entry)); const prior = JSON.parse(localStorage.getItem("vehemence_game_history") || "[]"); const history = Array.isArray(prior) ? prior : []; localStorage.setItem("vehemence_game_history", JSON.stringify([entry, ...history.filter((item) => item.id !== game.id)].slice(0, 50))); } catch {}
     window.dispatchEvent(new Event("vehemence-game-last-played"));
