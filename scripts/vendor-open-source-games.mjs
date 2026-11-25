@@ -17,7 +17,18 @@ const selectedGames = [
   ["classic-breakout", "html5-breakout"],
   ["classic-snake", "html5-snake"],
   ["space-invaders", "html5-space-invaders"],
-  ["asteroids", "asteroids-infinity"],
+  ["asteroids", "asteroids-infinity"],  ["hextris", "hextris"],
+  ["wok", "wok"],
+  ["yanoid", "yanoid"],
+  ["for-science", "for-science"],
+  ["the-lost-path", "the-lost-path"],
+  ["strider", "strider"],
+  ["glparchis", "glparchis"],
+  ["game-of-the-goose", "game-of-the-goose"],
+  ["klondike", "klondike"],
+  ["netris", "netris"],
+  ["don-ceferino", "don-ceferino"],
+  ["psypong3d", "psypong3d"],
 ];
 
 async function fetchText(url, minimumLength = 1) {
